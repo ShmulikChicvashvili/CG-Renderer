@@ -114,7 +114,7 @@ void MeshModel::loadFile(string fileName)
 	{
 		Face f;
 		for (int i = 0; i < 3; i++){
-			f.addVertex(vec4(vertices[faceIdc.v[i]]));
+			f.addVertex(vec4(vertices[faceIdc.v[i]-1]));
 		}
 		this->faces.push_back(f);
 	}

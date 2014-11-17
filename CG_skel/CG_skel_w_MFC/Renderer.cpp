@@ -63,7 +63,7 @@ void Renderer::InitializeBuffer() {
 
 // The algorith for drawing line that is used is Bresenham's line algorithm
 void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
-	InitializeBuffer();
+	//InitializeBuffer();
 	const bool highOctant = (fabs(y2 - y1) > fabs(x2 - x1));
 	if (highOctant == true) {
 		// switch between x and y
@@ -115,8 +115,8 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 void Renderer::setBuffer(const vector<Model>& models, const mat4& viewTransform, const mat4& projection) {
 	for each (const Model& model in models)
 	{
+
 		mat4 transformationMatrix = projection * viewTransform * model.getModelMatrix();
-		cout << "Transformation matrix: " << transformationMatrix << endl;
 		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
