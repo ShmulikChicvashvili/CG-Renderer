@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "Renderer.h"
+#include "Model.h"
 using namespace std;
 
 

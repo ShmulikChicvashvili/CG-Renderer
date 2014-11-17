@@ -1,23 +1,20 @@
+#pragma once
 #include <vector>
 #include "mat.h"
+#include "Face.h"
 
 using std::vector;
-
-
-class Face {
-private:
-	vector<vec4> vertices;
-
-public:
-	const vector<vec4> getVertices() const;
-};
 
 class Model {
 protected:
 	vector<Face> faces;
-	virtual ~Model() {}
+	mat4 rotation;
+	mat4 translation;
+	mat4 scale;
+	mat3 _normal_transform;
 
 public:
-	virtual const mat4 getModelMatrix() const = 0;
-	virtual const vector<Face> getFaces() const = 0;
+	virtual ~Model() {}
+	virtual const mat4 getModelMatrix() const;
+	virtual const vector<Face>& getFaces() const;
 };

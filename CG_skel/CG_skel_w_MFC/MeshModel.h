@@ -7,10 +7,6 @@ class MeshModel : public Model
 {
 protected :
 	MeshModel() {}
-	vec3 *vertex_positions;
-	//add more attributes
-	mat4 _world_transform;
-	mat3 _normal_transform;
 
 public:
 
@@ -21,7 +17,7 @@ public:
 	///////////////////////////////
 	// Shmulik & Eyal stuff
 
-	const vector<Face> getFaces() const;
+	const vector<Face>& getFaces() const;
 	virtual const mat4 getModelMatrix() const;
 	//////////////////////////////
 };

@@ -63,7 +63,6 @@ vec2 vec2fFromStream(std::istream & aStream)
 MeshModel::MeshModel(string fileName)
 {
 	loadFile(fileName);
-	_world_transform = mat4(1);
 }
 
 MeshModel::~MeshModel(void)
@@ -109,22 +108,34 @@ void MeshModel::loadFile(string fileName)
 	//Then vertex_positions should contain:
 	//vertex_positions={v1,v2,v3,v1,v3,v4}
 
-	vertex_positions = new vec3[3 * faces.size()];
 	// iterate through all stored faces and create triangles
-	int k=0;
-	for (vector<FaceIdcs>::iterator it = faces.begin(); it != faces.end(); ++it)
+
+	for each (const FaceIdcs& faceIdc in faces)
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			vertex_positions[k++] = vertices[it->v[i]];
+		Face f;
+		for (int i = 0; i < 3; i++){
+			f.addVertex(vec4(vertices[faceIdc.v[i]]));
 		}
+		this->faces.push_back(f);
+	}
+
+	// @TODO delete it
+	cout << "Loaded model with " << this->faces.size() << " faces" << endl;
+	for each (const Face& face in this->faces)
+	{
+		for each (const vec4& vertex in face.getVertices())
+		{
+			cout << vertex;
+		}
+		cout << endl;
+		
 	}
 }
 
 ///////////////////////////////////////////////
 // Shmulik & Eyal stuff
 
-const vector<Face> MeshModel::getFaces() const{
+const vector<Face>& MeshModel::getFaces() const{
 	return vector<Face>();
 }
 

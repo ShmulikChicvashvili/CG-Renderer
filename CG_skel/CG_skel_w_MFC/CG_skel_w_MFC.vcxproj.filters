@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{5f35f4d7-05b7-4340-bdca-a9712935aa4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\ObjectExamples">
+      <UniqueIdentifier>{ce137564-369b-4d2f-83be-f25e2845dacd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CG_skel_w_MFC.cpp">
@@ -34,6 +37,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -69,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Face.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
