@@ -17,7 +17,7 @@
       <UniqueIdentifier>{5f35f4d7-05b7-4340-bdca-a9712935aa4b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\ObjectExamples">
-      <UniqueIdentifier>{ce137564-369b-4d2f-83be-f25e2845dacd}</UniqueIdentifier>
+      <UniqueIdentifier>{72a480e9-cf57-48e6-af67-fd951490dc22}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,12 +37,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Face.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,9 +74,6 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Face.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CG_skel_w_MFC.rc">
@@ -97,5 +88,46 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="..\..\example.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\feline.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\pawn.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\teapot.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\banana.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\beethoven.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\bishop.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\blob.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\Bunny.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\chain.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\cow.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\demo.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
+    <Object Include="..\..\obj_examples\dolphin.obj">
+      <Filter>Resource Files\ObjectExamples</Filter>
+    </Object>
   </ItemGroup>
 </Project>

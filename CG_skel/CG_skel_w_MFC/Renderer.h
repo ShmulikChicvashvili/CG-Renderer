@@ -4,6 +4,7 @@
 #include "vec.h"
 #include "mat.h"
 #include "GL/glew.h"
+#include "Model.h"
 
 using namespace std;
 class Renderer
@@ -14,6 +15,15 @@ class Renderer
 
 	void CreateBuffers(int width, int height);
 	void CreateLocalBuffer();
+
+	//////////////////////////////
+	// Shmulik & Eyal stuff
+
+	void drawFace(Face& face);
+	vec3 divideByW(const vec4& vector);
+	vec2 windowCoordinates(const vec3& vector);
+
+	//////////////////////////////
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.
@@ -43,6 +53,7 @@ public:
 	void InitializeBuffer();
 	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 	void drawSinglePixel(GLint x, GLint y);
+	void setBuffer(vector<Model>& models, mat4& viewTransform, mat4& projection);
 
 	//////////////////////////////
 };

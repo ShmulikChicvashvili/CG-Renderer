@@ -144,6 +144,21 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="..\..\example.obj" />
+    <Object Include="..\..\obj_examples\banana.obj" />
+    <Object Include="..\..\obj_examples\beethoven.obj" />
+    <Object Include="..\..\obj_examples\bishop.obj" />
+    <Object Include="..\..\obj_examples\blob.obj" />
+    <Object Include="..\..\obj_examples\Bunny.obj" />
+    <Object Include="..\..\obj_examples\chain.obj" />
+    <Object Include="..\..\obj_examples\cow.obj" />
+    <Object Include="..\..\obj_examples\demo.obj" />
+    <Object Include="..\..\obj_examples\dolphin.obj" />
+    <Object Include="..\..\obj_examples\feline.obj" />
+    <Object Include="..\..\obj_examples\pawn.obj" />
+    <Object Include="..\..\obj_examples\teapot.obj" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

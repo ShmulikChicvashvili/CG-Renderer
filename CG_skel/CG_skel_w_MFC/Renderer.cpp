@@ -112,6 +112,37 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 	m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
 }
 
+void Renderer::setBuffer(vector<Model>& models, mat4& viewTransform, mat4& projection) {
+	for each (Model& model in models)
+	{
+		mat4 transformationMatrix = projection * viewTransform * model.getModelMatrix();
+		vector<Face> modelFaces = model.getFaces();
+		for each (Face& face in modelFaces)
+		{
+			drawFace(face);
+		}
+	}
+}
+
+
+void Renderer::drawFace(Face& face) {
+	for (int i = 0; i < face.getVertices().size(); i++) {
+		vec2 windowCordsFirstVector = windowCoordinates(divideByW(face.getVertices()[i]));
+		vec2 windowCordsSecondVector = windowCoordinates(divideByW(face.getVertices()[(i+1)%face.getVertices().size()]));
+		drawLine(windowCordsFirstVector.x, windowCordsFirstVector.y, windowCordsSecondVector.x, windowCordsSecondVector.y);
+	}
+}
+
+vec3 Renderer::divideByW(const vec4& vector) {
+	return vec3(vector.x / vector.w, vector.y / vector.w, vector.z / vector.w);
+}
+
+vec2 Renderer::windowCoordinates(const vec3& vector) {
+	GLint halfWidth = m_width / 2;
+	GLint halfHeight = m_height / 2;
+	return vec2((halfWidth*vector.x) + halfWidth, (halfHeight*vector.y) + halfHeight);
+}
+
 /////////////////////////////////////////////////////
 
 
