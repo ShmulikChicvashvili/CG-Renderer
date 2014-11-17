@@ -20,6 +20,7 @@ void Scene::draw()
 
 void Scene::drawDemo()
 {
-	m_renderer->SetDemoBuffer();
+	//m_renderer->SetDemoBuffer();
+	m_renderer->drawLine(0, 0, 10, 10);
 	m_renderer->SwapBuffers();
 }

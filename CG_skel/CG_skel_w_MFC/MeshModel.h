@@ -21,5 +21,9 @@ public:
 	~MeshModel(void);
 	void loadFile(string fileName);
 	void draw();
-	
+
+	///////////////////////////////
+	// Shmulik & Eyal stuff
+
+	//////////////////////////////
 };

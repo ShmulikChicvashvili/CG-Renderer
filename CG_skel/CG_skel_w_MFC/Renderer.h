@@ -36,4 +36,13 @@ public:
 	void ClearColorBuffer();
 	void ClearDepthBuffer();
 	void SetDemoBuffer();
+
+	//////////////////////////////
+	// Shmulik & Eyal stuff.
+
+	void InitializeBuffer();
+	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
+	void drawSinglePixel(GLint x, GLint y);
+
+	//////////////////////////////
 };

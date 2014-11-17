@@ -47,8 +47,68 @@ void Renderer::SetDemoBuffer()
 	}
 }
 
+/////////////////////////////////////////////////////
+// Shmulik & Eyal stuff
 
+void Renderer::InitializeBuffer() {
+	for (int x = 0; x < m_width; x++) {
+		for (int y = 0; y < m_height; y++) {
+			m_outBuffer[INDEX(m_width, x, y, 0)] = 1;
+			m_outBuffer[INDEX(m_width, x, y, 1)] = 1;
+			m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
+		}
+	}
+}
 
+// The algorith for drawing line that is used is Bresenham's line algorithm
+void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
+	InitializeBuffer();
+	const bool highOctant = (fabs(y2-y1) > fabs(x2-x1));
+	if (highOctant == true) {
+		// switch between x and y
+		std::swap(x1, y1);
+		std::swap(x2, y2);
+	}
+	if (x1 > x2) {
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+
+	const GLfloat dx = x2 - x1;
+	const GLfloat dy = fabs(y2 - y1);
+
+	GLfloat error = dx / 2.0f;
+	const GLint ystep = (y1 < y2) ? 1 : -1;
+	GLint y = (GLint)y1;
+
+	const GLint Xmax = (GLint)x2;
+
+	for (GLint x = (GLint)x1; x < Xmax; x++) {
+		std::cout << "In LOOP" << std::endl;
+		if (highOctant == true) {
+			std::cout << "drawing pixel: " << y << " , " << x << endl;
+			drawSinglePixel(y, x);
+		}
+		else {
+			std::cout << "drawing pixel: " << x << " , " << y << endl;
+			drawSinglePixel(x, y);
+		}
+		
+		error -= dy;
+		if (error < 0) {
+			y += ystep;
+			error += dx;
+		}
+	}
+}
+
+void Renderer::drawSinglePixel(GLint x, GLint y) {
+	m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
+	m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
+	m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
+}
+
+/////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////

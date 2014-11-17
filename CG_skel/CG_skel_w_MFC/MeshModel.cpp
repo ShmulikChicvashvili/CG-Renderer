@@ -63,6 +63,7 @@ vec2 vec2fFromStream(std::istream & aStream)
 MeshModel::MeshModel(string fileName)
 {
 	loadFile(fileName);
+	_world_transform = mat4(1);
 }
 
 MeshModel::~MeshModel(void)
@@ -126,3 +127,8 @@ void MeshModel::draw()
 {
 	
 }
+
+///////////////////////////////////////////////
+// Shmulik & Eyal stuff
+
+///////////////////////////////////////////////

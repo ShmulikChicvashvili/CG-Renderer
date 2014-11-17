@@ -110,7 +110,7 @@ void mainMenu(int id)
 		scene->drawDemo();
 		break;
 	case MAIN_ABOUT:
-		AfxMessageBox(_T("Computer Graphics"));
+		AfxMessageBox(_T("Shmulik and Eyal RULEZ!"));
 		break;
 	}
 }
@@ -137,7 +137,7 @@ int my_main( int argc, char **argv )
 	glutInit( &argc, argv );
 	glutInitDisplayMode( GLUT_RGBA| GLUT_DOUBLE);
 	glutInitWindowSize( 512, 512 );
-	glutInitContextVersion( 3, 2 );
+	glutInitContextVersion( 2, 0 );
 	glutInitContextProfile( GLUT_CORE_PROFILE );
 	glutCreateWindow( "CG" );
 	glewExperimental = GL_TRUE;
