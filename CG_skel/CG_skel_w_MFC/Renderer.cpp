@@ -9,12 +9,12 @@
 Renderer::Renderer() :m_width(512), m_height(512)
 {
 	InitOpenGLRendering();
-	CreateBuffers(512,512);
+	CreateBuffers(512, 512);
 }
-Renderer::Renderer(int width, int height) :m_width(width), m_height(height)
+Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 {
 	InitOpenGLRendering();
-	CreateBuffers(width,height);
+	CreateBuffers(width, height);
 }
 
 Renderer::~Renderer(void)
@@ -25,24 +25,24 @@ Renderer::~Renderer(void)
 
 void Renderer::CreateBuffers(int width, int height)
 {
-	m_width=width;
-	m_height=height;	
+	m_width = width;
+	m_height = height;
 	CreateOpenGLBuffer(); //Do not remove this line.
-	m_outBuffer = new float[3*m_width*m_height];
+	m_outBuffer = new float[3 * m_width*m_height];
 }
 
 void Renderer::SetDemoBuffer()
 {
 	//vertical line
-	for(int i=0; i<m_width; i++)
+	for (int i = 0; i < m_width; i++)
 	{
-		m_outBuffer[INDEX(m_width,256,i,0)]=1;	m_outBuffer[INDEX(m_width,256,i,1)]=0;	m_outBuffer[INDEX(m_width,256,i,2)]=0;
+		m_outBuffer[INDEX(m_width, 256, i, 0)] = 1;	m_outBuffer[INDEX(m_width, 256, i, 1)] = 0;	m_outBuffer[INDEX(m_width, 256, i, 2)] = 0;
 
 	}
 	//horizontal line
-	for(int i=0; i<m_width; i++)
+	for (int i = 0; i < m_width; i++)
 	{
-		m_outBuffer[INDEX(m_width,i,256,0)]=1;	m_outBuffer[INDEX(m_width,i,256,1)]=0;	m_outBuffer[INDEX(m_width,i,256,2)]=1;
+		m_outBuffer[INDEX(m_width, i, 256, 0)] = 1;	m_outBuffer[INDEX(m_width, i, 256, 1)] = 0;	m_outBuffer[INDEX(m_width, i, 256, 2)] = 1;
 
 	}
 }
@@ -63,7 +63,7 @@ void Renderer::InitializeBuffer() {
 // The algorith for drawing line that is used is Bresenham's line algorithm
 void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	InitializeBuffer();
-	const bool highOctant = (fabs(y2-y1) > fabs(x2-x1));
+	const bool highOctant = (fabs(y2 - y1) > fabs(x2 - x1));
 	if (highOctant == true) {
 		// switch between x and y
 		std::swap(x1, y1);
@@ -74,16 +74,17 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 		std::swap(y1, y2);
 	}
 
-	const GLfloat dx = x2 - x1;
-	const GLfloat dy = fabs(y2 - y1);
+	const GLint dx = x2 - x1;
+	const GLint dx2 = 2 * dx;
+	const GLint dy2 = 2 * fabs(y2 - y1);
 
-	GLfloat error = dx / 2.0f;
+	GLint d = dy2 - dx;
 	const GLint ystep = (y1 < y2) ? 1 : -1;
 	GLint y = (GLint)y1;
 
 	const GLint Xmax = (GLint)x2;
 
-	for (GLint x = (GLint)x1; x < Xmax; x++) {
+	for (GLint x = (GLint)x1; x <= Xmax; x++) {
 		std::cout << "In LOOP" << std::endl;
 		if (highOctant == true) {
 			std::cout << "drawing pixel: " << y << " , " << x << endl;
@@ -93,11 +94,11 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 			std::cout << "drawing pixel: " << x << " , " << y << endl;
 			drawSinglePixel(x, y);
 		}
-		
-		error -= dy;
-		if (error < 0) {
+
+		d += dy2;
+		if (d > 0) {
 			y += ystep;
-			error += dx;
+			d -= dx2;
 		}
 	}
 }
@@ -124,7 +125,7 @@ void Renderer::InitOpenGLRendering()
 	GLuint buffer;
 	glBindVertexArray(gScreenVtc);
 	glGenBuffers(1, &buffer);
-	const GLfloat vtc[]={
+	const GLfloat vtc[] = {
 		-1, -1,
 		1, -1,
 		-1, 1,
@@ -132,31 +133,31 @@ void Renderer::InitOpenGLRendering()
 		1, -1,
 		1, 1
 	};
-	const GLfloat tex[]={
-		0,0,
-		1,0,
-		0,1,
-		0,1,
-		1,0,
-		1,1};
+	const GLfloat tex[] = {
+		0, 0,
+		1, 0,
+		0, 1,
+		0, 1,
+		1, 0,
+		1, 1 };
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc)+sizeof(tex), NULL, GL_STATIC_DRAW);
-	glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(vtc), vtc);
-	glBufferSubData( GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc) + sizeof(tex), NULL, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vtc), vtc);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
 
-	GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
-	glUseProgram( program );
-	GLint  vPosition = glGetAttribLocation( program, "vPosition" );
+	GLuint program = InitShader("vshader.glsl", "fshader.glsl");
+	glUseProgram(program);
+	GLint  vPosition = glGetAttribLocation(program, "vPosition");
 
-	glEnableVertexAttribArray( vPosition );
-	glVertexAttribPointer( vPosition, 2, GL_FLOAT, GL_FALSE, 0,
-		0 );
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0,
+		0);
 
-	GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
-	glEnableVertexAttribArray( vTexCoord );
-	glVertexAttribPointer( vTexCoord, 2, GL_FLOAT, GL_FALSE, 0,
-		(GLvoid *) sizeof(vtc) );
-	glUniform1i(glGetUniformLocation(program, "texture"), 0 );
+	GLint  vTexCoord = glGetAttribLocation(program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0,
+		(GLvoid *) sizeof(vtc));
+	glUniform1i(glGetUniformLocation(program, "texture"), 0);
 	a = glGetError();
 }
 
