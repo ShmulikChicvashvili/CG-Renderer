@@ -127,4 +127,8 @@ void MeshModel::loadFile(string fileName)
 const vector<Face> MeshModel::getFaces() const{
 	return vector<Face>();
 }
+
+const mat4 MeshModel::getModelMatrix() const{
+	return mat4();
+}
 ///////////////////////////////////////////////

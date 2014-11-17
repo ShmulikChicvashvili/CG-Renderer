@@ -24,6 +24,7 @@ public:
 	///////////////////////////////
 	// Shmulik & Eyal stuff
 
-	virtual const vector<Face> getFaces() const;
+	const vector<Face> getFaces() const;
+	virtual const mat4 getModelMatrix() const;
 	//////////////////////////////
 };
