@@ -113,11 +113,12 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 }
 
 void Renderer::setBuffer(vector<Model>& models, mat4& viewTransform, mat4& projection) {
-	for each (Model& model in models)
+	for each (const Model& model in models)
 	{
 		mat4 transformationMatrix = projection * viewTransform * model.getModelMatrix();
+		cout << "Transformation matrix: " << transformationMatrix << endl;
 		vector<Face> modelFaces = model.getFaces();
-		for each (Face& face in modelFaces)
+		for each (const Face& face in modelFaces)
 		{
 			drawFace(face);
 		}
@@ -125,7 +126,7 @@ void Renderer::setBuffer(vector<Model>& models, mat4& viewTransform, mat4& proje
 }
 
 
-void Renderer::drawFace(Face& face) {
+void Renderer::drawFace(const Face& face) {
 	for (int i = 0; i < face.getVertices().size(); i++) {
 		vec2 windowCordsFirstVector = windowCoordinates(divideByW(face.getVertices()[i]));
 		vec2 windowCordsSecondVector = windowCoordinates(divideByW(face.getVertices()[(i+1)%face.getVertices().size()]));

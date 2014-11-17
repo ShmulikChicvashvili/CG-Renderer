@@ -40,6 +40,7 @@ bool lb_down,rb_down,mb_down;
 void display( void )
 {
 //Call the scene and ask it to draw itself
+	scene->draw();
 }
 
 void reshape( int width, int height )
@@ -97,6 +98,7 @@ void fileMenu(int id)
 			{
 				std::string s((LPCTSTR)dlg.GetPathName());
 				scene->loadOBJModel((LPCTSTR)dlg.GetPathName());
+				display();
 			}
 			break;
 	}
@@ -137,7 +139,7 @@ int my_main( int argc, char **argv )
 	glutInit( &argc, argv );
 	glutInitDisplayMode( GLUT_RGBA| GLUT_DOUBLE);
 	glutInitWindowSize( 512, 512 );
-	glutInitContextVersion( 2, 0 );
+	glutInitContextVersion( 3, 2 );
 	glutInitContextProfile( GLUT_CORE_PROFILE );
 	glutCreateWindow( "CG" );
 	glewExperimental = GL_TRUE;

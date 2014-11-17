@@ -19,7 +19,7 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
-	void drawFace(Face& face);
+	void drawFace(const Face& face);
 	vec3 divideByW(const vec4& vector);
 	vec2 windowCoordinates(const vec3& vector);
 
