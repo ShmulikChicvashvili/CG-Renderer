@@ -1,8 +1,5 @@
 #pragma once
-#include "scene.h"
-#include "vec.h"
-#include "mat.h"
-#include <string>
+#include "Model.h"
 
 using namespace std;
 

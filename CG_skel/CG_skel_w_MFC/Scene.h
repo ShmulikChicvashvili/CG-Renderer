@@ -6,33 +6,6 @@
 #include "Renderer.h"
 using namespace std;
 
-class Vertex{
-private:
-	vec4 coords;
-
-public:
-	const vec4 getCoords() const{
-		return coords;
-	}
-};
-
-class Face {
-private:
-	vector<Vertex> vertices;
-
-public:
-	const vector<Vertex> getVertices() const;
-};
-
-class Model {
-protected:
-	vector<Face> faces;
-	virtual ~Model() {}
-
-public:
-	virtual const mat4 getModelMatrix() const = 0;
-	virtual const vector<Face> getFaces() const = 0;
-};
 
 
 class Light {
