@@ -24,5 +24,6 @@ public:
 	///////////////////////////////
 	// Shmulik & Eyal stuff
 
+	virtual const vector<Face> getFaces() const;
 	//////////////////////////////
 };
