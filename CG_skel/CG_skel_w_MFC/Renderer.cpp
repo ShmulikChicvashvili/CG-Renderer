@@ -3,6 +3,7 @@
 #include "CG_skel_w_MFC.h"
 #include "InitShader.h"
 #include "GL\freeglut.h"
+#include <assert.h>
 
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 
@@ -85,6 +86,7 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	const GLint Xmax = (GLint)x2;
 
 	for (GLint x = (GLint)x1; x <= Xmax; x++) {
+
 		std::cout << "In LOOP" << std::endl;
 		if (highOctant == true) {
 			std::cout << "drawing pixel: " << y << " , " << x << endl;
@@ -96,15 +98,20 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 		}
 
 		d += dy2;
-		if (d > 0) {
+		if (d >= 0) {
 			y += ystep;
 			d -= dx2;
 		}
+	
 	}
 }
 
 void Renderer::drawSinglePixel(GLint x, GLint y) {
-	m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
+	cout << "In draw pixel: " << INDEX(m_width, x, y, 0) << endl;
+	if (!(x >= 0 && x < m_width && y >= 0 && y < m_height)){
+		return;
+	}
+	m_outBuffer[INDEX(m_width, x, y, 0)] = 1;
 	m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
 	m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
 }
