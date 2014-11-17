@@ -6,10 +6,31 @@
 #include "Renderer.h"
 using namespace std;
 
+class Vertex{
+private:
+	vec4 coords;
+
+public:
+	const vec4 getCoords() const{
+		return coords;
+	}
+};
+
+class Face {
+private:
+	vector<Vertex> vertices;
+
+public:
+	const vector<Vertex> getVertices() const;
+};
+
 class Model {
 protected:
 	virtual ~Model() {}
-	void virtual draw()=0;
+
+public:
+	virtual const mat4 getModelMatrix() const = 0;
+	virtual const vector<Face> getFaces() const = 0;
 };
 
 
@@ -18,7 +39,7 @@ class Light {
 };
 
 class Camera {
-	mat4 cTransform;
+	mat4 viewTransform;
 	mat4 projection;
 
 public:
@@ -32,7 +53,8 @@ public:
 		const float zNear, const float zFar );
 	mat4 Perspective( const float fovy, const float aspect,
 		const float zNear, const float zFar);
-
+	mat4 getViewMatrix() const;
+	mat4 getProjectionMatrix() const;
 };
 
 class Scene {
