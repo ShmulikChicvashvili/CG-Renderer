@@ -112,35 +112,37 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 	m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
 }
 
-void Renderer::setBuffer(vector<Model>& models, mat4& viewTransform, mat4& projection) {
+void Renderer::setBuffer(const vector<Model>& models, const mat4& viewTransform, const mat4& projection) {
 	for each (const Model& model in models)
 	{
 		mat4 transformationMatrix = projection * viewTransform * model.getModelMatrix();
 		cout << "Transformation matrix: " << transformationMatrix << endl;
-		vector<Face> modelFaces = model.getFaces();
+		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
-			drawFace(face);
+			drawFace(face, transformationMatrix);
 		}
 	}
 }
 
 
-void Renderer::drawFace(const Face& face) {
+void Renderer::drawFace(const Face& face, const mat4& transformationMatrix) {
 	for (int i = 0; i < face.getVertices().size(); i++) {
-		vec2 windowCordsFirstVector = windowCoordinates(divideByW(face.getVertices()[i]));
-		vec2 windowCordsSecondVector = windowCoordinates(divideByW(face.getVertices()[(i+1)%face.getVertices().size()]));
-		drawLine(windowCordsFirstVector.x, windowCordsFirstVector.y, windowCordsSecondVector.x, windowCordsSecondVector.y);
+		vec4 transformedVerticesFirstPoint = transformationMatrix * face.getVertices()[i];
+		vec4 transformedVerticesSecondPoint = transformationMatrix * face.getVertices()[(i + 1) % face.getVertices().size()];
+		vec2 windowCordsFirstPoint = windowCoordinates(divideByW(transformedVerticesFirstPoint));
+		vec2 windowCordsSecondPoint = windowCoordinates(divideByW(transformedVerticesSecondPoint));
+		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y);
 	}
 }
 
-vec3 Renderer::divideByW(const vec4& vector) {
+const vec3 Renderer::divideByW(const vec4& vector) const {
 	return vec3(vector.x / vector.w, vector.y / vector.w, vector.z / vector.w);
 }
 
-vec2 Renderer::windowCoordinates(const vec3& vector) {
-	GLint halfWidth = m_width / 2;
-	GLint halfHeight = m_height / 2;
+const vec2 Renderer::windowCoordinates(const vec3& vector) const {
+	GLfloat halfWidth = m_width / 2;
+	GLfloat halfHeight = m_height / 2;
 	return vec2((halfWidth*vector.x) + halfWidth, (halfHeight*vector.y) + halfHeight);
 }
 
