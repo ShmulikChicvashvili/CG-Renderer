@@ -123,6 +123,8 @@ void MeshModel::loadFile(string fileName)
 
 
 
+
+
 void MeshModel::draw()
 {
 	
@@ -131,4 +133,7 @@ void MeshModel::draw()
 ///////////////////////////////////////////////
 // Shmulik & Eyal stuff
 
+vector<Face> MeshModel::getFaces() const{
+	return vector<Face>();
+}
 ///////////////////////////////////////////////

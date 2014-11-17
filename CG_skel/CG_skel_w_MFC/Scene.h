@@ -26,6 +26,7 @@ public:
 
 class Model {
 protected:
+	vector<Face> faces;
 	virtual ~Model() {}
 
 public:
