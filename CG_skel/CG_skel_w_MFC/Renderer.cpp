@@ -87,13 +87,10 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 
 	for (GLint x = (GLint)x1; x <= Xmax; x++) {
 
-		std::cout << "In LOOP" << std::endl;
 		if (highOctant == true) {
-			std::cout << "drawing pixel: " << y << " , " << x << endl;
 			drawSinglePixel(y, x);
 		}
 		else {
-			std::cout << "drawing pixel: " << x << " , " << y << endl;
 			drawSinglePixel(x, y);
 		}
 
@@ -102,18 +99,17 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 			y += ystep;
 			d -= dx2;
 		}
-	
+
 	}
 }
 
 void Renderer::drawSinglePixel(GLint x, GLint y) {
-	cout << "In draw pixel: " << INDEX(m_width, x, y, 0) << endl;
 	if (!(x >= 0 && x < m_width && y >= 0 && y < m_height)){
 		return;
 	}
 	m_outBuffer[INDEX(m_width, x, y, 0)] = 1;
 	m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
-	m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
+	m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
 }
 
 /////////////////////////////////////////////////////
