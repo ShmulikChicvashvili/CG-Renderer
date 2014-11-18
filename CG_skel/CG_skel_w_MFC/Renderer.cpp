@@ -117,10 +117,11 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 }
 
 void Renderer::setBuffer(const vector<Model>& models, const mat4& viewTransform, const mat4& projection) {
+	mat4 cameraMatrix = projection * viewTransform;
 	for each (const Model& model in models)
 	{
 
-		mat4 transformationMatrix = projection * viewTransform * model.getModelMatrix();
+		mat4 transformationMatrix = cameraMatrix * model.getModelMatrix();
 		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
@@ -131,11 +132,13 @@ void Renderer::setBuffer(const vector<Model>& models, const mat4& viewTransform,
 
 
 void Renderer::drawFace(const Face& face, const mat4& transformationMatrix) {
+	vec2* windowCords = new vec2[face.getVertices().size()];
 	for (int i = 0; i < face.getVertices().size(); i++) {
-		vec4 transformedVerticesFirstPoint = transformationMatrix * face.getVertices()[i];
-		vec4 transformedVerticesSecondPoint = transformationMatrix * face.getVertices()[(i + 1) % face.getVertices().size()];
-		vec2 windowCordsFirstPoint = windowCoordinates(divideByW(transformedVerticesFirstPoint));
-		vec2 windowCordsSecondPoint = windowCoordinates(divideByW(transformedVerticesSecondPoint));
+		windowCords[i] = windowCoordinates(divideByW(transformationMatrix * face.getVertices()[i]));
+	}
+	for (int i = 0; i < face.getVertices().size(); i++) {
+		vec2& windowCordsFirstPoint = windowCords[i];
+		vec2& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
 		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y);
 	}
 }
