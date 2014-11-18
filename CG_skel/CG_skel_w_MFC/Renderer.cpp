@@ -51,6 +51,10 @@ void Renderer::SetDemoBuffer()
 /////////////////////////////////////////////////////
 // Shmulik & Eyal stuff
 
+void Renderer::reshape(int width, int height){
+	CreateBuffers(width, height);
+}
+
 void Renderer::InitializeBuffer() {
 	for (int x = 0; x < m_width; x++) {
 		for (int y = 0; y < m_height; y++) {

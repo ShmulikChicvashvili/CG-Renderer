@@ -50,6 +50,7 @@ public:
 	//////////////////////////////
 	// Shmulik & Eyal stuff.
 
+	void reshape(int width, int height);
 	void InitializeBuffer();
 	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 	void drawSinglePixel(GLint x, GLint y);

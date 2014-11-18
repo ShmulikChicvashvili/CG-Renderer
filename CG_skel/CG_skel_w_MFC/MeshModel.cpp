@@ -118,18 +118,6 @@ void MeshModel::loadFile(string fileName)
 		}
 		this->faces.push_back(f);
 	}
-
-	// @TODO delete it
-	cout << "Loaded model with " << this->faces.size() << " faces" << endl;
-	for each (const Face& face in this->faces)
-	{
-		for each (const vec4& vertex in face.getVertices())
-		{
-			cout << vertex;
-		}
-		cout << endl;
-		
-	}
 }
 
 ///////////////////////////////////////////////

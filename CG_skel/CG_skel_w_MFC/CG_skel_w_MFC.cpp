@@ -45,6 +45,7 @@ void display( void )
 
 void reshape( int width, int height )
 {
+	renderer->reshape(width, height);
 //update the renderer's buffers
 }
 
