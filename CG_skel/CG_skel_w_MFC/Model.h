@@ -14,7 +14,7 @@ protected:
 	mat4 rotateTranslateMtx; // moves the spinned and scaled object in the world
 	mat3 _normal_transform;
 
-	const mat4 genRotationMatrix(const GLfloat teta, const Axes axis) const;
+	const mat4 genRotationMatrix(const GLfloat deg, const Axes axis) const;
 	const mat4 genTranslationMatrix(const GLfloat tx, const GLfloat ty, const GLfloat tz) const;
 	const mat4 genScaleMatrix(const GLfloat sx, const GLfloat sy, const GLfloat sz) const;
 

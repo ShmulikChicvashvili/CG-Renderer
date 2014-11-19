@@ -2,10 +2,11 @@
 #include "Model.h"
 
 GLfloat deg2radian(const GLfloat deg){
-	return deg * M_PI / 180;
+	return (GLfloat)(deg * M_PI / 180);
 }
 
-const mat4 Model::genRotationMatrix(const GLfloat teta, const Axes axis) const{
+const mat4 Model::genRotationMatrix(const GLfloat deg, const Axes axis) const{
+	GLfloat teta = deg2radian(deg);
 	GLfloat cosTeta = cos(teta);
 	GLfloat sinTeta = sin(teta);
 	
@@ -22,6 +23,7 @@ const mat4 Model::genRotationMatrix(const GLfloat teta, const Axes axis) const{
 						sinTeta, cosTeta, 0, 0,
 						0, 0, 1, 0,
 						0, 0, 0, 1);
+	default: return mat4(); // We don't rotate in all axes
 	}
 }
 
@@ -48,7 +50,7 @@ const vector<Face>& Model::getFaces() const{
 }
 
 void Model::spin(const GLfloat deg, const Axes axis){
-	const mat4& spinMatrix = genRotationMatrix(deg2radian(deg), axis);
+	const mat4& spinMatrix = genRotationMatrix(deg, axis);
 	spinScaleMtx = spinMatrix * spinScaleMtx;
 	std::cout << "Spin matrix: " << spinMatrix << std::endl;
 	std::cout << "Current Spin Scale matrix: " << spinScaleMtx << std::endl;
@@ -69,7 +71,7 @@ void Model::translate(const GLfloat tx, const GLfloat ty, const GLfloat tz){
 }
 
 void Model::rotate(const GLfloat deg, const Axes axis){
-	const mat4& rotateMatrix = genRotationMatrix(deg2radian(deg), axis);
+	const mat4& rotateMatrix = genRotationMatrix(deg, axis);
 	rotateTranslateMtx = rotateMatrix * spinScaleMtx;
 	std::cout << "Spin matrix: " << rotateMatrix << std::endl;
 	std::cout << "Current Spin Scale matrix: " << spinScaleMtx << std::endl;
