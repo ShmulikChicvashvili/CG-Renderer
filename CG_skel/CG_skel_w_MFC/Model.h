@@ -10,8 +10,8 @@ enum Axes {x, y, z, all};
 class Model {
 protected:
 	vector<Face> faces;
-	mat4 spinScaleTransform; // spinning and scaling are done in model spcae
-	mat4 rotateTranslateTransform; // moves the spinned and scaled object in the world
+	mat4 spinScaleMtx; // spinning and scaling are done in model spcae
+	mat4 rotateTranslateMtx; // moves the spinned and scaled object in the world
 	mat3 _normal_transform;
 
 public:
