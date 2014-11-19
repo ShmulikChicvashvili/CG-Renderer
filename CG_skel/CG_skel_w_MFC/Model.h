@@ -20,7 +20,7 @@ public:
 	virtual const vector<Face>& getFaces() const;
 
 	virtual void spin(const GLfloat teta, const Axes axis);
-	virtual void scale(const GLfloat s, const Axes axis);
-	virtual void translate(const GLfloat t, const Axes axis);
+	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
+	virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
 	virtual void rotate(const GLfloat teta, const Axes axis);
 };
