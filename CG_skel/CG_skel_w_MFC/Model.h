@@ -5,7 +5,7 @@
 
 using std::vector;
 
-enum Axes {x, y, z};
+enum Axes {x, y, z, all};
 
 class Model {
 protected:
