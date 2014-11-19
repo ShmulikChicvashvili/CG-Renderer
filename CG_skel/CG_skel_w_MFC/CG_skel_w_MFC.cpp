@@ -70,9 +70,9 @@ void applyTransformation(float intensity) {
 		for (auto &m : currentModels)
 		{
 			cout << "Scaling by : " << intensity << "In " << selectedAxis << " Axis";
-			m.scale((allAxesBool + xAxisBool)*intensity,
-				(allAxesBool + yAxisBool)*intensity,
-				(allAxesBool + zAxisBool)*intensity);
+			m.scale((allAxesBool + xAxisBool)*(intensity+1),
+				(allAxesBool + yAxisBool)*(intensity + 1),
+				(allAxesBool + zAxisBool)*(intensity + 1));
 		}
 		scene->draw();
 		break;
@@ -110,10 +110,10 @@ void keyboard(unsigned char key, int x, int y)
 		exit(EXIT_SUCCESS);
 		break;
 	case 0x2E:
-		applyTransformation(10.0);
+		applyTransformation(1.0);
 		break;
 	case 0x2C:
-		applyTransformation(-10.0);
+		applyTransformation(-1.0);
 		break;
 	}
 }
