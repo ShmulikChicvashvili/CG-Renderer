@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "MeshModel.h"
 #include <string>
+#include <math.h>
 
 using namespace std;
 void Scene::loadOBJModel(string fileName)
@@ -15,10 +16,10 @@ void Scene::draw()
 	// 1. Send the renderer the current camera transform and the projection
 	// 2. Tell all models to draw themselves
 	m_renderer->InitializeBuffer();
-	m_renderer->setBuffer(models, mat4(),	mat4(1,0,0,0,
-												0,1,0,0,
-												0,0,1,0,
-												0,0,0,1));
+	m_renderer->setBuffer(models, mat4(), mat4(1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1));
 	m_renderer->SwapBuffers();
 }
 
@@ -27,3 +28,80 @@ void Scene::drawDemo()
 	m_renderer->SetDemoBuffer();
 	m_renderer->SwapBuffers();
 }
+
+
+///////////////////////////////////
+// Shmulik & Eyal stuff
+
+//void Camera::setTransformation(const mat4& transform) {
+//	this->viewTransform = transform;
+//}
+
+void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
+	const vec3 eyeNotHomogenic = Renderer::divideByW(eye); 
+	const vec3 atNotHomogenic = Renderer::divideByW(at); 
+	const vec3 upNotHomogenic = Renderer::divideByW(up);
+	const vec3 zAxis = normalize(eyeNotHomogenic - atNotHomogenic); // The forward vector
+	const vec3 xAxis = normalize(cross(upNotHomogenic, zAxis)); // The right vector
+	const vec3 yAxis = cross(zAxis, xAxis); // the upper vector
+	this->viewTransform = mat4(	xAxis.x, xAxis.y, xAxis.z, -dot(xAxis, eyeNotHomogenic),
+								yAxis.x, yAxis.y, yAxis.z, -dot(yAxis, eyeNotHomogenic),
+								zAxis.x, zAxis.y, zAxis.z, -dot(zAxis, eyeNotHomogenic),
+								0, 0, 0, 1);
+
+	//@TODO camera is a model. update modelMatrix (the inverse of the above)
+}
+
+void Camera::Frustum(const float left, const float right,
+	const float bottom, const float top,
+	const float zNear, const float zFar) {
+	const float entry11 = ((2 * zNear) / (right - left));
+	const float entry13 = ((right + left) / (right - left));
+	const float entry22 = ((2 * zNear) / (top - bottom));
+	const float entry23 = ((top + bottom) / (top - bottom));
+	const float entry33 = ((-zFar - zNear) / (zFar - zNear));
+	const float entry34 = ((-2 * zFar*zNear) / (zFar - zNear));
+	
+	this->projection = mat4(entry11, 0, entry13, 0,
+		0, entry22, entry23, 0,
+		0, 0, entry33, entry34,
+		0, 0, -1, 0);
+}
+
+void Camera::Perspective(const float fovy, const float aspect,
+	const float zNear, const float zFar) {
+
+	const double DEG2RAD = 3.14159265 / 180;
+
+	double tangent = tan(fovy / 2 * DEG2RAD);   // tangent of half fovY
+	double height = zNear * tangent;          // half height of near plane
+	double width = height * aspect;      // half width of near plane
+
+	// params: left, right, bottom, top, near, far
+	Frustum(-width, width, -height, height, zNear, zFar);
+}
+
+void Camera::Ortho(const float left, const float right,
+	const float bottom, const float top,
+	const float zNear, const float zFar) {
+	const float entry11 = (2 / (right - left));
+	const float entry14 = ((-right - left) / (right - left));
+	const float entry22 = (2 / (top - bottom));
+	const float entry24 = ((-top - bottom) / (top - bottom));
+	const float entry33 = (-2 / (zFar - zNear));
+	const float entry34 = ((-zFar - zNear) / (zFar - zNear));
+	this->projection = mat4(entry11, 0, 0, entry14,
+		0, entry22, 0, entry24,
+		0, 0, entry33, entry34,
+		0, 0, 0, 1);
+}
+
+const mat4& Camera::getProjectionMatrix() const {
+	return this->projection;
+}
+
+const mat4& Camera::getViewMatrix() const {
+	return this->viewTransform;
+}
+
+///////////////////////////////////

@@ -20,7 +20,6 @@ class Renderer
 	// Shmulik & Eyal stuff
 
 	void drawFace(const Face& face, const mat4& transformationMatrix);
-	const vec3 divideByW(const vec4& vector) const;
 	const vec2 windowCoordinates(const vec3& vector) const;
 
 	//////////////////////////////
@@ -55,6 +54,7 @@ public:
 	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 	void drawSinglePixel(GLint x, GLint y);
 	void setBuffer(const vector<Model>& models, const mat4& viewTransform, const mat4& projection);
+	static const vec3 divideByW(const vec4& vector);
 
 	//////////////////////////////
 };

@@ -17,19 +17,20 @@ class Camera {
 	mat4 viewTransform;
 	mat4 projection;
 
+
 public:
-	void setTransformation(const mat4& transform);
-	void LookAt(const vec4& eye, const vec4& at, const vec4& up );
-	void Ortho( const float left, const float right,
+	//void setTransformation(const mat4& transform);
+	void LookAt(const vec4& eye, const vec4& at, const vec4& up);
+	void Ortho(const float left, const float right,
 		const float bottom, const float top,
-		const float zNear, const float zFar );
-	void Frustum( const float left, const float right,
-		const float bottom, const float top,
-		const float zNear, const float zFar );
-	mat4 Perspective( const float fovy, const float aspect,
 		const float zNear, const float zFar);
-	mat4 getViewMatrix() const;
-	mat4 getProjectionMatrix() const;
+	void Frustum(const float left, const float right,
+		const float bottom, const float top,
+		const float zNear, const float zFar);
+	void Perspective(const float fovy, const float aspect,
+		const float zNear, const float zFar);
+	const mat4& getViewMatrix() const;
+	const mat4& getProjectionMatrix() const;
 };
 
 class Scene {
@@ -45,7 +46,7 @@ public:
 	void loadOBJModel(string fileName);
 	void draw();
 	void drawDemo();
-	
+
 	int activeModel;
 	int activeLight;
 	int activeCamera;

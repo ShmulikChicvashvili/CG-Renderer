@@ -143,7 +143,7 @@ void Renderer::drawFace(const Face& face, const mat4& transformationMatrix) {
 	}
 }
 
-const vec3 Renderer::divideByW(const vec4& vector) const {
+static const vec3 divideByW(const vec4& vector) {
 	return vec3(vector.x / vector.w, vector.y / vector.w, vector.z / vector.w);
 }
 
