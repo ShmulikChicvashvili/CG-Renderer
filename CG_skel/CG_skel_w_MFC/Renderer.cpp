@@ -134,7 +134,7 @@ void Renderer::setBuffer(const vector<Model>& models, const mat4& viewTransform,
 void Renderer::drawFace(const Face& face, const mat4& transformationMatrix) {
 	vec2* windowCords = new vec2[face.getVertices().size()];
 	for (int i = 0; i < face.getVertices().size(); i++) {
-		windowCords[i] = windowCoordinates(divideByW(transformationMatrix * face.getVertices()[i]));
+		windowCords[i] = windowCoordinates(Renderer::divideByW(transformationMatrix * face.getVertices()[i]));
 	}
 	for (int i = 0; i < face.getVertices().size(); i++) {
 		vec2& windowCordsFirstPoint = windowCords[i];

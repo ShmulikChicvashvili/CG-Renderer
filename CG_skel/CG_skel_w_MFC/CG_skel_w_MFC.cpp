@@ -27,12 +27,19 @@
 #define FILE_OPEN 1
 #define MAIN_DEMO 1
 #define MAIN_ABOUT 2
+#define X_AXIS 3
+#define Y_AXIS 4
+#define Z_AXIS 5
+#define ALL_AXES 6
 
 Scene *scene;
 Renderer *renderer;
 
 int last_x,last_y;
 bool lb_down,rb_down,mb_down;
+
+// My addition
+Axes selectedAxis = all;
 
 //----------------------------------------------------------------------------
 // Callbacks
@@ -105,6 +112,10 @@ void fileMenu(int id)
 	}
 }
 
+void axisMenu(int id) {
+
+}
+
 void mainMenu(int id)
 {
 	switch (id)
@@ -120,12 +131,20 @@ void mainMenu(int id)
 
 void initMenu()
 {
-
 	int menuFile = glutCreateMenu(fileMenu);
 	glutAddMenuEntry("Open..",FILE_OPEN);
 	glutCreateMenu(mainMenu);
+
+	// my addition
+	int menuAxis = glutCreateMenu(axisMenu);
+	glutAddMenuEntry("x", X_AXIS);
+	glutAddMenuEntry("y", Y_AXIS);
+	glutAddMenuEntry("z", Z_AXIS);
+	glutAddMenuEntry("all", ALL_AXES);
+
 	glutAddSubMenu("File",menuFile);
 	glutAddMenuEntry("Demo",MAIN_DEMO);
+	glutAddSubMenu("Choose Axis", menuAxis);
 	glutAddMenuEntry("About",MAIN_ABOUT);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
