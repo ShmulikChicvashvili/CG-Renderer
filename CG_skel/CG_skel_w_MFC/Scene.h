@@ -50,4 +50,6 @@ public:
 	int activeModel;
 	int activeLight;
 	int activeCamera;
+
+	const vector<Model>& getModels();
 };

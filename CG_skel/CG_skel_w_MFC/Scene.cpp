@@ -38,9 +38,9 @@ void Scene::drawDemo()
 //}
 
 void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
-	const vec3 eyeNotHomogenic = Renderer::divideByW(eye); 
-	const vec3 atNotHomogenic = Renderer::divideByW(at); 
-	const vec3 upNotHomogenic = Renderer::divideByW(up);
+	const vec3 eyeNotHomogenic = divideByW(eye); 
+	const vec3 atNotHomogenic = divideByW(at); 
+	const vec3 upNotHomogenic = divideByW(up);
 	const vec3 zAxis = normalize(eyeNotHomogenic - atNotHomogenic); // The forward vector
 	const vec3 xAxis = normalize(cross(upNotHomogenic, zAxis)); // The right vector
 	const vec3 yAxis = cross(zAxis, xAxis); // the upper vector
@@ -102,6 +102,11 @@ const mat4& Camera::getProjectionMatrix() const {
 
 const mat4& Camera::getViewMatrix() const {
 	return this->viewTransform;
+}
+
+
+const vector<Model>& Scene::getModels() {
+	return this->models;
 }
 
 ///////////////////////////////////
