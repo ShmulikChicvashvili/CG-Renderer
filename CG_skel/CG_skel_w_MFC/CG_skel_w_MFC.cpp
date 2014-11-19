@@ -32,7 +32,7 @@
 #define Z_AXIS 5
 #define ALL_AXES 6
 #define TRANSLATION_ACTION 7
-#define ROTATION_ACTION 8
+#define SPIN_ACTION 8
 #define SCALING_ACTION 9
 
 Scene *scene;
@@ -195,8 +195,8 @@ void actionMenu(int id) {
 	case TRANSLATION_ACTION:
 		selectedAction = translate;
 		break;
-	case ROTATION_ACTION:
-		selectedAction = rotatee;
+	case SPIN_ACTION:
+		selectedAction = spin;
 		break;
 	case SCALING_ACTION:
 		selectedAction = scale;
@@ -234,7 +234,7 @@ void initMenu()
 	// my addition
 	int menuAction = glutCreateMenu(actionMenu);
 	glutAddMenuEntry("Translation", TRANSLATION_ACTION);
-	glutAddMenuEntry("Rotation", ROTATION_ACTION);
+	glutAddMenuEntry("Rotation", SPIN_ACTION);
 	glutAddMenuEntry("Scaling", SCALING_ACTION);
 
 	glutCreateMenu(mainMenu);
