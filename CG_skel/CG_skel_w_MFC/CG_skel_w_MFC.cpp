@@ -121,7 +121,7 @@ void motion(int x, int y)
 	case scale:
 		for (auto &m : currentModels)
 		{
-			cout << "Scaling by : " << dx + dy << "In " << selectedAxis << " Axis";
+			cout << "Scaling by : " << pixels << "In " << selectedAxis << " Axis";
 			m.scale((allAxesBool + xAxisBool)*pixels,
 				(allAxesBool + yAxisBool)*pixels,
 				(allAxesBool + zAxisBool)*pixels);
