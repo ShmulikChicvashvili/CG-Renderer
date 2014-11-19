@@ -2,7 +2,7 @@
 #include "Model.h"
 
 const mat4 Model::getModelMatrix() const{
-	return rotateTranslateTransform * spinScaleTransform;
+	return rotateTranslateMtx * spinScaleMtx;
 }
 
 const vector<Face>& Model::getFaces() const{
