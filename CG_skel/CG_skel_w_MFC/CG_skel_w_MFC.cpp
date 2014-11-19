@@ -104,7 +104,7 @@ void motion(int x, int y)
 	int dy = y - last_y;
 
 	// my addition
-	vector<Model>& currentModels = scene->getModels();
+	vector<Model>& currentModels = scene->getModels(); 
 	switch (selectedAction)
 	{
 	case translate:
