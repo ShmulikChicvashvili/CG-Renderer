@@ -104,22 +104,22 @@ void motion(int x, int y)
 	int dy = y - last_y;
 
 	// my addition
-	const vector<Model> currentModels = scene->getModels();
+	vector<Model>& currentModels = scene->getModels();
 	switch (selectedAction)
 	{
 	case translate:
-		for each (Model m in currentModels)
+		for (vector<Model>::iterator it = currentModels.begin(); it != currentModels.end(); ++it)
 		{
 			cout << "Translating by : " << dx + dy << "In " << selectedAxis << " Axis";
-			m.translate((allAxesBool + xAxisBool)*(dx + dy), (allAxesBool + yAxisBool)*(dx + dy), (allAxesBool + zAxisBool)*(dx + dy));
+			it->translate((allAxesBool + xAxisBool)*(dx + dy), (allAxesBool + yAxisBool)*(dx + dy), (allAxesBool + zAxisBool)*(dx + dy));
 		}
 		scene->draw();
 		break;
 	case scale:
-		for each (Model m in currentModels)
+		for (vector<Model>::iterator it = currentModels.begin(); it != currentModels.end(); ++it)
 		{
 			cout << "Scaling by : " << dx + dy << "In " << selectedAxis << " Axis";
-			m.scale((allAxesBool + xAxisBool)*(dx + dy), (allAxesBool + yAxisBool)*(dx + dy), (allAxesBool + zAxisBool)*(dx + dy));
+			it->scale((allAxesBool + xAxisBool)*(dx + dy), (allAxesBool + yAxisBool)*(dx + dy), (allAxesBool + zAxisBool)*(dx + dy));
 		}
 		break;
 	default:
@@ -242,7 +242,7 @@ int my_main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(512, 512);
-	glutInitContextVersion(2, 0);
+	glutInitContextVersion(3, 2);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
 	glewExperimental = GL_TRUE;

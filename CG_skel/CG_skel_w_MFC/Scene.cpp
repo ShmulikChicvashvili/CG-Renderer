@@ -105,8 +105,8 @@ const mat4& Camera::getViewMatrix() const {
 }
 
 
-const vector<Model>& Scene::getModels() {
-	return this->models;
+vector<Model>& Scene::getModels() {
+	return std::move(this->models);
 }
 
 ///////////////////////////////////
