@@ -109,10 +109,10 @@ void keyboard(unsigned char key, int x, int y)
 	case 0x1B:
 		exit(EXIT_SUCCESS);
 		break;
-	case GLUT_KEY_UP:
+	case 0x2E:
 		applyTransformation(10.0);
 		break;
-	case GLUT_KEY_DOWN:
+	case 0x2C:
 		applyTransformation(-10.0);
 		break;
 	}
