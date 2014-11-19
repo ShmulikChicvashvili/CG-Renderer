@@ -33,16 +33,21 @@ void Scene::drawDemo()
 ///////////////////////////////////
 // Shmulik & Eyal stuff
 
-//void Camera::setTransformation(const mat4& transform) {
-//	this->viewTransform = transform;
-//}
+void Camera::spin(const GLfloat teta, const Axes axis) {
+	spinScaleMtx = spinScaleMtx * Model::genRotationMatrix(-teta, axis);
+}
 
-//virtual void spin(const GLfloat teta, const Axes axis);
-//virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
-//virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
-//virtual void rotate(const GLfloat teta, const Axes axis);
+void Camera::scale(const GLfloat sx, const GLfloat sy, const GLfloat sz) {
+	spinScaleMtx = spinScaleMtx * Model::genScaleMatrix(1 / sx, 1 / sy, 1 / sz);
+}
 
-//void Camera::spin(const GLfloat)
+void Camera::translate(const GLfloat tx, const GLfloat ty, const GLfloat tz) {
+	rotateTranslateMtx = rotateTranslateMtx * genTranslationMatrix(-tx, -ty, -tz);
+}
+
+void Camera::rotate(const GLfloat teta, const Axes axis) {
+	rotateTranslateMtx = rotateTranslateMtx * genRotationMatrix(-teta, axis);
+}
 
 void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 	const vec3 eyeNotHomogenic = divideByW(eye); 

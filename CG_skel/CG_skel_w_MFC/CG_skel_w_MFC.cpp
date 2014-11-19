@@ -43,12 +43,12 @@ bool lb_down, rb_down, mb_down;
 
 // My addition
 
-enum Action { translate, rotatee, scale };
+enum Action { translate, rotatee, spin, scale };
 
 bool allAxesBool, yAxisBool, zAxisBool = false;
 bool xAxisBool = true;
 
-Axes selectedAxis = x;
+Axes selectedAxis = X;
 
 Action selectedAction = translate;
 
@@ -101,11 +101,12 @@ void motion(int x, int y)
 {
 	// calc difference in mouse movement
 	int dx = x - last_x;
-	int dy =-( y - last_y);
+	int dy = -(y - last_y);
 
 	// my addition
-	vector<Model>& currentModels = scene->getModels(); 
-	GLfloat pixels = (GLfloat)dx / glutGet(GLUT_WINDOW_WIDTH) + (GLfloat)dy / glutGet(GLUT_WINDOW_HEIGHT);
+	float sensitivity = 1.f;
+	vector<Model>& currentModels = scene->getModels();
+	GLfloat pixels = sensitivity * ((GLfloat)dx / glutGet(GLUT_WINDOW_WIDTH) + (GLfloat)dy / glutGet(GLUT_WINDOW_HEIGHT));
 	switch (selectedAction)
 	{
 	case translate:
@@ -126,6 +127,14 @@ void motion(int x, int y)
 				(allAxesBool + yAxisBool)*pixels,
 				(allAxesBool + zAxisBool)*pixels);
 		}
+		scene->draw();
+		break;
+	case spin:
+		for (auto &m : currentModels) {
+			cout << "Rotating by : " << pixels << " In" << selectedAxis << " Axis";
+			m.spin(pixels, selectedAxis);
+		}
+		scene->draw();
 		break;
 	default:
 		break;
@@ -158,22 +167,22 @@ void axisMenu(int id) {
 	case X_AXIS:
 		xAxisBool = true;
 		yAxisBool = zAxisBool = allAxesBool = false;
-		selectedAxis = x;
+		selectedAxis = X;
 		break;
 	case Y_AXIS:
 		yAxisBool = true;
 		xAxisBool = zAxisBool = allAxesBool = false;
-		selectedAxis = y;
+		selectedAxis = Y;
 		break;
 	case Z_AXIS:
 		zAxisBool = true;
 		xAxisBool = yAxisBool = allAxesBool = false;
-		selectedAxis = z;
+		selectedAxis = Z;
 		break;
 	case ALL_AXES:
 		allAxesBool = true;
 		xAxisBool = yAxisBool = zAxisBool = false;
-		selectedAxis = all;
+		selectedAxis = ALL;
 		break;
 	default:
 		break;

@@ -19,7 +19,6 @@ class Camera : Model {
 
 
 public:
-	//void setTransformation(const mat4& transform);
 	void LookAt(const vec4& eye, const vec4& at, const vec4& up);
 	void Ortho(const float left, const float right,
 		const float bottom, const float top,
@@ -31,6 +30,11 @@ public:
 		const float zNear, const float zFar);
 	const mat4& getViewMatrix() const;
 	const mat4& getProjectionMatrix() const;
+
+	virtual void spin(const GLfloat teta, const Axes axis);
+	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
+	virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
+	virtual void rotate(const GLfloat teta, const Axes axis);
 };
 
 class Scene {
