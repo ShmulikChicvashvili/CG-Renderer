@@ -48,10 +48,7 @@ const vector<Face>& Model::getFaces() const{
 }
 
 void Model::spin(const GLfloat deg, const Axes axis){
-	GLfloat teta = deg2radian(deg);
-	
-	const mat4& spinMatrix = genRotationMatrix(teta, axis);
-
+	const mat4& spinMatrix = genRotationMatrix(deg2radian(deg), axis);
 	spinScaleMtx = spinMatrix * spinScaleMtx;
 	std::cout << "Spin matrix: " << spinMatrix << std::endl;
 	std::cout << "Current Spin Scale matrix: " << spinScaleMtx << std::endl;
@@ -72,11 +69,8 @@ void Model::translate(const GLfloat tx, const GLfloat ty, const GLfloat tz){
 }
 
 void Model::rotate(const GLfloat deg, const Axes axis){
-	GLfloat teta = deg2radian(deg);
-
-	const mat4& rotateMatrix = genRotationMatrix(teta, axis);
-
+	const mat4& rotateMatrix = genRotationMatrix(deg2radian(deg), axis);
 	rotateTranslateMtx = rotateMatrix * spinScaleMtx;
-	std::cout << "Spin matrix: " << spinMatrix << std::endl;
+	std::cout << "Spin matrix: " << rotateMatrix << std::endl;
 	std::cout << "Current Spin Scale matrix: " << spinScaleMtx << std::endl;
 }
