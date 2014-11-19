@@ -23,6 +23,8 @@ void Model::translate(const GLfloat tx, const GLfloat ty, const GLfloat tz){
 							0, 0, 1, tz,
 							0, 0, 0, 1);
 	rotateTranslateMtx = transMatrix * rotateTranslateMtx;
+	std::cout << "Rotation matrix: " << transMatrix << std::endl;
+	std::cout << "Current matrix: " << rotateTranslateMtx << std::endl;
 }
 
 void Model::rotate(const GLfloat teta, const Axes axis){
