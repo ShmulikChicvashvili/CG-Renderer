@@ -52,6 +52,42 @@ Axes selectedAxis = X;
 
 Action selectedAction = translate;
 
+void applyTransformation(float intensity) {
+	vector<Model>& currentModels = scene->getModels();
+	switch (selectedAction)
+	{
+	case translate:
+		for (auto &m : currentModels)
+		{
+			cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis";
+			m.translate((allAxesBool + xAxisBool)*intensity,
+				(allAxesBool + yAxisBool)*intensity,
+				(allAxesBool + zAxisBool)*intensity);
+		}
+		scene->draw();
+		break;
+	case scale:
+		for (auto &m : currentModels)
+		{
+			cout << "Scaling by : " << intensity << "In " << selectedAxis << " Axis";
+			m.scale((allAxesBool + xAxisBool)*intensity,
+				(allAxesBool + yAxisBool)*intensity,
+				(allAxesBool + zAxisBool)*intensity);
+		}
+		scene->draw();
+		break;
+	case spin:
+		for (auto &m : currentModels) {
+			cout << "Rotating by : " << intensity << " In" << selectedAxis << " Axis";
+			m.spin(intensity, selectedAxis);
+		}
+		scene->draw();
+		break;
+	default:
+		break;
+	}
+}
+
 //----------------------------------------------------------------------------
 // Callbacks
 
@@ -70,8 +106,14 @@ void reshape(int width, int height)
 void keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
-	case 033:
+	case 0x1B:
 		exit(EXIT_SUCCESS);
+		break;
+	case GLUT_KEY_UP:
+		applyTransformation(10.0);
+		break;
+	case GLUT_KEY_DOWN:
+		applyTransformation(-10.0);
 		break;
 	}
 }
@@ -105,41 +147,8 @@ void motion(int x, int y)
 
 	// my addition
 	float sensitivity = 1.f;
-	vector<Model>& currentModels = scene->getModels();
 	GLfloat pixels = sensitivity * ((GLfloat)dx / glutGet(GLUT_WINDOW_WIDTH) + (GLfloat)dy / glutGet(GLUT_WINDOW_HEIGHT));
-	switch (selectedAction)
-	{
-	case translate:
-		for (auto &m : currentModels)
-		{
-			cout << "Translating by : " << pixels << " In " << selectedAxis << " Axis";
-			m.translate((allAxesBool + xAxisBool)*pixels,
-				(allAxesBool + yAxisBool)*pixels,
-				(allAxesBool + zAxisBool)*pixels);
-		}
-		scene->draw();
-		break;
-	case scale:
-		for (auto &m : currentModels)
-		{
-			cout << "Scaling by : " << pixels << "In " << selectedAxis << " Axis";
-			m.scale((allAxesBool + xAxisBool)*pixels,
-				(allAxesBool + yAxisBool)*pixels,
-				(allAxesBool + zAxisBool)*pixels);
-		}
-		scene->draw();
-		break;
-	case spin:
-		for (auto &m : currentModels) {
-			cout << "Rotating by : " << pixels << " In" << selectedAxis << " Axis";
-			m.spin(pixels, selectedAxis);
-		}
-		scene->draw();
-		break;
-	default:
-		break;
-	}
-
+	applyTransformation(pixels);
 	// update last x,y
 	last_x = x;
 	last_y = y;

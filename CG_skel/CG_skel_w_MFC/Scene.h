@@ -14,7 +14,8 @@ class Light {
 };
 
 class Camera : Model {
-	mat4 viewTransform;
+	mat4 spinScaleInvMtx;
+	mat4 rotateTranslateInvMtx;
 	mat4 projection;
 
 

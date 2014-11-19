@@ -34,19 +34,19 @@ void Scene::drawDemo()
 // Shmulik & Eyal stuff
 
 void Camera::spin(const GLfloat teta, const Axes axis) {
-	spinScaleMtx = spinScaleMtx * Model::genRotationMatrix(-teta, axis);
+	spinScaleInvMtx = spinScaleInvMtx * Model::genRotationMatrix(-teta, axis);
 }
 
 void Camera::scale(const GLfloat sx, const GLfloat sy, const GLfloat sz) {
-	spinScaleMtx = spinScaleMtx * Model::genScaleMatrix(1 / sx, 1 / sy, 1 / sz);
+	spinScaleInvMtx = spinScaleInvMtx * Model::genScaleMatrix(1 / sx, 1 / sy, 1 / sz);
 }
 
 void Camera::translate(const GLfloat tx, const GLfloat ty, const GLfloat tz) {
-	rotateTranslateMtx = rotateTranslateMtx * genTranslationMatrix(-tx, -ty, -tz);
+	rotateTranslateInvMtx = rotateTranslateInvMtx * genTranslationMatrix(-tx, -ty, -tz);
 }
 
 void Camera::rotate(const GLfloat teta, const Axes axis) {
-	rotateTranslateMtx = rotateTranslateMtx * genRotationMatrix(-teta, axis);
+	rotateTranslateInvMtx = rotateTranslateInvMtx * genRotationMatrix(-teta, axis);
 }
 
 void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
@@ -56,12 +56,15 @@ void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 	const vec3 zAxis = normalize(eyeNotHomogenic - atNotHomogenic); // The forward vector
 	const vec3 xAxis = normalize(cross(upNotHomogenic, zAxis)); // The right vector
 	const vec3 yAxis = cross(zAxis, xAxis); // the upper vector
-	this->viewTransform = mat4(	xAxis.x, xAxis.y, xAxis.z, -dot(xAxis, eyeNotHomogenic),
-								yAxis.x, yAxis.y, yAxis.z, -dot(yAxis, eyeNotHomogenic),
-								zAxis.x, zAxis.y, zAxis.z, -dot(zAxis, eyeNotHomogenic),
+	this->spinScaleInvMtx = mat4(xAxis.x, xAxis.y, xAxis.z, 0,
+								yAxis.x, yAxis.y, yAxis.z, 0,
+								zAxis.x, zAxis.y, zAxis.z, 0,
 								0, 0, 0, 1);
-
-	//@TODO camera is a model. update modelMatrix (the inverse of the above)
+	this->rotateTranslateInvMtx = mat4(0,0,0,-eyeNotHomogenic.x,
+									   0,0,0,-eyeNotHomogenic.y,
+									   0,0,0,-eyeNotHomogenic.z,
+									   0,0,0,1);
+	//@TODO camera is a model. date modelMatrix (the inverse of the above)
 }
 
 void Camera::Frustum(const float left, const float right,
@@ -113,7 +116,7 @@ const mat4& Camera::getProjectionMatrix() const {
 }
 
 const mat4& Camera::getViewMatrix() const {
-	return this->viewTransform;
+	return spinScaleInvMtx * rotateTranslateInvMtx;
 }
 
 
