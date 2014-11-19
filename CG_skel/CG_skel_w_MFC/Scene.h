@@ -13,7 +13,7 @@ class Light {
 
 };
 
-class Camera {
+class Camera : Model {
 	mat4 viewTransform;
 	mat4 projection;
 

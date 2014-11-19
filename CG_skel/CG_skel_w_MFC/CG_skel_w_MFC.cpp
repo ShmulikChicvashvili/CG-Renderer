@@ -45,10 +45,10 @@ bool lb_down, rb_down, mb_down;
 
 enum Action { translate, rotatee, scale };
 
-bool xAxisBool, yAxisBool, zAxisBool = false;
-bool allAxesBool = true;
+bool allAxesBool, yAxisBool, zAxisBool = false;
+bool xAxisBool = true;
 
-Axes selectedAxis = all;
+Axes selectedAxis = x;
 
 Action selectedAction = translate;
 
@@ -101,25 +101,30 @@ void motion(int x, int y)
 {
 	// calc difference in mouse movement
 	int dx = x - last_x;
-	int dy = y - last_y;
+	int dy =-( y - last_y);
 
 	// my addition
 	vector<Model>& currentModels = scene->getModels(); 
+	GLfloat pixels = (GLfloat)dx / glutGet(GLUT_WINDOW_WIDTH) + (GLfloat)dy / glutGet(GLUT_WINDOW_HEIGHT);
 	switch (selectedAction)
 	{
 	case translate:
-		for (vector<Model>::iterator it = currentModels.begin(); it != currentModels.end(); ++it)
+		for (auto &m : currentModels)
 		{
-			cout << "Translating by : " << dx + dy << "In " << selectedAxis << " Axis";
-			it->translate((allAxesBool + xAxisBool)*(dx + dy), (allAxesBool + yAxisBool)*(dx + dy), (allAxesBool + zAxisBool)*(dx + dy));
+			cout << "Translating by : " << pixels << " In " << selectedAxis << " Axis";
+			m.translate((allAxesBool + xAxisBool)*pixels,
+				(allAxesBool + yAxisBool)*pixels,
+				(allAxesBool + zAxisBool)*pixels);
 		}
 		scene->draw();
 		break;
 	case scale:
-		for (vector<Model>::iterator it = currentModels.begin(); it != currentModels.end(); ++it)
+		for (auto &m : currentModels)
 		{
 			cout << "Scaling by : " << dx + dy << "In " << selectedAxis << " Axis";
-			it->scale((allAxesBool + xAxisBool)*(dx + dy), (allAxesBool + yAxisBool)*(dx + dy), (allAxesBool + zAxisBool)*(dx + dy));
+			m.scale((allAxesBool + xAxisBool)*pixels,
+				(allAxesBool + yAxisBool)*pixels,
+				(allAxesBool + zAxisBool)*pixels);
 		}
 		break;
 	default:
@@ -242,7 +247,7 @@ int my_main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(512, 512);
-	glutInitContextVersion(3, 2);
+	glutInitContextVersion(2, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
 	glewExperimental = GL_TRUE;

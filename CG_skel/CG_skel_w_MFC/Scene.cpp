@@ -37,6 +37,13 @@ void Scene::drawDemo()
 //	this->viewTransform = transform;
 //}
 
+//virtual void spin(const GLfloat teta, const Axes axis);
+//virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
+//virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
+//virtual void rotate(const GLfloat teta, const Axes axis);
+
+//void Camera::spin(const GLfloat)
+
 void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 	const vec3 eyeNotHomogenic = divideByW(eye); 
 	const vec3 atNotHomogenic = divideByW(at); 
