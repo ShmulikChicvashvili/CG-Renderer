@@ -268,7 +268,7 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		cout << "Choose Target Coordinates" << endl;
 		if (dlgTarget.DoModal() == IDOK) {
-			target = dlgEye.GetXYZ();
+			target = dlgTarget.GetXYZ();
 		}
 		cout << "Choose Up Coordinates" << endl;
 		if (dlgUp.DoModal() == IDOK) {
@@ -276,7 +276,17 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		err = c[0]->LookAt(vec4(eye.x, eye.y, eye.z, 1), vec4(target.x, target.y, target.z, 1), vec4(up.x, up.y, up.z, 1));
 		if (CameraLookAtError::OK != err) {
-			cout << "Error Occurred" << endl;
+			switch (err)
+			{
+			case CameraLookAtError::EYE_AT_TARGET:
+				cout << "The Camera is at the target" << endl;
+				break;
+			case CameraLookAtError::INVALID_UP:
+				cout << "The up vector is invalid" << endl;
+				break;
+			default:
+				break;
+			}
 		}
 		else {
 			scene->draw();
