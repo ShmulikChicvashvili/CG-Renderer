@@ -20,7 +20,7 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
-	void drawFace(const Face& face, const mat4& transformationMatrix);
+	void drawFace(const Face& face, const mat4& normatMatrix, const mat4& transformationMatrix);
 	const vec2 windowCoordinates(const vec3& vector) const;
 
 	//////////////////////////////

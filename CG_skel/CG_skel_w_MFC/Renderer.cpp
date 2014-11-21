@@ -133,7 +133,7 @@ void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 }
 
 
-void Renderer::drawFace(const Face& face, const mat4& transformationMatrix) {
+void Renderer::drawFace(const Face& face, const mat4& noramlMatrix, const mat4& transformationMatrix) {
 	vec2* windowCords = new vec2[face.getVertices().size()];
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
