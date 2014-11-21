@@ -184,6 +184,14 @@ void keyboard(unsigned char key, int x, int y)
 		cout << "Selected Translation Action" << endl;
 		selectedAction = translate;
 		break;
+	case 0x6C:
+		cout << "Look at & Perspective " << endl;
+		vector<Camera*> c = scene->getCameras();
+		cout << endl;
+		c[0]->LookAt(vec4(0,0,1,1),vec4(0,0,0,0),vec4(0,1,0,1));
+		c[0]->Frustum(-5.0, 5.0, -10.0, 10.0, -1.0, 10.0);
+		scene->draw();
+		break;
 	}
 }
 
@@ -369,6 +377,7 @@ int my_main(int argc, char **argv)
 
 	renderer = new Renderer(512, 512);
 	scene = new Scene(renderer);
+	scene->loadCamera();
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks
 

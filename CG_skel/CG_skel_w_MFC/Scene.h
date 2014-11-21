@@ -44,17 +44,31 @@ class Scene {
 	vector<Light*> lights;
 	vector<Camera*> cameras;
 	Renderer *m_renderer;
+	int activeModel;
+	int activeLight;
+	int activeCamera;
+
 
 public:
 	Scene() {};
 	Scene(Renderer *renderer) : m_renderer(renderer) {};
 	void loadOBJModel(string fileName);
+	void loadCamera();
 	void draw();
 	void drawDemo();
 
-	int activeModel;
-	int activeLight;
-	int activeCamera;
+	const int getActiveModel() {
+		return activeModel;
+	}
+
+	const int getActiveLight() {
+		return activeLight;
+	}
+
+	const int getActiveCamera() {
+		return activeCamera;
+	}
 
 	vector<Model>& getModels();
+	vector<Camera*>& getCameras();
 };
