@@ -132,6 +132,7 @@ void reshape(int width, int height)
 
 void keyboard(unsigned char key, int x, int y)
 {
+	cout << (int)key << endl;
 	switch (key) {
 	case 0x1B:
 		exit(EXIT_SUCCESS);
@@ -141,6 +142,46 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 	case 0x2C:
 		applyTransformation(-1.1);
+		break;
+	case 0x61:
+		cout << "Selected All Axes" << endl;
+		allAxesBool = true;
+		xAxisBool = yAxisBool = zAxisBool = false;
+		selectedAxis = ALL;
+		break;
+	case 0x78:
+		cout << "Selected X axis" << endl;
+		xAxisBool = true;
+		yAxisBool = zAxisBool = allAxesBool = false;
+		selectedAxis = X;
+		break;
+	case 0x79:
+		cout << "Selected Y axis" << endl;
+		yAxisBool = true;
+		xAxisBool = zAxisBool = allAxesBool = false;
+		selectedAxis = Y;
+		break;
+	case 0x7A:
+		cout << "Selected Z axis" << endl;
+		zAxisBool = true;
+		xAxisBool = yAxisBool = allAxesBool = false;
+		selectedAxis = Z;
+		break;
+	case 0x53:
+		cout << "Selected Spinning Action" << endl;
+		selectedAction = spin;
+		break;
+	case 0x73:
+		cout << "Selected Scaling Action" << endl;
+		selectedAction = scale;
+		break;
+	case 0x72:
+		cout << "Selected Rotation Action" << endl;
+		selectedAction = rotatee;
+		break;
+	case 0x74:
+		cout << "Selected Translation Action" << endl;
+		selectedAction = translate;
 		break;
 	}
 }
