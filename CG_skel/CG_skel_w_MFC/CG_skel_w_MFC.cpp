@@ -20,6 +20,8 @@
 #include "InitShader.h"
 #include "Scene.h"
 #include "Renderer.h"
+#include "Resource.h"
+#include "InputDialog.h"
 #include <string>
 
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
@@ -133,7 +135,8 @@ void reshape(int width, int height)
 
 void keyboard(unsigned char key, int x, int y)
 {
-	cout << (int)key << endl;
+	vector<Camera*> c = scene->getCameras();
+	CXyzDialog dlg;
 	switch (key) {
 	case 0x1B:
 		exit(EXIT_SUCCESS);
@@ -185,11 +188,21 @@ void keyboard(unsigned char key, int x, int y)
 		selectedAction = translate;
 		break;
 	case 0x6C:
-		cout << "Look at & Perspective " << endl;
-		vector<Camera*> c = scene->getCameras();
-		cout << endl;
-		c[0]->LookAt(vec4(0,0,1,1),vec4(0,0,0,0),vec4(0,1,0,1));
-		c[0]->Frustum(-5.0, 5.0, -10.0, 10.0, -1.0, 10.0);
+		cout << "Look at " << endl;
+		if (dlg.DoModal() == IDOK) {
+			vec3 v = dlg.GetXYZ();
+			c[0]->LookAt(vec4(v.x, v.y, v.z, 1), vec4(0, 0, 0, 1), vec4(0, 1, 0, 1));
+		}
+		scene->draw();
+		break;
+	case 0x6F:
+		cout << "Orthographic projection: " << endl;
+		c[0]->Ortho(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
+		scene->draw();
+		break;
+	case 0x70:
+		cout << "Perspective projection: " << endl;
+		c[0]->Frustum(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
 		scene->draw();
 		break;
 	}

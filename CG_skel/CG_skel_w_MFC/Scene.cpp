@@ -16,6 +16,8 @@ void Scene::draw()
 	// 1. Send the renderer the current camera transform and the projection
 	// 2. Tell all models to draw themselves
 	m_renderer->InitializeBuffer();
+	cout << "View Matrix while drawing : " << cameras[0]->getViewMatrix() << endl;
+	cout << "Projection Matrix while drawing : " << cameras[0]->getProjectionMatrix() << endl;
 	m_renderer->setBuffer(models, cameras[0]->getViewMatrix(), cameras[0]->getProjectionMatrix());
 	m_renderer->SwapBuffers();
 }
@@ -63,9 +65,9 @@ void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 								yAxis.x, yAxis.y, yAxis.z, 0,
 								zAxis.x, zAxis.y, zAxis.z, 0,
 								0, 0, 0, 1);
-	this->rotateTranslateInvMtx = mat4(0,0,0,-eyeNotHomogenic.x,
-									   0,0,0,-eyeNotHomogenic.y,
-									   0,0,0,-eyeNotHomogenic.z,
+	this->rotateTranslateInvMtx = mat4(1,0,0,-eyeNotHomogenic.x,
+									   0,1,0,-eyeNotHomogenic.y,
+									   0,0,1,-eyeNotHomogenic.z,
 									   0,0,0,1);
 	//@TODO camera is a model. date modelMatrix (the inverse of the above)
 }
@@ -114,11 +116,11 @@ void Camera::Ortho(const float left, const float right,
 		0, 0, 0, 1);
 }
 
-const mat4& Camera::getProjectionMatrix() const {
+const mat4 Camera::getProjectionMatrix() const {
 	return this->projection;
 }
 
-const mat4& Camera::getViewMatrix() const {
+const mat4 Camera::getViewMatrix() const {
 	return spinScaleInvMtx * rotateTranslateInvMtx;
 }
 

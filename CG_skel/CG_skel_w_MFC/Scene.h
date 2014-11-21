@@ -29,8 +29,8 @@ public:
 		const float zNear, const float zFar);
 	void Perspective(const float fovy, const float aspect,
 		const float zNear, const float zFar);
-	const mat4& getViewMatrix() const;
-	const mat4& getProjectionMatrix() const;
+	const mat4 getViewMatrix() const;
+	const mat4 getProjectionMatrix() const;
 
 	virtual void spin(const GLfloat teta, const Axes axis);
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
