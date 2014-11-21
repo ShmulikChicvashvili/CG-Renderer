@@ -9,6 +9,7 @@ void Scene::loadOBJModel(string fileName)
 {
 	MeshModel model = MeshModel(fileName);
 	models.push_back(model);
+	activeModel = models.size() - 1;
 }
 
 void Scene::draw()

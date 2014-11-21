@@ -9,6 +9,8 @@
 using namespace std;
 
 
+#define ALL_MODELS_ACTIVE -1
+
 
 class Light {
 
@@ -45,6 +47,18 @@ public:
 
 	const int getActiveCamera() {
 		return activeCamera;
+	}
+
+	void setActiveModel(const int activeModel) {
+		this->activeModel = activeModel;
+	}
+
+	void setActiveLight(const int activeLight) {
+		this->activeLight = activeLight;
+	}
+
+	void setActiveCamera(const int activeCamera) {
+		this->activeCamera = activeCamera;
 	}
 
 	vector<Model>& getModels();

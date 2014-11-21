@@ -58,26 +58,52 @@ Axes selectedAxis = ALL;
 
 Action selectedAction = scale;
 
-void applyTransformation(float intensity) {
-	vector<Model>& currentModels = scene->getModels();
-	switch (selectedAction)
-	{
-	case translate:
+void doTranslation(vector<Model>& currentModels, int activeModel, float intensity) {
+	if (activeModel != ALL_MODELS_ACTIVE) {
+		cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis Model number" << activeModel << endl;
+		currentModels[activeModel].translate((allAxesBool + xAxisBool)*intensity,
+			(allAxesBool + yAxisBool)*intensity,
+			(allAxesBool + zAxisBool)*intensity);
+	}
+	else {
 		for (auto &m : currentModels)
 		{
-			cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis";
+			cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis" << endl;
 			m.translate((allAxesBool + xAxisBool)*intensity,
 				(allAxesBool + yAxisBool)*intensity,
 				(allAxesBool + zAxisBool)*intensity);
 		}
-		scene->draw();
-		break;
-	case scale:
+	}
+	scene->draw();
+}
+
+void doScaling(vector<Model>& currentModels, int activeModel, float intensity) {
+	if (intensity < 0) {
+		intensity = 1 / abs(intensity);
+	}
+	if (activeModel != ALL_MODELS_ACTIVE) {
+		cout << " Scaling by : " << intensity << "The model :" << activeModel << endl;
+		switch (selectedAxis)
+		{
+		case X:
+			currentModels[activeModel].scale(SCALING_FACTOR*abs(intensity), 1, 1);
+			break;
+		case Y:
+			currentModels[activeModel].scale(1, SCALING_FACTOR*abs(intensity), 1);
+			break;
+		case Z:
+			currentModels[activeModel].scale(1, 1, SCALING_FACTOR*abs(intensity));
+			break;
+		case ALL:
+			currentModels[activeModel].scale(SCALING_FACTOR*abs(intensity), SCALING_FACTOR * abs(intensity), SCALING_FACTOR * abs(intensity));
+			break;
+		default:
+			break;
+		}
+	}
+	else {
 		for (auto &m : currentModels)
 		{
-			if (intensity < 0) {
-				intensity = 1 / abs(intensity);
-			}
 			cout << " Scaling by : " << intensity << endl;
 			switch (selectedAxis)
 			{
@@ -97,21 +123,54 @@ void applyTransformation(float intensity) {
 				break;
 			}
 		}
-		scene->draw();
-		break;
-	case spin:
+	}
+	scene->draw();
+}
+
+void doSpin(vector<Model>& currentModels, int activeModel, float intensity) {
+	if (activeModel != ALL_MODELS_ACTIVE) {
+		cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis The model : " << activeModel << endl;
+		currentModels[activeModel].spin(intensity, selectedAxis);
+	}
+	else {
 		for (auto &m : currentModels) {
 			cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis" << endl;
 			m.spin(intensity, selectedAxis);
 		}
-		scene->draw();
-		break;
-	case rotatee:
+	}
+	scene->draw();
+}
+
+void doRotate(vector<Model>& currentModels, int activeModel, float intensity) {
+	if (activeModel != ALL_MODELS_ACTIVE) {
+		cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis The model : " << activeModel << endl;
+		currentModels[activeModel].rotate(intensity, selectedAxis);
+	}
+	else {
 		for (auto &m : currentModels) {
 			cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis" << endl;
 			m.rotate(intensity, selectedAxis);
 		}
-		scene->draw();
+	}
+	scene->draw();
+}
+
+void applyTransformation(float intensity) {
+	int activeModel = scene->getActiveModel();
+	vector<Model>& currentModels = scene->getModels();
+	switch (selectedAction)
+	{
+	case translate:
+		doTranslation(currentModels, activeModel, intensity);
+		break;
+	case scale:
+		doScaling(currentModels, activeModel, intensity);
+		break;
+	case spin:
+		doSpin(currentModels, activeModel, intensity);
+		break;
+	case rotatee:
+		doRotate(currentModels, activeModel, intensity);
 		break;
 	default:
 		break;
@@ -136,9 +195,21 @@ void reshape(int width, int height)
 void keyboard(unsigned char key, int x, int y)
 {
 	cout << (int)key << endl;
+	
 	vector<Camera*> c = scene->getCameras();
+	
 	vector<Model>& currentModels = scene->getModels();
-	CXyzDialog dlg;
+	
+	int index = scene->getActiveModel();
+	
+	CXyzDialog dlgEye("Camera Coordinates");
+	CXyzDialog dlgTarget("Target Coordinates");
+	CXyzDialog dlgUp("Up Coordinates");
+	vec3 eye;
+	vec3 target;
+	vec3 up;
+	CameraLookAtError err;
+
 	switch (key) {
 	case 0x1B:
 		exit(EXIT_SUCCESS);
@@ -191,11 +262,25 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 	case 0x6C:
 		cout << "Look at " << endl;
-		if (dlg.DoModal() == IDOK) {
-			vec3 v = dlg.GetXYZ();
-			c[0]->LookAt(vec4(v.x, v.y, v.z, 1), vec4(0, 0, 0, 1), vec4(0, 1, 0, 1));
+		cout << "Choose Camera Coordinates" << endl;
+		if (dlgEye.DoModal() == IDOK) {
+			eye = dlgEye.GetXYZ();
 		}
-		scene->draw();
+		cout << "Choose Target Coordinates" << endl;
+		if (dlgTarget.DoModal() == IDOK) {
+			target = dlgEye.GetXYZ();
+		}
+		cout << "Choose Up Coordinates" << endl;
+		if (dlgUp.DoModal() == IDOK) {
+			up = dlgUp.GetXYZ();
+		}
+		err = c[0]->LookAt(vec4(eye.x, eye.y, eye.z, 1), vec4(target.x, target.y, target.z, 1), vec4(up.x, up.y, up.z, 1));
+		if (CameraLookAtError::OK != err) {
+			cout << "Error Occurred" << endl;
+		}
+		else {
+			scene->draw();
+		}
 		break;
 	case 0x6F:
 		cout << "Orthographic projection: " << endl;
@@ -218,6 +303,22 @@ void keyboard(unsigned char key, int x, int y)
 			m.reset();
 		}
 		scene->draw();
+		break;
+	case 0x5B:
+		cout << "Previous active model is : " << index << endl;
+		scene->setActiveModel((index - 1) % scene->getModels().size());
+		cout << "Current active model is : " << index << endl;
+		// add funcionality
+		break;
+	case 0x5D:
+		cout << "Previous active model is : " << index << endl;
+		scene->setActiveModel((index + 1) % scene->getModels().size());
+		cout << "Current active model is : " << index << endl;
+		// add funcionality
+		break;
+	case 0x5C:
+		scene->setActiveModel(ALL_MODELS_ACTIVE);
+		// add functionality
 		break;
 	}
 
