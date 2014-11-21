@@ -90,6 +90,14 @@ struct vec2 {
 
 	return *this;
     }
+
+	bool operator == (const vec2& v) const{
+		return x == v.x && y == v.y;
+	}
+
+	bool operator != (const vec2& v) const{
+		return !(*this == v);
+	}
 	
     //
     //  --- Insertion and Extraction Operators ---
@@ -141,105 +149,139 @@ vec2 normalize( const vec2& v ) {
 
 struct vec3 {
 
-    GLfloat  x;
-    GLfloat  y;
-    GLfloat  z;
+	GLfloat  x;
+	GLfloat  y;
+	GLfloat  z;
 
-    //
-    //  --- Constructors and Destructors ---
-    //
+	//
+	//  --- Constructors and Destructors ---
+	//
 
-    vec3( GLfloat s = GLfloat(0.0) ) :
-	x(s), y(s), z(s) {}
+	vec3(GLfloat s = GLfloat(0.0)) :
+		x(s), y(s), z(s) {}
 
-    vec3( GLfloat x, GLfloat y, GLfloat z ) :
-	x(x), y(y), z(z) {}
+	vec3(GLfloat x, GLfloat y, GLfloat z) :
+		x(x), y(y), z(z) {}
 
-    vec3( const vec3& v ) { x = v.x;  y = v.y;  z = v.z; }
+	vec3(const vec3& v) { x = v.x;  y = v.y;  z = v.z; }
 
-    vec3( const vec2& v, const float f ) { x = v.x;  y = v.y;  z = f; }
+	vec3(const vec2& v, const float f) { x = v.x;  y = v.y;  z = f; }
 
-    //
-    //  --- Indexing Operator ---
-    //
+	//
+	//  --- Indexing Operator ---
+	//
 
-    GLfloat& operator [] ( int i ) { return *(&x + i); }
-    const GLfloat operator [] ( int i ) const { return *(&x + i); }
+	GLfloat& operator [] (int i) { return *(&x + i); }
+	const GLfloat operator [] (int i) const { return *(&x + i); }
 
-    //
-    //  --- (non-modifying) Arithematic Operators ---
-    //
+	//
+	//  --- (non-modifying) Arithematic Operators ---
+	//
 
-    vec3 operator - () const  // unary minus operator
-	{ return vec3( -x, -y, -z ); }
+	vec3 operator - () const  // unary minus operator
+	{
+		return vec3(-x, -y, -z);
+	}
 
-    vec3 operator + ( const vec3& v ) const
-	{ return vec3( x + v.x, y + v.y, z + v.z ); }
+	vec3 operator + (const vec3& v) const
+	{
+		return vec3(x + v.x, y + v.y, z + v.z);
+	}
 
-    vec3 operator - ( const vec3& v ) const
-	{ return vec3( x - v.x, y - v.y, z - v.z ); }
+	vec3 operator - (const vec3& v) const
+	{
+		return vec3(x - v.x, y - v.y, z - v.z);
+	}
 
-    vec3 operator * ( const GLfloat s ) const
-	{ return vec3( s*x, s*y, s*z ); }
+	vec3 operator * (const GLfloat s) const
+	{
+		return vec3(s*x, s*y, s*z);
+	}
 
-    vec3 operator * ( const vec3& v ) const
-	{ return vec3( x*v.x, y*v.y, z*v.z ); }
+	vec3 operator * (const vec3& v) const
+	{
+		return vec3(x*v.x, y*v.y, z*v.z);
+	}
 
-    friend vec3 operator * ( const GLfloat s, const vec3& v )
-	{ return v * s; }
+	friend vec3 operator * (const GLfloat s, const vec3& v)
+	{
+		return v * s;
+	}
 
-    vec3 operator / ( const GLfloat s ) const {
-
-
-	GLfloat r = GLfloat(1.0) / s;
-	return *this * r;
-    }
-
-    //
-    //  --- (modifying) Arithematic Operators ---
-    //
-
-    vec3& operator += ( const vec3& v )
-	{ x += v.x;  y += v.y;  z += v.z;  return *this; }
-
-    vec3& operator -= ( const vec3& v )
-	{ x -= v.x;  y -= v.y;  z -= v.z;  return *this; }
-
-    vec3& operator *= ( const GLfloat s )
-	{ x *= s;  y *= s;  z *= s;  return *this; }
-
-    vec3& operator *= ( const vec3& v )
-	{ x *= v.x;  y *= v.y;  z *= v.z;  return *this; }
-
-    vec3& operator /= ( const GLfloat s ) {
+	vec3 operator / (const GLfloat s) const {
 
 
-	GLfloat r = GLfloat(1.0) / s;
-	*this *= r;
+		GLfloat r = GLfloat(1.0) / s;
+		return *this * r;
+	}
 
-	return *this;
-    }
-	
-    //
-    //  --- Insertion and Extraction Operators ---
-    //
+	//
+	//  --- (modifying) Arithematic Operators ---
+	//
 
-    friend std::ostream& operator << ( std::ostream& os, const vec3& v ) {
-	return os << "( " << v.x << ", " << v.y << ", " << v.z <<  " )";
-    }
+	vec3& operator += (const vec3& v)
+	{
+		x += v.x;  y += v.y;  z += v.z;  return *this;
+	}
 
-    friend std::istream& operator >> ( std::istream& is, vec3& v )
-	{ return is >> v.x >> v.y >> v.z ; }
+	vec3& operator -= (const vec3& v)
+	{
+		x -= v.x;  y -= v.y;  z -= v.z;  return *this;
+	}
 
-    //
-    //  --- Conversion Operators ---
-    //
+	vec3& operator *= (const GLfloat s)
+	{
+		x *= s;  y *= s;  z *= s;  return *this;
+	}
 
-    operator const GLfloat* () const
-	{ return static_cast<const GLfloat*>( &x ); }
+	vec3& operator *= (const vec3& v)
+	{
+		x *= v.x;  y *= v.y;  z *= v.z;  return *this;
+	}
 
-    operator GLfloat* ()
-	{ return static_cast<GLfloat*>( &x ); }
+	vec3& operator /= (const GLfloat s) {
+
+
+		GLfloat r = GLfloat(1.0) / s;
+		*this *= r;
+
+		return *this;
+	}
+
+	bool operator == (const vec3& v) const{
+		return x == v.x && y == v.y && z == v.z;
+	}
+
+	bool operator != (const vec3& v) const{
+		return !(*this == v);
+	}
+
+	//
+	//  --- Insertion and Extraction Operators ---
+	//
+
+	friend std::ostream& operator << (std::ostream& os, const vec3& v) {
+		return os << "( " << v.x << ", " << v.y << ", " << v.z << " )";
+	}
+
+	friend std::istream& operator >> (std::istream& is, vec3& v)
+	{
+		return is >> v.x >> v.y >> v.z;
+	}
+
+	//
+	//  --- Conversion Operators ---
+	//
+
+	operator const GLfloat* () const
+	{
+		return static_cast<const GLfloat*>(&x);
+	}
+
+	operator GLfloat* ()
+	{
+		return static_cast<GLfloat*>(&x);
+	}
 };
 
 //----------------------------------------------------------------------------
@@ -360,6 +402,14 @@ struct vec4 {
 
 	return *this;
     }
+
+	bool operator == (const vec4& v) const{
+		return x == v.x && y == v.y && z == v.z && w == v.w;
+	}
+
+	bool operator != (const vec4& v) const{
+		return !(*this == v);
+	}
 	
     //
     //  --- Insertion and Extraction Operators ---

@@ -112,6 +112,14 @@ class mat2 {
 	return *this *= r;
     }
 
+	bool operator == (const mat2& m) const{
+		return _m[0] == m._m[0] && m[1] == m._m[1];
+	}
+
+	bool operator != (const mat2& m) const{
+		return !(*this == m);
+	}
+
     //
     //  --- Matrix / Vector operators ---
     //
@@ -280,6 +288,14 @@ class mat3 {
 	return *this *= r;
     }
 
+	bool operator == (const mat3& m) const{
+		return _m[0] == m._m[0] && m[1] == m._m[1] && _m[2] == m._m[2];
+	}
+
+	bool operator != (const mat3& m) const{
+		return !(*this == m);
+	}
+
     //
     //  --- Matrix / Vector operators ---
     //
@@ -293,7 +309,7 @@ class mat3 {
     //
     //  --- Insertion and Extraction Operators ---
     //
-	
+
     friend std::ostream& operator << ( std::ostream& os, const mat3& m ) {
 	return os << std::endl 
 		  << m[0] << std::endl
@@ -457,6 +473,14 @@ class mat4 {
 	GLfloat r = GLfloat(1.0) / s;
 	return *this *= r;
     }
+
+	bool operator == (const mat4& m) const{
+		return _m[0] == m._m[0] && m[1] == m._m[1] && _m[2] == m._m[2] && _m[3] == m._m[3];
+	}
+
+	bool operator != (const mat4& m) const{
+		return !(*this == m);
+	}
 
     //
     //  --- Matrix / Vector operators ---

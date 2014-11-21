@@ -2,13 +2,17 @@
 
 #include "Model.h"
 
+enum class CameraLookAtError{
+	EYE_AT_TARGET, INVALID_UP, OK
+};
+
 class Camera : public Model {
 
 	mat4 projection;
 	
 
 public:
-	void LookAt(const vec4& eye, const vec4& at, const vec4& up);
+	CameraLookAtError LookAt(const vec4& eye, const vec4& at, const vec4& up);
 	void Ortho(const float left, const float right,
 		const float bottom, const float top,
 		const float zNear, const float zFar);

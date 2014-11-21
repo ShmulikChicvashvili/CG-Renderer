@@ -2,11 +2,21 @@
 #include "Camera.h"
 #include <assert.h>
 
-void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
-	const vec3 eyeNotHomogenic = divideByW(eye);
-	const vec3 atNotHomogenic = divideByW(at);
-	const vec3 upNotHomogenic = divideByW(up);
+CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
+	vec3 eyeNotHomogenic = divideByW(eye);
+	vec3 atNotHomogenic = divideByW(at);
+	vec3 upNotHomogenic = divideByW(up);
+
+	if (eyeNotHomogenic == atNotHomogenic){
+		return CameraLookAtError::EYE_AT_TARGET;
+	}
+
 	const vec3 zAxis = normalize(eyeNotHomogenic - atNotHomogenic); // The forward vector
+
+	if (cross(upNotHomogenic, zAxis) == vec3(0, 0, 0)){
+		return CameraLookAtError::INVALID_UP;
+	}
+
 	const vec3 xAxis = normalize(cross(upNotHomogenic, zAxis)); // The right vector
 	const vec3 yAxis = cross(zAxis, xAxis); // the upper vector
 	this->spinScaleInvMtx = mat4(xAxis.x, xAxis.y, xAxis.z, 0,
@@ -14,6 +24,9 @@ void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 		zAxis.x, zAxis.y, zAxis.z, 0,
 		0, 0, 0, 1);
 	this->spinScaleMtx = transpose(this->spinScaleInvMtx);
+	if (!(spinScaleMtx * spinScaleInvMtx == mat4())){
+		std::cout << "spinScale and Inv are not right. spinScale * spinScaleInv = " << spinScaleMtx * spinScaleInvMtx << std::endl;
+	}
 	assert(spinScaleMtx * spinScaleInvMtx == mat4());
 	this->rotateTranslateInvMtx = mat4(1, 0, 0, -eyeNotHomogenic.x,
 										0, 1, 0, -eyeNotHomogenic.y,
@@ -24,6 +37,8 @@ void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 									0, 0, 1, eyeNotHomogenic.z,
 									0, 0, 0, 1);
 	assert(rotateTranslateMtx * rotateTranslateInvMtx == mat4());
+
+	return CameraLookAtError::OK;
 	//@TODO camera is a model. date modelMatrix (the inverse of the above)
 }
 
