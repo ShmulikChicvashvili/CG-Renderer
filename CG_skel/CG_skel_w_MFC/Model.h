@@ -10,9 +10,13 @@ enum Axes {X, Y, Z, ALL};
 class Model {
 protected:
 	vector<Face> faces;
+
 	mat4 spinScaleMtx; // spinning and scaling are done in model spcae
+	mat4 spinScaleInvMtx;
 	mat4 rotateTranslateMtx; // moves the spinned and scaled object in the world
-	mat3 _normal_transform;
+	mat4 rotateTranslateInvMtx;
+	
+	//mat3 _normal_transform;
 
 	const mat4 genRotationMatrix(const GLfloat deg, const Axes axis) const;
 	const mat4 genTranslationMatrix(const GLfloat tx, const GLfloat ty, const GLfloat tz) const;
@@ -23,8 +27,7 @@ public:
 	virtual const mat4 getModelMatrix() const;
 	virtual const vector<Face>& getFaces() const;
 
-	virtual void setSpinScaleMtx(const mat4& spinScaleMtx);
-	virtual void setRotateTranslateMtx(const mat4& rotateTranslateMtx);
+	virtual void reset();
 
 	virtual void spin(const GLfloat deg, const Axes axis);
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
