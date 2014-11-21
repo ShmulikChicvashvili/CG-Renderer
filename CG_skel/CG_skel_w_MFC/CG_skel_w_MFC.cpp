@@ -135,7 +135,9 @@ void reshape(int width, int height)
 
 void keyboard(unsigned char key, int x, int y)
 {
+	cout << (int)key << endl;
 	vector<Camera*> c = scene->getCameras();
+	vector<Model>& currentModels = scene->getModels();
 	CXyzDialog dlg;
 	switch (key) {
 	case 0x1B:
@@ -205,7 +207,22 @@ void keyboard(unsigned char key, int x, int y)
 		c[0]->Frustum(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
 		scene->draw();
 		break;
+	case 0x7F:
+		renderer->InitializeBuffer();
+		currentModels = vector<Model>();
+		renderer->SwapBuffers();
+		break;
+	case 0x60:
+		c[0]->setRotateTranslateInvMtx(mat4());
+		c[0]->setSpinScaleInvMtx(mat4());
+		for (auto &m : currentModels) {
+			m.setRotateTranslateMtx(mat4());
+			m.setSpinScaleMtx(mat4());
+		}
+		scene->draw();
+		break;
 	}
+
 }
 
 void mouse(int button, int state, int x, int y)

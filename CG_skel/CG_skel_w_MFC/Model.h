@@ -23,6 +23,9 @@ public:
 	virtual const mat4 getModelMatrix() const;
 	virtual const vector<Face>& getFaces() const;
 
+	virtual void setSpinScaleMtx(const mat4& spinScaleMtx);
+	virtual void setRotateTranslateMtx(const mat4& rotateTranslateMtx);
+
 	virtual void spin(const GLfloat deg, const Axes axis);
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
 	virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);

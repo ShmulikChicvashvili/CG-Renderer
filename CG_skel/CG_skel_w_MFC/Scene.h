@@ -36,6 +36,9 @@ public:
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
 	virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
 	virtual void rotate(const GLfloat teta, const Axes axis);
+
+	void setSpinScaleInvMtx(const mat4& spinScaleInvMtx);
+	void setRotateTranslateInvMtx(const mat4& rotateTranslateInvMtx);
 };
 
 class Scene {

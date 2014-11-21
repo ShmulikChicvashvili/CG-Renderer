@@ -133,4 +133,12 @@ vector<Camera*>& Scene::getCameras() {
 	return std::move(this->cameras);
 }
 
+void Camera::setSpinScaleInvMtx(const mat4& spinScaleInvMtx) {
+	this->spinScaleInvMtx = spinScaleInvMtx;
+}
+
+void Camera::setRotateTranslateInvMtx(const mat4& rotateTranslateInvMtx) {
+	this->rotateTranslateInvMtx = rotateTranslateInvMtx;
+}
+
 ///////////////////////////////////
