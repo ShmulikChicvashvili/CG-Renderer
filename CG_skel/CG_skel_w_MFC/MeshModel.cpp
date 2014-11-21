@@ -46,6 +46,13 @@ struct FaceIdcs
 	}
 };
 
+vec4 vec4fFromStream(std::istream & aStream, GLfloat w)
+{
+	float x, y, z;
+	aStream >> x >> std::ws >> y >> std::ws >> z;
+	return vec4(x, y, z, w);
+}
+
 vec3 vec3fFromStream(std::istream & aStream)
 {
 	float x, y, z;
@@ -72,8 +79,9 @@ MeshModel::~MeshModel(void)
 void MeshModel::loadFile(string fileName)
 {
 	ifstream ifile(fileName.c_str());
-	vector<FaceIdcs> faces;
-	vector<vec3> vertices;
+	vector<FaceIdcs> facesIdcs;
+	vector<vec4> vertices;
+	vector<vec4> normals;
 	// while not end of file
 	while (!ifile.eof())
 	{
@@ -89,19 +97,19 @@ void MeshModel::loadFile(string fileName)
 
 		// based on the type parse data
 		if (lineType == "v")
-			vertices.push_back(vec3fFromStream(issLine));
+			vertices.push_back(vec4fFromStream(issLine, 1));
 		else if (lineType == "f")
-			faces.push_back(issLine);
+			facesIdcs.push_back(issLine);
 		else if (lineType == "#" || lineType == "")
 		{
 			// comment / empty line
 		}
 		else if (lineType == "vn"){
-			//@TODO read the vector!
+			normals.push_back(vec4fFromStream(issLine, 1));
 		}
 		else
 		{
-			cout << "Found unknown line Type \"" << lineType << "\"";
+			cout << "Found unknown line Type \"" << lineType << "\"" << endl;
 		}
 	}
 	//Vertex_positions is an array of vec3. Every three elements define a triangle in 3D.
@@ -113,11 +121,17 @@ void MeshModel::loadFile(string fileName)
 
 	// iterate through all stored faces and create triangles
 
-	for each (const FaceIdcs& faceIdc in faces)
+	for each (const FaceIdcs& faceIdc in facesIdcs)
 	{
 		Face f;
 		for (int i = 0; i < 3; i++){
-			f.addVertex(vec4(vertices[faceIdc.v[i]-1]));
+			const vec4& v = vertices[faceIdc.v[i] - 1];
+			if (faceIdc.vn[i] == 0){
+				f.addVertex(v);
+			}
+			else {
+				f.addVertex(v, normals[faceIdc.vn[i] - 1]);
+			}
 		}
 		this->faces.push_back(f);
 	}
