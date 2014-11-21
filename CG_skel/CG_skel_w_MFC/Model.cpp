@@ -72,7 +72,7 @@ void Model::translate(const GLfloat tx, const GLfloat ty, const GLfloat tz){
 
 void Model::rotate(const GLfloat deg, const Axes axis){
 	const mat4& rotateMatrix = genRotationMatrix(deg, axis);
-	rotateTranslateMtx = rotateMatrix * spinScaleMtx;
+	rotateTranslateMtx = rotateMatrix * rotateTranslateMtx;
 	std::cout << "Spin matrix: " << rotateMatrix << std::endl;
-	std::cout << "Current Spin Scale matrix: " << spinScaleMtx << std::endl;
+	std::cout << "Current Rotation Translation matrix: " << rotateTranslateMtx << std::endl;
 }

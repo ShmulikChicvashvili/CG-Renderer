@@ -34,6 +34,7 @@
 #define TRANSLATION_ACTION 7
 #define SPIN_ACTION 8
 #define SCALING_ACTION 9
+#define ROTATE_ACTION 10
 
 #define SCALING_FACTOR 1
 
@@ -97,8 +98,15 @@ void applyTransformation(float intensity) {
 		break;
 	case spin:
 		for (auto &m : currentModels) {
-			cout << "Rotating by : " << intensity << " In" << selectedAxis << " Axis";
+			cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis" << endl;
 			m.spin(intensity, selectedAxis);
+		}
+		scene->draw();
+		break;
+	case rotatee:
+		for (auto &m : currentModels) {
+			cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis" << endl;
+			m.rotate(intensity, selectedAxis);
 		}
 		scene->draw();
 		break;
@@ -231,6 +239,9 @@ void actionMenu(int id) {
 	case SCALING_ACTION:
 		selectedAction = scale;
 		break;
+	case ROTATE_ACTION:
+		selectedAction = rotatee;
+		break;
 	default:
 		break;
 	}
@@ -264,8 +275,9 @@ void initMenu()
 	// my addition
 	int menuAction = glutCreateMenu(actionMenu);
 	glutAddMenuEntry("Translation", TRANSLATION_ACTION);
-	glutAddMenuEntry("Rotation", SPIN_ACTION);
+	glutAddMenuEntry("Spin", SPIN_ACTION);
 	glutAddMenuEntry("Scaling", SCALING_ACTION);
+	glutAddMenuEntry("Rotation", ROTATE_ACTION);
 
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);
