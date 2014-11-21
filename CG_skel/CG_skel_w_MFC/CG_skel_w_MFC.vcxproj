@@ -100,6 +100,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CG_skel_w_MFC.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="InitShader.cpp" />
@@ -114,6 +115,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CG_skel_w_MFC.h" />
     <ClInclude Include="Face.h" />
     <ClInclude Include="InitShader.h" />

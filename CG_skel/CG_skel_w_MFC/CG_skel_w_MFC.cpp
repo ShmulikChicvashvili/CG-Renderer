@@ -213,11 +213,9 @@ void keyboard(unsigned char key, int x, int y)
 		renderer->SwapBuffers();
 		break;
 	case 0x60:
-		c[0]->setRotateTranslateInvMtx(mat4());
-		c[0]->setSpinScaleInvMtx(mat4());
+		c[0]->reset();
 		for (auto &m : currentModels) {
-			m.setRotateTranslateMtx(mat4());
-			m.setSpinScaleMtx(mat4());
+			m.reset();
 		}
 		scene->draw();
 		break;
