@@ -82,3 +82,11 @@ void Model::rotate(const GLfloat deg, const Axes axis){
 	/*std::cout << "Spin matrix: " << rotateMatrix << std::endl;
 	std::cout << "Current Rotation Translation matrix: " << rotateTranslateMtx << std::endl;*/
 }
+
+void Model::reset(){
+	const mat4 eye;
+	spinScaleMtx = eye;
+	spinScaleInvMtx = eye;
+	rotateTranslateMtx = eye;
+	rotateTranslateInvMtx = eye;
+}
