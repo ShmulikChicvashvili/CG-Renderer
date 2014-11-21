@@ -5,6 +5,7 @@
 #include "mat.h"
 #include "GL/glew.h"
 #include "Model.h"
+#include "Camera.h"
 
 using namespace std;
 class Renderer
@@ -53,10 +54,9 @@ public:
 	void InitializeBuffer();
 	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
 	void drawSinglePixel(GLint x, GLint y);
-	void setBuffer(const vector<Model>& models, const mat4& viewTransform, const mat4& projection);
+	void setBuffer(const vector<Model>& models, const Camera& cam);
 
 	//////////////////////////////
 };
 
 
-const vec3 divideByW(const vec4& vector);

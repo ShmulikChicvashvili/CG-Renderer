@@ -96,9 +96,12 @@ void MeshModel::loadFile(string fileName)
 		{
 			// comment / empty line
 		}
+		else if (lineType == "vn"){
+			//@TODO read the vector!
+		}
 		else
 		{
-			cout<< "Found unknown line Type \"" << lineType << "\"";
+			cout << "Found unknown line Type \"" << lineType << "\"";
 		}
 	}
 	//Vertex_positions is an array of vec3. Every three elements define a triangle in 3D.
@@ -118,6 +121,8 @@ void MeshModel::loadFile(string fileName)
 		}
 		this->faces.push_back(f);
 	}
+
+	cout << "Loaded mesh model: " << fileName << " Successfully";
 }
 
 ///////////////////////////////////////////////

@@ -607,3 +607,8 @@ mat4 Scale( const vec3& v )
 }
 
 //----------------------------------------------------------------------------
+
+inline
+const vec3 divideByW(const vec4& vector) {
+	return vec3(vector.x / vector.w, vector.y / vector.w, vector.z / vector.w);
+}

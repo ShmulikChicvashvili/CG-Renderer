@@ -116,7 +116,9 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 	m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
 }
 
-void Renderer::setBuffer(const vector<Model>& models, const mat4& viewTransform, const mat4& projection) {
+void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
+	const mat4& viewTransform = cam.getViewMatrix(); 
+	const mat4& projection = cam.getProjectionMatrix();
 	mat4 cameraMatrix = projection * viewTransform;
 	for each (const Model& model in models)
 	{
@@ -143,9 +145,7 @@ void Renderer::drawFace(const Face& face, const mat4& transformationMatrix) {
 	}
 }
 
-const vec3 divideByW(const vec4& vector) {
-	return vec3(vector.x / vector.w, vector.y / vector.w, vector.z / vector.w);
-}
+
 
 const vec2 Renderer::windowCoordinates(const vec3& vector) const {
 	GLfloat halfWidth = m_width / 2;

@@ -5,6 +5,7 @@
 #include <string>
 #include "Renderer.h"
 #include "Model.h"
+#include "Camera.h"
 using namespace std;
 
 
@@ -13,33 +14,7 @@ class Light {
 
 };
 
-class Camera : Model {
-	mat4 spinScaleInvMtx;
-	mat4 rotateTranslateInvMtx;
-	mat4 projection;
 
-
-public:
-	void LookAt(const vec4& eye, const vec4& at, const vec4& up);
-	void Ortho(const float left, const float right,
-		const float bottom, const float top,
-		const float zNear, const float zFar);
-	void Frustum(const float left, const float right,
-		const float bottom, const float top,
-		const float zNear, const float zFar);
-	void Perspective(const float fovy, const float aspect,
-		const float zNear, const float zFar);
-	const mat4 getViewMatrix() const;
-	const mat4 getProjectionMatrix() const;
-
-	virtual void spin(const GLfloat teta, const Axes axis);
-	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
-	virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
-	virtual void rotate(const GLfloat teta, const Axes axis);
-
-	void setSpinScaleInvMtx(const mat4& spinScaleInvMtx);
-	void setRotateTranslateInvMtx(const mat4& rotateTranslateInvMtx);
-};
 
 class Scene {
 
