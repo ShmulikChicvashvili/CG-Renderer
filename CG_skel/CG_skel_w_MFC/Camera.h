@@ -2,7 +2,7 @@
 
 #include "Model.h"
 
-class Camera : Model {
+class Camera : public Model {
 
 	mat4 projection;
 

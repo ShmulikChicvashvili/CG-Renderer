@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Camera.h"
+#include <assert.h>
 
 void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 	const vec3 eyeNotHomogenic = divideByW(eye);
@@ -12,10 +13,17 @@ void Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 		yAxis.x, yAxis.y, yAxis.z, 0,
 		zAxis.x, zAxis.y, zAxis.z, 0,
 		0, 0, 0, 1);
+	this->spinScaleMtx = transpose(this->spinScaleInvMtx);
+	assert(spinScaleMtx * spinScaleInvMtx == mat4());
 	this->rotateTranslateInvMtx = mat4(1, 0, 0, -eyeNotHomogenic.x,
-		0, 1, 0, -eyeNotHomogenic.y,
-		0, 0, 1, -eyeNotHomogenic.z,
-		0, 0, 0, 1);
+										0, 1, 0, -eyeNotHomogenic.y,
+										0, 0, 1, -eyeNotHomogenic.z,
+										0, 0, 0, 1);
+	this->rotateTranslateMtx = mat4(1, 0, 0, eyeNotHomogenic.x,
+									0, 1, 0, eyeNotHomogenic.y,
+									0, 0, 1, eyeNotHomogenic.z,
+									0, 0, 0, 1);
+	assert(rotateTranslateMtx * rotateTranslateInvMtx == mat4());
 	//@TODO camera is a model. date modelMatrix (the inverse of the above)
 }
 
