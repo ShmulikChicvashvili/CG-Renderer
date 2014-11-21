@@ -35,6 +35,8 @@
 #define SPIN_ACTION 8
 #define SCALING_ACTION 9
 
+#define SCALING_FACTOR 1
+
 Scene *scene;
 Renderer *renderer;
 
@@ -45,12 +47,12 @@ bool lb_down, rb_down, mb_down;
 
 enum Action { translate, rotatee, spin, scale };
 
-bool allAxesBool, yAxisBool, zAxisBool = false;
-bool xAxisBool = true;
+bool xAxisBool, yAxisBool, zAxisBool = false;
+bool allAxesBool = true;
 
-Axes selectedAxis = X;
+Axes selectedAxis = ALL;
 
-Action selectedAction = translate;
+Action selectedAction = scale;
 
 void applyTransformation(float intensity) {
 	vector<Model>& currentModels = scene->getModels();
@@ -69,10 +71,27 @@ void applyTransformation(float intensity) {
 	case scale:
 		for (auto &m : currentModels)
 		{
-			cout << "Scaling by : " << intensity << "In " << selectedAxis << " Axis";
-			m.scale((allAxesBool + xAxisBool)*(intensity+1),
-				(allAxesBool + yAxisBool)*(intensity + 1),
-				(allAxesBool + zAxisBool)*(intensity + 1));
+			if (intensity < 0) {
+				intensity = 1 / abs(intensity);
+			}
+			cout << " Scaling by : " << intensity << endl;
+			switch (selectedAxis)
+			{
+			case X:
+				m.scale(SCALING_FACTOR*abs(intensity), 1, 1);
+				break;
+			case Y:
+				m.scale(1, SCALING_FACTOR*abs(intensity), 1);
+				break;
+			case Z:
+				m.scale(1, 1, SCALING_FACTOR*abs(intensity));
+				break;
+			case ALL:
+				m.scale(SCALING_FACTOR*abs(intensity), SCALING_FACTOR * abs(intensity), SCALING_FACTOR * abs(intensity));
+				break;
+			default:
+				break;
+			}
 		}
 		scene->draw();
 		break;
@@ -110,10 +129,10 @@ void keyboard(unsigned char key, int x, int y)
 		exit(EXIT_SUCCESS);
 		break;
 	case 0x2E:
-		applyTransformation(1.0);
+		applyTransformation(1.1);
 		break;
 	case 0x2C:
-		applyTransformation(-1.0);
+		applyTransformation(-1.1);
 		break;
 	}
 }
@@ -148,7 +167,9 @@ void motion(int x, int y)
 	// my addition
 	float sensitivity = 1.f;
 	GLfloat pixels = sensitivity * ((GLfloat)dx / glutGet(GLUT_WINDOW_WIDTH) + (GLfloat)dy / glutGet(GLUT_WINDOW_HEIGHT));
-	applyTransformation(pixels);
+	if (selectedAction != scale) {
+		applyTransformation(pixels);
+	}
 	// update last x,y
 	last_x = x;
 	last_y = y;

@@ -58,9 +58,9 @@ void Renderer::reshape(int width, int height){
 void Renderer::InitializeBuffer() {
 	for (int x = 0; x < m_width; x++) {
 		for (int y = 0; y < m_height; y++) {
-			m_outBuffer[INDEX(m_width, x, y, 0)] = 1;
-			m_outBuffer[INDEX(m_width, x, y, 1)] = 1;
-			m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
+			m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
+			m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
+			m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
 		}
 	}
 }
@@ -112,7 +112,7 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 		return;
 	}
 	m_outBuffer[INDEX(m_width, x, y, 0)] = 1;
-	m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
+	m_outBuffer[INDEX(m_width, x, y, 1)] = 1;
 	m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
 }
 
