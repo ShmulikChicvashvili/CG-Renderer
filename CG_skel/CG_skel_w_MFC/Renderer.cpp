@@ -119,6 +119,7 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 	const mat4& viewTransform = cam.getViewMatrix(); 
 	const mat4& projection = cam.getProjectionMatrix();
+	const mat4& camNorm = cam.getViewNormalMatrix();
 	mat4 cameraMatrix = projection * viewTransform;
 	for each (const Model& model in models)
 	{
@@ -127,23 +128,29 @@ void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
-			drawFace(face, transformationMatrix);
+			drawFace(face, camNorm * model.getModelNormalMatrix(), transformationMatrix);
 		}
 	}
 }
 
 
-void Renderer::drawFace(const Face& face, const mat4& noramlMatrix, const mat4& transformationMatrix) {
+void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix) {
 	vec2* windowCords = new vec2[face.getVertices().size()];
+	vec3 normCords = vec3();
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
-		windowCords[i] = windowCoordinates(divideByW(transformationMatrix * vertices[i].getCoords()));
+		windowCords[i] = windowCoordinates(divideByW(modelMatrix * vertices[i].getCoords()));
+		if (vertices[i].hasNormal()) {
+			normCords = normalize(divideByW(normalMatrix * vertices[i].getNorm()));
+			drawLine(windowCords[i].x + normCords.x , windowCords[i].y + normCords.y, windowCords[i].x, windowCords[i].y);
+		}
 	}
 	for (int i = 0; i < face.getVertices().size(); i++) {
 		vec2& windowCordsFirstPoint = windowCords[i];
 		vec2& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
 		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y);
 	}
+	delete windowCords;
 }
 
 
