@@ -37,11 +37,12 @@
 #define ROTATE_ACTION 10
 
 #define SCALING_FACTOR 1
-
+#define MOUSE_SMOOTH 30
 Scene *scene;
 Renderer *renderer;
 
 int last_x, last_y;
+int last_dx, last_dy;
 bool lb_down, rb_down, mb_down;
 
 // My addition
@@ -212,6 +213,19 @@ void motion(int x, int y)
 	// calc difference in mouse movement
 	int dx = x - last_x;
 	int dy = -(y - last_y);
+	int dx_diff = abs(abs(dx) - last_dx);
+	int dy_diff = abs(abs(dy) - last_dy);
+
+	last_x = x;
+	last_y = y;
+	last_dx = abs(dx);
+	last_dy = abs(dy);
+
+	//cout << "dx_diff:" << dx_diff << ", dy_diff:" << dy_diff << endl;
+	if (dx_diff > MOUSE_SMOOTH || dy_diff > MOUSE_SMOOTH){
+		//cout << "Smoothed" << endl;
+		return;
+	}
 
 	// my addition
 	float sensitivity = 1.f;
@@ -219,9 +233,7 @@ void motion(int x, int y)
 	if (selectedAction != scale) {
 		applyTransformation(pixels);
 	}
-	// update last x,y
-	last_x = x;
-	last_y = y;
+
 }
 
 void fileMenu(int id)
