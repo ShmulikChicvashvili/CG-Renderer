@@ -93,3 +93,7 @@ const mat4 Camera::getProjectionMatrix() const {
 const mat4 Camera::getViewMatrix() const {
 	return spinScaleInvMtx * rotateTranslateInvMtx;
 }
+
+const mat4 Camera::getViewNormalMatrix() const{
+	return mat4();
+}

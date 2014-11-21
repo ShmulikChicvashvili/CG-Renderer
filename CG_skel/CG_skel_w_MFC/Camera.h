@@ -22,6 +22,7 @@ public:
 		const float zNear, const float zFar);
 	
 	const mat4 getViewMatrix() const;
+	const mat4 getViewNormalMatrix() const;
 	const mat4 getProjectionMatrix() const;
 };
 

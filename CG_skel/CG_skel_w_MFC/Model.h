@@ -25,6 +25,7 @@ protected:
 public:
 	virtual ~Model() {}
 	virtual const mat4 getModelMatrix() const;
+	const mat4 getModelNormalMatrix() const;
 	virtual const vector<Face>& getFaces() const;
 
 	virtual void reset();

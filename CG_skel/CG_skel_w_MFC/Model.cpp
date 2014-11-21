@@ -90,3 +90,7 @@ void Model::reset(){
 	rotateTranslateMtx = eye;
 	rotateTranslateInvMtx = eye;
 }
+
+const mat4 Model::getModelNormalMatrix() const{
+	return mat4();
+}
