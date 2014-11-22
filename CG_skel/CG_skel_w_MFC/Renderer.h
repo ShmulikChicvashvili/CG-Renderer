@@ -25,6 +25,7 @@ class Renderer
 	// Shmulik & Eyal stuff
 
 	void drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix);
+	const vec3 normalNDC2Window(const vec4& n) const;
 	const vec3 windowCoordinates(const vec3& vector) const;
 
 	//////////////////////////////

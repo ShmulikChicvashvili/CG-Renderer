@@ -2,6 +2,21 @@
 #include "Camera.h"
 #include <assert.h>
 
+Camera::Camera(){
+	for (int i = 0; i < 3; i++){
+		Face f;
+		vec4 v(0,0,0,1);
+
+		v[i] = 0.5;
+		f.addVertex(v);
+
+		v[i] = -0.5;
+		f.addVertex(v);
+
+		faces.push_back(f);
+	}
+}
+
 CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
 	vec3 eyeNotHomogenic = divideByW(eye);
 	vec3 atNotHomogenic = divideByW(at);

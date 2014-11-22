@@ -31,7 +31,7 @@ public:
 	virtual void reset();
 
 	void spin(const GLfloat deg, const Axes axis);
-	void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
+	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
 	void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
 	void rotate(const GLfloat deg, const Axes axis);
 };

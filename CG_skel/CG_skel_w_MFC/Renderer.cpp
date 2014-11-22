@@ -128,33 +128,49 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 	const mat4& viewTransform = cam.getViewMatrix(); 
 	const mat4& projection = cam.getProjectionMatrix();
-	const mat4& camNorm = cam.getViewNormalMatrix();
-	mat4 cameraMatrix = projection * viewTransform;
+	const mat4& camNorm = cam.getViewNormalMatrix() *  mat4(1 / resizingMatrix[0][0], 0, 0, 0,
+															0, 1 / resizingMatrix[1][1], 0, 0,
+															0, 0, 1, 0,
+															0, 0, 0, 1);
+	mat4 cameraMatrix = projection * viewTransform * resizingMatrix;
 	for each (const Model& model in models)
 	{
-
-		mat4 transformationMatrix = cameraMatrix * model.getModelMatrix() * resizingMatrix;
 		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
-			drawFace(face, camNorm * model.getModelNormalMatrix(), transformationMatrix);
+			drawFace(face, camNorm * model.getModelNormalMatrix(), cameraMatrix * model.getModelMatrix());
 		}
 	}
+}
+
+const vec3 Renderer::normalNDC2Window(const vec4& n) const{
+	vec4& ndc = mat4((GLfloat)2 / m_width, 0, 0, 0,
+		0, (GLfloat)2 / m_height, 0, 0,
+		0, 0, 2, 0,
+		-1, -1, -1, 1) * n;
+
+	if (ndc.w != 0){
+		return divideByW(ndc);
+	}
+	return vec3(ndc.x, ndc.y, ndc.z);
+
 }
 
 
 void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix) {
 	vec3* windowCords = new vec3[face.getVertices().size()];
-	vec3 normCords = vec3();
+	vec3 normCords;
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
 		windowCords[i] = windowCoordinates(divideByW(modelMatrix * vertices[i].getCoords()));
 		if (vertices[i].hasNormal()) {
-			mat4 resizeNormMtx = mat4(1/resizingMatrix[0][0],0,0,0,
-									  0,1/resizingMatrix[1][1],0,0,
-									  0,0,1,0,
-									  0,0,0,1);
-			normCords = normalize(divideByW(normalMatrix * vertices[i].getNorm()));
+			
+			normCords = normalNDC2Window(normalMatrix * vertices[i].getNorm());
+			normCords = normalize(normCords);
+
+			//@TODO fix this
+			normCords *= 20;
+
 			drawLine(windowCords[i].x + normCords.x , windowCords[i].y + normCords.y, windowCords[i].x, windowCords[i].y);
 		}
 	}

@@ -106,6 +106,7 @@ void MeshModel::loadFile(string fileName)
 		}
 		else if (lineType == "vn"){
 			normals.push_back(vec4fFromStream(issLine, 1));
+			cout << "read normal: " << normals.at(normals.size() - 1) << endl;;
 		}
 		else
 		{
@@ -130,6 +131,7 @@ void MeshModel::loadFile(string fileName)
 				f.addVertex(v);
 			}
 			else {
+				cout << "Vertex: " << v << " Loaded with normal: " << normals[faceIdc.vn[i] - 1] << endl;
 				f.addVertex(v, normals[faceIdc.vn[i] - 1]);
 			}
 		}
