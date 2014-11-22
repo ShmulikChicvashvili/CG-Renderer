@@ -22,6 +22,8 @@ protected:
 	const mat4 genTranslationMatrix(const GLfloat tx, const GLfloat ty, const GLfloat tz) const;
 	const mat4 genScaleMatrix(const GLfloat sx, const GLfloat sy, const GLfloat sz) const;
 
+	bool isActive;
+
 public:
 	virtual ~Model() {}
 	const mat4 getModelMatrix() const;
@@ -34,4 +36,7 @@ public:
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
 	void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
 	void rotate(const GLfloat deg, const Axes axis);
+
+	void setActive(const bool isActive);
+	bool getActive() const;
 };

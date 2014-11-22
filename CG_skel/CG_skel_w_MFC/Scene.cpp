@@ -10,6 +10,10 @@ void Scene::loadOBJModel(string fileName)
 	MeshModel model = MeshModel(fileName);
 	models.push_back(model);
 	activeModel = models.size() - 1;
+	models[activeModel].setActive(true);
+	if (activeModel - 1 >= 0) {
+		models[activeModel - 1].setActive(false);
+	}
 }
 
 void Scene::draw()

@@ -14,6 +14,7 @@ Renderer::Renderer() :m_width(512), m_height(512)
 	initial_width = 512;
 	initial_height = 512;
 	CreateBuffers(512, 512);
+	drawNormals = false;
 }
 Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 {
@@ -21,6 +22,7 @@ Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 	initial_width = width;
 	initial_height = height;
 	CreateBuffers(width, height);
+	drawNormals = false;
 }
 
 Renderer::~Renderer(void)
@@ -75,7 +77,7 @@ void Renderer::InitializeBuffer() {
 }
 
 // The algorith for drawing line that is used is Bresenham's line algorithm
-void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
+void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, Color c) {
 	//InitializeBuffer();
 	const bool highOctant = (fabs(y2 - y1) > fabs(x2 - x1));
 	if (highOctant == true) {
@@ -101,10 +103,10 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	for (GLint x = (GLint)x1; x <= Xmax; x++) {
 
 		if (highOctant == true) {
-			drawSinglePixel(y, x);
+			drawSinglePixel(y, x, c);
 		}
 		else {
-			drawSinglePixel(x, y);
+			drawSinglePixel(x, y, c);
 		}
 
 		d += dy2;
@@ -116,13 +118,13 @@ void Renderer::drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 	}
 }
 
-void Renderer::drawSinglePixel(GLint x, GLint y) {
+void Renderer::drawSinglePixel(GLint x, GLint y, Color c) {
 	if (!(x >= 0 && x < m_width && y >= 0 && y < m_height)){
 		return;
 	}
-	m_outBuffer[INDEX(m_width, x, y, 0)] = 1;
-	m_outBuffer[INDEX(m_width, x, y, 1)] = 1;
-	m_outBuffer[INDEX(m_width, x, y, 2)] = 1;
+	m_outBuffer[INDEX(m_width, x, y, 0)] = c.getRed();
+	m_outBuffer[INDEX(m_width, x, y, 1)] = c.getGreen();
+	m_outBuffer[INDEX(m_width, x, y, 2)] = c.getBlue();
 }
 
 void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
@@ -137,10 +139,16 @@ void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 	mat4 cameraMatrix = projection * viewTransform * resizingMatrix;
 	for each (const Model& model in models)
 	{
+		bool active = model.getActive();
 		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
-			drawFace(face, camNorm * model.getModelNormalMatrix(), cameraMatrix * model.getModelMatrix());
+			if (active) {
+				drawFace(face, camNorm * model.getModelNormalMatrix(), cameraMatrix * model.getModelMatrix(), Color(true,false,false));
+			}
+			else {
+				drawFace(face, camNorm * model.getModelNormalMatrix(), cameraMatrix * model.getModelMatrix(), Color(true, true, true));
+			}
 		}
 	}
 }
@@ -159,27 +167,30 @@ const vec3 Renderer::normalNDC2Window(const vec4& n) const{
 }
 
 
-void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix) {
+void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix, Color c) {
 	vec3* windowCords = new vec3[face.getVertices().size()];
 	vec3 normCords;
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
 		windowCords[i] = windowCoordinates(divideByW(modelMatrix * vertices[i].getCoords()));
-		if (vertices[i].hasNormal()) {
-			
-			normCords = normalNDC2Window(normalMatrix * vertices[i].getNorm());
-			normCords = normalize(normCords);
+		if (drawNormals) {
+			if (vertices[i].hasNormal()) {
 
-			//@TODO fix this
-			normCords *= 20;
+				normCords = normalNDC2Window(normalMatrix * vertices[i].getNorm());
+				normCords = normalize(normCords);
 
-			drawLine(windowCords[i].x + normCords.x , windowCords[i].y + normCords.y, windowCords[i].x, windowCords[i].y);
+				//@TODO fix this
+				normCords *= 20;
+
+				drawLine(windowCords[i].x + normCords.x, windowCords[i].y + normCords.y, windowCords[i].x, 
+					windowCords[i].y, Color(true, false, true));
+			}
 		}
 	}
 	for (int i = 0; i < face.getVertices().size(); i++) {
 		vec3& windowCordsFirstPoint = windowCords[i];
 		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
-		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y);
+		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y,c);
 	}
 	delete windowCords;
 }
@@ -190,6 +201,14 @@ const vec3 Renderer::windowCoordinates(const vec3& vector) const {
 	GLfloat halfWidth = m_width / 2;
 	GLfloat halfHeight = m_height / 2;
 	return vec3((halfWidth*vector.x) + halfWidth, (halfHeight*vector.y) + halfHeight, (vector.z / 2) + 0.5);
+}
+
+
+bool Renderer::getDrawNormals() {
+	return this->drawNormals;
+}
+void Renderer::setDrawNormals(const bool drawNormals) {
+	this->drawNormals = drawNormals;
 }
 
 /////////////////////////////////////////////////////

@@ -240,8 +240,10 @@ void keyboard(unsigned char key, int x, int y)
 	vector<Camera*>& currentCameras = scene->getCameras();
 	
 	int index = scene->getActiveModel();
+	int newIndex = 0;
 
 	int cameraIndex = scene->getActiveCamera();
+	int cameraNewIndex = 0;
 
 	CameraLookAtError err;
 
@@ -334,19 +336,47 @@ void keyboard(unsigned char key, int x, int y)
 		scene->draw();
 		break;
 	case 0x5B:
-		cout << "Previous active model is : " << index << endl;
-		scene->setActiveModel((index - 1) % scene->getModels().size());
-		cout << "Current active model is : " << index << endl;
-		// add funcionality
+		if (scene->getActiveModel() == ALL_MODELS_ACTIVE) {
+			scene->setActiveModel(currentModels.size() - 1);
+			for (auto &m : currentModels) {
+				m.setActive(false);
+			}
+			currentModels[currentModels.size() - 1].setActive(true);
+		}
+		else {
+			cout << "Previous active model is : " << index << endl;
+			currentModels[index].setActive(false);
+			newIndex = index - 1;
+			scene->setActiveModel(newIndex % scene->getModels().size());
+			cout << "Current active model is : " << newIndex << endl;
+			currentModels[newIndex % scene->getModels().size()].setActive(true);
+		}
+		scene->draw();
 		break;
 	case 0x5D:
-		cout << "Previous active model is : " << index << endl;
-		scene->setActiveModel((index + 1) % scene->getModels().size());
-		cout << "Current active model is : " << index << endl;
-		// add funcionality
+		if (scene->getActiveModel() == ALL_MODELS_ACTIVE) {
+			scene->setActiveModel(currentModels.size() - 1);
+			for (auto &m : currentModels) {
+				m.setActive(false);
+			}
+			currentModels[0].setActive(true);
+		}
+		else {
+			cout << "Previous active model is : " << index << endl;
+			currentModels[index].setActive(false);
+			newIndex = index + 1;
+			scene->setActiveModel(newIndex % scene->getModels().size());
+			cout << "Current active model is : " << newIndex << endl;
+			currentModels[newIndex  % scene->getModels().size()].setActive(true);
+		}
+		scene->draw();
 		break;
 	case 0x5C:
 		scene->setActiveModel(ALL_MODELS_ACTIVE);
+		for (auto &m : currentModels) {
+			m.setActive(true);
+		}
+		scene->draw();
 		// add functionality
 		break;
 	case 0x7B:
@@ -362,6 +392,13 @@ void keyboard(unsigned char key, int x, int y)
 		cout << "Current active Camera is : " << cameraIndex << endl;
 		scene->draw();
 		// add funcionality
+		break;
+	case 0x6E:
+		bool drawNorms = renderer->getDrawNormals();
+		cout << "Draw Normals was : " << drawNorms << endl;
+		renderer->setDrawNormals(!drawNorms);
+		cout << "And now it is : " << renderer->getDrawNormals() << endl;
+		scene->draw();
 		break;
 	}
 

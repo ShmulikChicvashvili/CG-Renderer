@@ -8,15 +8,30 @@
 #include "Camera.h"
 
 using namespace std;
+
+class Color {
+	bool red;
+	bool green;
+	bool blue;
+public:
+	Color() : red(false), green(false), blue(false) {}
+	Color(bool red, bool green, bool blue) : red(red), green(green), blue(blue) {}
+	bool getRed() {
+		return red;
+	}
+	bool getGreen() {
+		return green;
+	}
+	bool getBlue() {
+		return blue;
+	}
+};
+
 class Renderer
 {
 	float *m_outBuffer; // 3*width*height
 	float *m_zbuffer; // width*height
 	int m_width, m_height;
-
-	int initial_width, initial_height;
-
-	mat4 resizingMatrix;
 
 	void CreateBuffers(int width, int height);
 	void CreateLocalBuffer();
@@ -24,9 +39,15 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
-	void drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix);
+	void drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix, Color c);
 	const vec3 normalNDC2Window(const vec4& n) const;
 	const vec3 windowCoordinates(const vec3& vector) const;
+
+	mat4 resizingMatrix;
+
+	int initial_width, initial_height;
+
+	bool drawNormals;
 
 	//////////////////////////////
 
@@ -57,9 +78,12 @@ public:
 
 	void reshape(int width, int height);
 	void InitializeBuffer();
-	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
-	void drawSinglePixel(GLint x, GLint y);
+	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, Color c);
+	void drawSinglePixel(GLint x, GLint y, Color c);
 	void setBuffer(const vector<Model>& models, const Camera& cam);
+
+	bool getDrawNormals();
+	void setDrawNormals(const bool drawNormals);
 
 	//////////////////////////////
 };
