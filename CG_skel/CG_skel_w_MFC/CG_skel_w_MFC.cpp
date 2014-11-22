@@ -41,6 +41,8 @@
 #define SCALING_ACTION 9
 #define ROTATE_ACTION 10
 
+#define LOAD_CAMERA 1
+
 #define SCALING_FACTOR 1
 #define MOUSE_SMOOTH 30
 Scene *scene;
@@ -195,15 +197,7 @@ void reshape(int width, int height)
 	//update the renderer's buffers
 }
 
-void keyboard(unsigned char key, int x, int y)
-{
-	cout << (int)key << endl;
-	
-	vector<Camera*> c = scene->getCameras();
-	
-	vector<Model>& currentModels = scene->getModels();
-	
-	int index = scene->getActiveModel();
+CameraLookAtError lookAt(Camera& cam) {
 	
 	CXyzDialog dlgEye("Camera Coordinates");
 	CXyzDialog dlgTarget("Target Coordinates");
@@ -211,6 +205,44 @@ void keyboard(unsigned char key, int x, int y)
 	vec3 eye;
 	vec3 target;
 	vec3 up;
+	CameraLookAtError err;
+
+	cout << "Choose Camera Coordinates" << endl;
+	if (dlgEye.DoModal() == IDOK) {
+		eye = dlgEye.GetXYZ();
+	}
+	cout << "Choose Target Coordinates" << endl;
+	if (dlgTarget.DoModal() == IDOK) {
+		target = dlgTarget.GetXYZ();
+	}
+	cout << "Choose Up Coordinates" << endl;
+	if (dlgUp.DoModal() == IDOK) {
+		up = dlgUp.GetXYZ();
+	}
+	err = cam.LookAt(vec4(eye.x, eye.y, eye.z, 1), vec4(target.x, target.y, target.z, 1), vec4(up.x, up.y, up.z, 1));
+	if (CameraLookAtError::OK != err) {
+		return err;
+	}
+	else {
+		scene->draw();
+		return err;
+	}
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+	cout << (int)key << endl;
+	
+	vector<Camera*> c = scene->getCameras();
+	
+	vector<Model>& currentModels = scene->getModels();
+
+	vector<Camera*>& currentCameras = scene->getCameras();
+	
+	int index = scene->getActiveModel();
+
+	int cameraIndex = scene->getActiveCamera();
+
 	CameraLookAtError err;
 
 	switch (key) {
@@ -264,45 +296,29 @@ void keyboard(unsigned char key, int x, int y)
 		selectedAction = translate;
 		break;
 	case 0x6C:
-		cout << "Look at " << endl;
-		cout << "Choose Camera Coordinates" << endl;
-		if (dlgEye.DoModal() == IDOK) {
-			eye = dlgEye.GetXYZ();
-		}
-		cout << "Choose Target Coordinates" << endl;
-		if (dlgTarget.DoModal() == IDOK) {
-			target = dlgTarget.GetXYZ();
-		}
-		cout << "Choose Up Coordinates" << endl;
-		if (dlgUp.DoModal() == IDOK) {
-			up = dlgUp.GetXYZ();
-		}
-		err = c[0]->LookAt(vec4(eye.x, eye.y, eye.z, 1), vec4(target.x, target.y, target.z, 1), vec4(up.x, up.y, up.z, 1));
-		if (CameraLookAtError::OK != err) {
-			switch (err)
-			{
-			case CameraLookAtError::EYE_AT_TARGET:
-				cout << "The Camera is at the target" << endl;
-				break;
-			case CameraLookAtError::INVALID_UP:
-				cout << "The up vector is invalid" << endl;
-				break;
-			default:
-				break;
-			}
-		}
-		else {
-			scene->draw();
+		err = lookAt(*currentCameras[cameraIndex]);
+		switch (err)
+		{
+		case CameraLookAtError::EYE_AT_TARGET:
+			cout << "The camera chosen is at the target" << endl;
+			break;
+		case CameraLookAtError::INVALID_UP:
+			cout << "The camera's up vector in invalid" << endl;
+			break;
+		case CameraLookAtError::OK:
+			break;
+		default:
+			break;
 		}
 		break;
 	case 0x6F:
 		cout << "Orthographic projection: " << endl;
-		c[0]->Ortho(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
+		currentCameras[cameraIndex]->Ortho(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
 		scene->draw();
 		break;
 	case 0x70:
 		cout << "Perspective projection: " << endl;
-		c[0]->Frustum(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
+		currentCameras[cameraIndex]->Frustum(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
 		scene->draw();
 		break;
 	case 0x7F:
@@ -332,6 +348,20 @@ void keyboard(unsigned char key, int x, int y)
 	case 0x5C:
 		scene->setActiveModel(ALL_MODELS_ACTIVE);
 		// add functionality
+		break;
+	case 0x7B:
+		cout << "Previous active Camera is : " << cameraIndex << endl;
+		scene->setActiveCamera((cameraIndex - 1) % scene->getCameras().size());
+		cout << "Current active Camera is : " << cameraIndex << endl;
+		scene->draw();
+		// add funcionality
+		break;
+	case 0x7D:
+		cout << "Previous active Camera is : " << cameraIndex << endl;
+		scene->setActiveCamera((cameraIndex + 1) % scene->getCameras().size());
+		cout << "Current active Camera is : " << cameraIndex << endl;
+		scene->draw();
+		// add funcionality
 		break;
 	}
 
@@ -450,6 +480,27 @@ void actionMenu(int id) {
 	}
 }
 
+void cameraMenu(int id) {
+	CameraLookAtError err;
+	vector<Camera*>& cameras = scene->getCameras();
+	switch (id)
+	{
+	case LOAD_CAMERA:
+		scene->loadCamera();
+		err = lookAt(*(cameras[scene->getActiveCamera()]));
+		if (CameraLookAtError::OK != err) {
+			cout << "Error Occurred" << endl;
+			delete cameras[scene->getActiveCamera()];
+		}
+		else {
+			scene->draw();
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 void mainMenu(int id)
 {
 	switch (id)
@@ -476,6 +527,10 @@ void initMenu()
 	glutAddMenuEntry("all", ALL_AXES);
 
 	// my addition
+	int menuCamera = glutCreateMenu(cameraMenu);
+	glutAddMenuEntry("Load Camera", LOAD_CAMERA);
+
+	// my addition
 	int menuAction = glutCreateMenu(actionMenu);
 	glutAddMenuEntry("Translation", TRANSLATION_ACTION);
 	glutAddMenuEntry("Spin", SPIN_ACTION);
@@ -484,6 +539,7 @@ void initMenu()
 
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);
+	glutAddSubMenu("Cameras",menuCamera);
 	glutAddMenuEntry("Demo", MAIN_DEMO);
 	glutAddSubMenu("Choose Axis", menuAxis);
 	glutAddSubMenu("Choose Action", menuAction);

@@ -17,9 +17,9 @@ void Scene::draw()
 	// 1. Send the renderer the current camera transform and the projection
 	// 2. Tell all models to draw themselves
 	m_renderer->InitializeBuffer();
-	cout << "View Matrix while drawing : " << cameras[0]->getViewMatrix() << endl;
-	cout << "Projection Matrix while drawing : " << cameras[0]->getProjectionMatrix() << endl;
-	m_renderer->setBuffer(models, *cameras[0]);
+	cout << "View Matrix while drawing : " << cameras[getActiveCamera()]->getViewMatrix() << endl;
+	cout << "Projection Matrix while drawing : " << cameras[getActiveCamera()]->getProjectionMatrix() << endl;
+	m_renderer->setBuffer(models, *cameras[getActiveCamera()]);
 	m_renderer->SwapBuffers();
 }
 
@@ -35,8 +35,8 @@ void Scene::drawDemo()
 
 void Scene::loadCamera() {
 	cameras.push_back(new Camera());
-	cout << "ViewMatrix is : " << cameras[0]->getViewMatrix() << endl;
-	cout << "ProjectionMatrix is : " << cameras[0]->getProjectionMatrix() << endl;
+	activeCamera = cameras.size() - 1;
+	models.push_back(*cameras[activeCamera]);
 }
 
 

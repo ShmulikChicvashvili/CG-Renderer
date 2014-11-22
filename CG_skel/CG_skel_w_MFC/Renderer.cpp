@@ -126,6 +126,8 @@ void Renderer::drawSinglePixel(GLint x, GLint y) {
 }
 
 void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
+	//@TODO: Delete it later
+	cout << "The size of models is : " << models.size() << endl;
 	const mat4& viewTransform = cam.getViewMatrix(); 
 	const mat4& projection = cam.getProjectionMatrix();
 	const mat4& camNorm = cam.getViewNormalMatrix() *  mat4(1 / resizingMatrix[0][0], 0, 0, 0,
