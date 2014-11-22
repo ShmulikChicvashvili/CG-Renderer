@@ -158,10 +158,6 @@ const vec3 Renderer::normalNDC2Window(const vec4& n) const{
 		0, (GLfloat)2 / m_height, 0, 0,
 		0, 0, 2, 0,
 		-1, -1, -1, 1) * n;
-
-	if (ndc.w != 0){
-		return divideByW(ndc);
-	}
 	return vec3(ndc.x, ndc.y, ndc.z);
 
 }

@@ -29,8 +29,8 @@ class Scene {
 	int activeCamera;
 
 public:
-	Scene() {};
-	Scene(Renderer *renderer) : m_renderer(renderer) {};
+	Scene() :activeModel(), activeLight(), activeCamera() {};
+	Scene(Renderer *renderer) : m_renderer(renderer), activeModel(), activeLight(), activeCamera() {};
 	void loadOBJModel(string fileName);
 	void loadCamera();
 	void draw();
