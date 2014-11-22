@@ -28,7 +28,6 @@ class Scene {
 	int activeLight;
 	int activeCamera;
 
-
 public:
 	Scene() {};
 	Scene(Renderer *renderer) : m_renderer(renderer) {};

@@ -26,6 +26,9 @@
 
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
 
+#define INIT_WIDTH 512
+#define INIT_HEIGHT 512
+
 #define FILE_OPEN 1
 #define MAIN_DEMO 1
 #define MAIN_ABOUT 2
@@ -497,7 +500,7 @@ int my_main(int argc, char **argv)
 	// Initialize window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-	glutInitWindowSize(512, 512);
+	glutInitWindowSize(INIT_WIDTH, INIT_HEIGHT);
 	glutInitContextVersion(2, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
@@ -514,7 +517,7 @@ int my_main(int argc, char **argv)
 
 
 
-	renderer = new Renderer(512, 512);
+	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
 	//----------------------------------------------------------------------------

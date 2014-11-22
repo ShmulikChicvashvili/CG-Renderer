@@ -14,6 +14,10 @@ class Renderer
 	float *m_zbuffer; // width*height
 	int m_width, m_height;
 
+	int initial_width, initial_height;
+
+	mat4 resizingMatrix;
+
 	void CreateBuffers(int width, int height);
 	void CreateLocalBuffer();
 
@@ -21,7 +25,7 @@ class Renderer
 	// Shmulik & Eyal stuff
 
 	void drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix);
-	const vec2 windowCoordinates(const vec3& vector) const;
+	const vec3 windowCoordinates(const vec3& vector) const;
 
 	//////////////////////////////
 

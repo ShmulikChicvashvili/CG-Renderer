@@ -5,16 +5,21 @@
 #include "GL\freeglut.h"
 #include <assert.h>
 
+
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 
 Renderer::Renderer() :m_width(512), m_height(512)
 {
 	InitOpenGLRendering();
+	initial_width = 512;
+	initial_height = 512;
 	CreateBuffers(512, 512);
 }
 Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 {
 	InitOpenGLRendering();
+	initial_width = width;
+	initial_height = height;
 	CreateBuffers(width, height);
 }
 
@@ -52,6 +57,10 @@ void Renderer::SetDemoBuffer()
 // Shmulik & Eyal stuff
 
 void Renderer::reshape(int width, int height){
+	resizingMatrix = mat4((float) initial_width / width, 0, 0, 0,
+						  0, (float) initial_height / height, 0, 0,
+						  0, 0, 1, 0,
+						  0, 0, 0, 1);
 	CreateBuffers(width, height);
 }
 
@@ -124,7 +133,7 @@ void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 	for each (const Model& model in models)
 	{
 
-		mat4 transformationMatrix = cameraMatrix * model.getModelMatrix();
+		mat4 transformationMatrix = cameraMatrix * model.getModelMatrix() * resizingMatrix;
 		const vector<Face>& modelFaces = model.getFaces();
 		for each (const Face& face in modelFaces)
 		{
@@ -135,19 +144,23 @@ void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
 
 
 void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix) {
-	vec2* windowCords = new vec2[face.getVertices().size()];
+	vec3* windowCords = new vec3[face.getVertices().size()];
 	vec3 normCords = vec3();
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
 		windowCords[i] = windowCoordinates(divideByW(modelMatrix * vertices[i].getCoords()));
 		if (vertices[i].hasNormal()) {
+			mat4 resizeNormMtx = mat4(1/resizingMatrix[0][0],0,0,0,
+									  0,1/resizingMatrix[1][1],0,0,
+									  0,0,1,0,
+									  0,0,0,1);
 			normCords = normalize(divideByW(normalMatrix * vertices[i].getNorm()));
 			drawLine(windowCords[i].x + normCords.x , windowCords[i].y + normCords.y, windowCords[i].x, windowCords[i].y);
 		}
 	}
 	for (int i = 0; i < face.getVertices().size(); i++) {
-		vec2& windowCordsFirstPoint = windowCords[i];
-		vec2& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
+		vec3& windowCordsFirstPoint = windowCords[i];
+		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
 		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y);
 	}
 	delete windowCords;
@@ -155,10 +168,10 @@ void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& 
 
 
 
-const vec2 Renderer::windowCoordinates(const vec3& vector) const {
+const vec3 Renderer::windowCoordinates(const vec3& vector) const {
 	GLfloat halfWidth = m_width / 2;
 	GLfloat halfHeight = m_height / 2;
-	return vec2((halfWidth*vector.x) + halfWidth, (halfHeight*vector.y) + halfHeight);
+	return vec3((halfWidth*vector.x) + halfWidth, (halfHeight*vector.y) + halfHeight, (vector.z / 2) + 0.5);
 }
 
 /////////////////////////////////////////////////////
