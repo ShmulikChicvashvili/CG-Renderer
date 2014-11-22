@@ -45,6 +45,10 @@ const mat4 Model::getModelMatrix() const{
 	return rotateTranslateMtx * spinScaleMtx;
 }
 
+const mat4 Model::getModelNormalMatrix() const{
+	return transpose(spinScaleInvMtx * rotateTranslateInvMtx);
+}
+
 const vector<Face>& Model::getFaces() const{
 	return faces;
 }
@@ -91,6 +95,3 @@ void Model::reset(){
 	rotateTranslateInvMtx = eye;
 }
 
-const mat4 Model::getModelNormalMatrix() const{
-	return mat4();
-}

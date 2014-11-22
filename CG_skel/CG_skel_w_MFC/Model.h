@@ -24,14 +24,14 @@ protected:
 
 public:
 	virtual ~Model() {}
-	virtual const mat4 getModelMatrix() const;
+	const mat4 getModelMatrix() const;
 	const mat4 getModelNormalMatrix() const;
-	virtual const vector<Face>& getFaces() const;
+	const vector<Face>& getFaces() const;
 
 	virtual void reset();
 
-	virtual void spin(const GLfloat deg, const Axes axis);
-	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
-	virtual void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
-	virtual void rotate(const GLfloat deg, const Axes axis);
+	void spin(const GLfloat deg, const Axes axis);
+	void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
+	void translate(const GLfloat tx, const GLfloat ty, const GLfloat tz);
+	void rotate(const GLfloat deg, const Axes axis);
 };
