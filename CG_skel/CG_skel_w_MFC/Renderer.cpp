@@ -147,7 +147,7 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 		for each (const Face& face in modelFaces)
 		{
-			if (face.hasNormal() && face.hasMidPoint()) {
+			if (face.hasNormal() && face.hasMidPoint() && drawFaceNorms) {
 				drawFaceNormal(face.getNorm(), face.getMidPoint(), normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx);
 			}
 			drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
@@ -226,7 +226,7 @@ bool Renderer::getDrawFaceNormals() {
 	return this->drawFaceNorms;
 }
 
-bool Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
+void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 	this->drawFaceNorms = drawFaceNorms;
 }
 

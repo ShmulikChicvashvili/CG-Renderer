@@ -439,6 +439,11 @@ void keyboard(unsigned char key, int x, int y)
 		// Keyboard : n
 		sceneDrawNormals();
 		break;
+	case 0x4E:
+		// Keyboard : Shift + n
+		bool drawFaceNorms = renderer->getDrawFaceNormals();
+		renderer->setDrawFaceNormals(!drawFaceNorms);
+		scene->draw();
 	}
 
 }
