@@ -24,5 +24,8 @@ public:
 	void calcMidPoint();
 	void calcNorm();
 
+	const vec4& getMidPoint() const;
+	const vec4& getNorm() const;
+
 };
 
