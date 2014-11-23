@@ -63,10 +63,10 @@ Axes selectedAxis = ALL;
 
 Action selectedAction = scale;
 
-void doTranslation(vector<Model>& currentModels, int activeModel, float intensity) {
+void doTranslation(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
 		cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis Model number" << activeModel << endl;
-		currentModels[activeModel].translate((allAxesBool + xAxisBool)*intensity,
+		currentModels[activeModel]->translate((allAxesBool + xAxisBool)*intensity,
 			(allAxesBool + yAxisBool)*intensity,
 			(allAxesBool + zAxisBool)*intensity);
 	}
@@ -74,7 +74,7 @@ void doTranslation(vector<Model>& currentModels, int activeModel, float intensit
 		for (auto &m : currentModels)
 		{
 			cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis" << endl;
-			m.translate((allAxesBool + xAxisBool)*intensity,
+			m->translate((allAxesBool + xAxisBool)*intensity,
 				(allAxesBool + yAxisBool)*intensity,
 				(allAxesBool + zAxisBool)*intensity);
 		}
@@ -82,7 +82,7 @@ void doTranslation(vector<Model>& currentModels, int activeModel, float intensit
 	scene->draw();
 }
 
-void doScaling(vector<Model>& currentModels, int activeModel, float intensity) {
+void doScaling(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (intensity < 0) {
 		intensity = 1 / abs(intensity);
 	}
@@ -91,16 +91,16 @@ void doScaling(vector<Model>& currentModels, int activeModel, float intensity) {
 		switch (selectedAxis)
 		{
 		case X:
-			currentModels[activeModel].scale(SCALING_FACTOR*abs(intensity), 1, 1);
+			currentModels[activeModel]->scale(SCALING_FACTOR*abs(intensity), 1, 1);
 			break;
 		case Y:
-			currentModels[activeModel].scale(1, SCALING_FACTOR*abs(intensity), 1);
+			currentModels[activeModel]->scale(1, SCALING_FACTOR*abs(intensity), 1);
 			break;
 		case Z:
-			currentModels[activeModel].scale(1, 1, SCALING_FACTOR*abs(intensity));
+			currentModels[activeModel]->scale(1, 1, SCALING_FACTOR*abs(intensity));
 			break;
 		case ALL:
-			currentModels[activeModel].scale(SCALING_FACTOR*abs(intensity), SCALING_FACTOR * abs(intensity), SCALING_FACTOR * abs(intensity));
+			currentModels[activeModel]->scale(SCALING_FACTOR*abs(intensity), SCALING_FACTOR * abs(intensity), SCALING_FACTOR * abs(intensity));
 			break;
 		default:
 			break;
@@ -113,16 +113,16 @@ void doScaling(vector<Model>& currentModels, int activeModel, float intensity) {
 			switch (selectedAxis)
 			{
 			case X:
-				m.scale(SCALING_FACTOR*abs(intensity), 1, 1);
+				m->scale(SCALING_FACTOR*abs(intensity), 1, 1);
 				break;
 			case Y:
-				m.scale(1, SCALING_FACTOR*abs(intensity), 1);
+				m->scale(1, SCALING_FACTOR*abs(intensity), 1);
 				break;
 			case Z:
-				m.scale(1, 1, SCALING_FACTOR*abs(intensity));
+				m->scale(1, 1, SCALING_FACTOR*abs(intensity));
 				break;
 			case ALL:
-				m.scale(SCALING_FACTOR*abs(intensity), SCALING_FACTOR * abs(intensity), SCALING_FACTOR * abs(intensity));
+				m->scale(SCALING_FACTOR*abs(intensity), SCALING_FACTOR * abs(intensity), SCALING_FACTOR * abs(intensity));
 				break;
 			default:
 				break;
@@ -132,29 +132,29 @@ void doScaling(vector<Model>& currentModels, int activeModel, float intensity) {
 	scene->draw();
 }
 
-void doSpin(vector<Model>& currentModels, int activeModel, float intensity) {
+void doSpin(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
 		cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis The model : " << activeModel << endl;
-		currentModels[activeModel].spin(intensity, selectedAxis);
+		currentModels[activeModel]->spin(intensity, selectedAxis);
 	}
 	else {
 		for (auto &m : currentModels) {
 			cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis" << endl;
-			m.spin(intensity, selectedAxis);
+			m->spin(intensity, selectedAxis);
 		}
 	}
 	scene->draw();
 }
 
-void doRotate(vector<Model>& currentModels, int activeModel, float intensity) {
+void doRotate(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
 		cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis The model : " << activeModel << endl;
-		currentModels[activeModel].rotate(intensity, selectedAxis);
+		currentModels[activeModel]->rotate(intensity, selectedAxis);
 	}
 	else {
 		for (auto &m : currentModels) {
 			cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis" << endl;
-			m.rotate(intensity, selectedAxis);
+			m->rotate(intensity, selectedAxis);
 		}
 	}
 	scene->draw();
@@ -162,7 +162,7 @@ void doRotate(vector<Model>& currentModels, int activeModel, float intensity) {
 
 void applyTransformation(float intensity) {
 	int activeModel = scene->getActiveModel();
-	vector<Model>& currentModels = scene->getModels();
+	vector<shared_ptr<Model>>& currentModels = scene->getModels();
 	switch (selectedAction)
 	{
 	case translate:
@@ -274,38 +274,38 @@ void tempLookAt(Camera& c) {
 	}
 }
 
-void deleteModels(vector<Model>& models) {
+void deleteModels(vector<shared_ptr<Model>>& models) {
 	renderer->InitializeBuffer();
-	for (int i = 0; i < models.size(); i++) {
-		if (models[i].toDel()) {
-			models.erase(models.begin() + i);
+	for (vector<shared_ptr<Model>>::iterator it = models.begin(); it != models.end(); ++it) {
+		if (typeid(it->get()) != typeid (Camera*)) {
+			it = models.erase(it);
 		}
 	}
 	scene->draw();
 }
 
-void selectSpecificModel(vector<Model>& currentModels, int index, int newIndex) {
+void selectSpecificModel(vector<shared_ptr<Model>>& currentModels, int index, int newIndex) {
 	if (scene->getActiveModel() == ALL_MODELS_ACTIVE) {
 		scene->setActiveModel(currentModels.size() - 1);
 		for (auto &m : currentModels) {
-			m.setActive(false);
+			m->setActive(false);
 		}
-		currentModels[currentModels.size() - 1].setActive(true);
+		currentModels[currentModels.size() - 1]->setActive(true);
 	}
 	else {
 		cout << "Previous active model is : " << index << endl;
-		currentModels[index].setActive(false);
+		currentModels[index]->setActive(false);
 		scene->setActiveModel(newIndex % scene->getModels().size());
 		cout << "Current active model is : " << newIndex << endl;
-		currentModels[newIndex % scene->getModels().size()].setActive(true);
+		currentModels[newIndex % scene->getModels().size()]->setActive(true);
 	}
 	scene->draw();
 }
 
-void selectAllModels(vector<Model>& currentModels) {
+void selectAllModels(vector<shared_ptr<Model>>& currentModels) {
 	scene->setActiveModel(ALL_MODELS_ACTIVE);
 	for (auto &m : currentModels) {
-		m.setActive(true);
+		m->setActive(true);
 	}
 	scene->draw();
 }
@@ -325,20 +325,20 @@ void sceneDrawNormals() {
 	scene->draw();
 }
 
-void resetScene(vector<Model>& currentModels, vector<Camera*>& currentCameras) {
-	for (auto c : currentCameras) {
+void resetScene(vector<shared_ptr<Model>>& currentModels, vector<shared_ptr<Camera>>& currentCameras) {
+	for (auto& c : currentCameras) {
 		c->reset();
 	}
-	for (auto &m : currentModels) {
-		m.reset();
+	for (auto& m : currentModels) {
+		m->reset();
 	}
 	scene->draw();
 }
 
 void keyboard(unsigned char key, int x, int y)
 {	
-	vector<Model>& currentModels = scene->getModels();
-	vector<Camera*>& currentCameras = scene->getCameras();
+	vector<shared_ptr<Model>>& currentModels = scene->getModels();
+	vector<shared_ptr<Camera>>& currentCameras = scene->getCameras();
 	
 	int index = scene->getActiveModel();
 	int cameraIndex = scene->getActiveCamera();
@@ -558,15 +558,14 @@ void actionMenu(int id) {
 
 void cameraMenu(int id) {
 	CameraLookAtError err;
-	vector<Camera*>& cameras = scene->getCameras();
+	vector<shared_ptr<Camera>>& cameras = scene->getCameras();
 	switch (id)
 	{
 	case LOAD_CAMERA:
 		scene->loadCamera();
 		err = lookAt(*(cameras[scene->getActiveCamera()]));
 		if (CameraLookAtError::OK != err) {
-			cout << "Error Occurred" << endl;
-			delete cameras[scene->getActiveCamera()];
+			scene->deleteCamera(scene->getActiveCamera());
 		}
 		else {
 			scene->draw();
@@ -633,7 +632,7 @@ int my_main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(INIT_WIDTH, INIT_HEIGHT);
-	glutInitContextVersion(2, 0);
+	glutInitContextVersion(3, 2);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
 	glewExperimental = GL_TRUE;

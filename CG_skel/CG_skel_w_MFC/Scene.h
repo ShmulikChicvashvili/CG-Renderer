@@ -6,8 +6,9 @@
 #include "Renderer.h"
 #include "Model.h"
 #include "Camera.h"
-using namespace std;
+#include <memory>
 
+using namespace std;
 
 #define ALL_MODELS_ACTIVE -1
 
@@ -19,10 +20,10 @@ class Light {
 
 
 class Scene {
-
-	vector<Model> models;
-	vector<Light*> lights;
-	vector<Camera*> cameras;
+	
+	vector<shared_ptr<Model>> models;
+	vector<shared_ptr<Light>> lights;
+	vector<shared_ptr<Camera>> cameras;
 	Renderer *m_renderer;
 	int activeModel;
 	int activeLight;
@@ -33,6 +34,7 @@ public:
 	Scene(Renderer *renderer) : m_renderer(renderer), activeModel(), activeLight(), activeCamera() {};
 	void loadOBJModel(string fileName);
 	void loadCamera();
+	void deleteCamera(int index);
 	void draw();
 	void drawDemo();
 
@@ -60,6 +62,6 @@ public:
 		this->activeCamera = activeCamera;
 	}
 
-	vector<Model>& getModels();
-	vector<Camera*>& getCameras();
+	vector<shared_ptr<Model>>& getModels();
+	vector<shared_ptr<Camera>>& getCameras();
 };

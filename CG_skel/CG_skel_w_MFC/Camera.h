@@ -29,7 +29,5 @@ public:
 	const mat4 getViewMatrix() const;
 	const mat4 getViewNormalMatrix() const;
 	const mat4 getProjectionMatrix() const;
-
-	const bool toDel() const;
 };
 

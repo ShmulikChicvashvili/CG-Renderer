@@ -6,23 +6,25 @@
 #include "GL/glew.h"
 #include "Model.h"
 #include "Camera.h"
+#include <memory>
+
 
 using namespace std;
 
 class Color {
-	bool red;
-	bool green;
-	bool blue;
+	float red;
+	float green;
+	float blue;
 public:
-	Color() : red(false), green(false), blue(false) {}
-	Color(bool red, bool green, bool blue) : red(red), green(green), blue(blue) {}
-	bool getRed() {
+	Color() : red(0), green(0), blue(0) {}
+	Color(float _red, float _green, float _blue) : red(_red), green(_green), blue(_blue) {}
+	float getRed() {
 		return red;
 	}
-	bool getGreen() {
+	float getGreen() {
 		return green;
 	}
-	bool getBlue() {
+	float getBlue() {
 		return blue;
 	}
 };
@@ -39,7 +41,7 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
-	void drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix, Color c);
+	void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
 	const vec3 normalNDC2Window(const vec4& n) const;
 	const vec3 windowCoordinates(const vec3& vector) const;
 
@@ -80,7 +82,7 @@ public:
 	void InitializeBuffer();
 	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, Color c);
 	void drawSinglePixel(GLint x, GLint y, Color c);
-	void setBuffer(const vector<Model>& models, const Camera& cam);
+	void setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam);
 
 	bool getDrawNormals();
 	void setDrawNormals(const bool drawNormals);

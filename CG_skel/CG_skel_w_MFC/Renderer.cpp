@@ -127,28 +127,25 @@ void Renderer::drawSinglePixel(GLint x, GLint y, Color c) {
 	m_outBuffer[INDEX(m_width, x, y, 2)] = c.getBlue();
 }
 
-void Renderer::setBuffer(const vector<Model>& models, const Camera& cam) {
+void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam) {
 	//@TODO: Delete it later
 	cout << "The size of models is : " << models.size() << endl;
-	const mat4& viewTransform = cam.getViewMatrix(); 
-	const mat4& projection = cam.getProjectionMatrix();
-	const mat4& camNorm = cam.getViewNormalMatrix() *  mat4(1 / resizingMatrix[0][0], 0, 0, 0,
-															0, 1 / resizingMatrix[1][1], 0, 0,
-															0, 0, 1, 0,
-															0, 0, 0, 1);
-	mat4 cameraMatrix = projection * viewTransform * resizingMatrix;
-	for each (const Model& model in models)
+	const mat4& viewMtx = cam.getViewMatrix(); 
+	const mat4& projMtx = cam.getProjectionMatrix() * resizingMatrix;
+	
+	const mat4& normViewMtx = cam.getViewNormalMatrix();
+	//const mat4& vpMtx = pMtx * vMtx;
+	for each (const shared_ptr<Model>& pModel in models)
 	{
-		bool active = model.getActive();
-		const vector<Face>& modelFaces = model.getFaces();
+		bool active = pModel->getActive();
+		const vector<Face>& modelFaces = pModel->getFaces();
+
+		const mat4& modelViewMtx = viewMtx * pModel->getModelMatrix();
+
+		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 		for each (const Face& face in modelFaces)
 		{
-			if (active) {
-				drawFace(face, camNorm * model.getModelNormalMatrix(), cameraMatrix * model.getModelMatrix(), Color(true,false,false));
-			}
-			else {
-				drawFace(face, camNorm * model.getModelNormalMatrix(), cameraMatrix * model.getModelMatrix(), Color(true, true, true));
-			}
+			drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
 		}
 	}
 }
@@ -163,24 +160,24 @@ const vec3 Renderer::normalNDC2Window(const vec4& n) const{
 }
 
 
-void Renderer::drawFace(const Face& face, const mat4& normalMatrix, const mat4& modelMatrix, Color c) {
+void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c){
 	vec3* windowCords = new vec3[face.getVertices().size()];
-	vec3 normCords;
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
-		windowCords[i] = windowCoordinates(divideByW(modelMatrix * vertices[i].getCoords()));
-		if (drawNormals) {
-			if (vertices[i].hasNormal()) {
+		windowCords[i] = windowCoordinates(divideByW(mvpMtx * vertices[i].getCoords()));
 
-				normCords = normalNDC2Window(normalMatrix * vertices[i].getNorm());
-				normCords = normalize(normCords);
+		if (drawNormals &&vertices[i].hasNormal()) {
+			vec4 normCords = normModelViewMtx * vertices[i].getNorm();
+			normCords.w = 0;
+			normCords = 0.1 * normalize(normCords);
 
-				//@TODO fix this
-				normCords *= 20;
+			const vec4& viewPointCords = modelViewMtx * vertices[i].getCoords();
+			const vec4& endNormViewCoords = vec4(viewPointCords.x + normCords.x, viewPointCords.y + normCords.y, viewPointCords.z + normCords.z, 1);
+			const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
 
-				drawLine(windowCords[i].x + normCords.x, windowCords[i].y + normCords.y, windowCords[i].x, 
-					windowCords[i].y, Color(true, false, true));
-			}
+			drawLine(windowCords[i].x,
+				windowCords[i].y, endNormWindowCoords.x, endNormWindowCoords.y, Color(1, 0, 0));
+
 		}
 	}
 	for (int i = 0; i < face.getVertices().size(); i++) {

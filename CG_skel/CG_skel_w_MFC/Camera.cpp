@@ -7,10 +7,10 @@ Camera::Camera(){
 		Face f;
 		vec4 v(0,0,0,1);
 
-		v[i] = 0.5;
+		v[i] = 0.2;
 		f.addVertex(v);
 
-		v[i] = -0.5;
+		v[i] = -0.2;
 		f.addVertex(v);
 
 		faces.push_back(f);
@@ -111,8 +111,4 @@ const mat4 Camera::getViewMatrix() const {
 
 const mat4 Camera::getViewNormalMatrix() const{
 	return transpose(rotateTranslateMtx * spinScaleMtx);
-}
-
-const bool Camera::toDel() const {
-	return false;
 }
