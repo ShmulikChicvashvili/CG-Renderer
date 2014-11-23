@@ -38,5 +38,28 @@ void Face::calcMidPoint(){
 }
 
 void Face::calcNorm(){
+	if (vertices.size() != 3){
+		std::cout << "Tried to calc normal for non triangle face" << std::endl;
+	}
+	const vec4& v0 = vertices[0].getCoords();
+	const vec4& v1 = vertices[1].getCoords();
+	const vec4& v2 = vertices[2].getCoords();
 
+	const vec4 vec1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z, 0);
+	const vec4 vec2(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z, 0);
+
+	norm = cross(vec1, vec2);
+	norm.w = 0;
+
+	hasNorm = length(norm) != 0;
+}
+
+const vec4& Face::getMidPoint() const{
+	assert(hasMid);
+	return midPoint;
+}
+
+const vec4& Face::getNorm() const{
+	assert(hasNorm);
+	return norm;
 }

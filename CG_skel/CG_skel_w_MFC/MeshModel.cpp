@@ -135,6 +135,8 @@ void MeshModel::loadFile(string fileName)
 				f.addVertex(v, normals[faceIdc.vn[i] - 1]);
 			}
 		}
+		f.calcMidPoint();
+		f.calcNorm();
 		this->faces.push_back(f);
 	}
 
