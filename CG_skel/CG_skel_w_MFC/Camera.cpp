@@ -112,3 +112,7 @@ const mat4 Camera::getViewMatrix() const {
 const mat4 Camera::getViewNormalMatrix() const{
 	return transpose(rotateTranslateMtx * spinScaleMtx);
 }
+
+const bool Camera::toDel() const {
+	return false;
+}

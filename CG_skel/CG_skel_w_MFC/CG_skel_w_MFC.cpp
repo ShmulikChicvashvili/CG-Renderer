@@ -229,176 +229,215 @@ CameraLookAtError lookAt(Camera& cam) {
 	}
 }
 
-void keyboard(unsigned char key, int x, int y)
-{
-	cout << (int)key << endl;
-	
-	vector<Camera*> c = scene->getCameras();
-	
-	vector<Model>& currentModels = scene->getModels();
+void selectAllAxes() {
+	cout << "Selected All Axes" << endl;
+	allAxesBool = true;
+	xAxisBool = yAxisBool = zAxisBool = false;
+	selectedAxis = ALL;
+}
 
+void selectXAxis() {
+	cout << "Selected X axis" << endl;
+	xAxisBool = true;
+	yAxisBool = zAxisBool = allAxesBool = false;
+	selectedAxis = X;
+}
+
+void selectYAxis() {
+	cout << "Selected Y axis" << endl;
+	yAxisBool = true;
+	xAxisBool = zAxisBool = allAxesBool = false;
+	selectedAxis = Y;
+}
+
+void selectZAxis() {
+	cout << "Selected Z axis" << endl;
+	zAxisBool = true;
+	xAxisBool = yAxisBool = allAxesBool = false;
+	selectedAxis = Z;
+}
+
+void tempLookAt(Camera& c) {
+	CameraLookAtError err = lookAt(c);
+	switch (err)
+	{
+	case CameraLookAtError::EYE_AT_TARGET:
+		cout << "The camera chosen is at the target" << endl;
+		break;
+	case CameraLookAtError::INVALID_UP:
+		cout << "The camera's up vector in invalid" << endl;
+		break;
+	case CameraLookAtError::OK:
+		break;
+	default:
+		break;
+	}
+}
+
+void deleteModels(vector<Model>& models) {
+	renderer->InitializeBuffer();
+	for (int i = 0; i < models.size(); i++) {
+		if (models[i].toDel()) {
+			models.erase(models.begin() + i);
+		}
+	}
+	scene->draw();
+}
+
+void selectSpecificModel(vector<Model>& currentModels, int index, int newIndex) {
+	if (scene->getActiveModel() == ALL_MODELS_ACTIVE) {
+		scene->setActiveModel(currentModels.size() - 1);
+		for (auto &m : currentModels) {
+			m.setActive(false);
+		}
+		currentModels[currentModels.size() - 1].setActive(true);
+	}
+	else {
+		cout << "Previous active model is : " << index << endl;
+		currentModels[index].setActive(false);
+		scene->setActiveModel(newIndex % scene->getModels().size());
+		cout << "Current active model is : " << newIndex << endl;
+		currentModels[newIndex % scene->getModels().size()].setActive(true);
+	}
+	scene->draw();
+}
+
+void selectAllModels(vector<Model>& currentModels) {
+	scene->setActiveModel(ALL_MODELS_ACTIVE);
+	for (auto &m : currentModels) {
+		m.setActive(true);
+	}
+	scene->draw();
+}
+
+void selectSpecificCamera(int index, int newIndex) {
+	cout << "Previous active Camera is : " << index << endl;
+	scene->setActiveCamera(newIndex % scene->getCameras().size());
+	cout << "Current active Camera is : " << newIndex << endl;
+	scene->draw();
+}
+
+void sceneDrawNormals() {
+	bool drawNorms = renderer->getDrawNormals();
+	cout << "Draw Normals was : " << drawNorms << endl;
+	renderer->setDrawNormals(!drawNorms);
+	cout << "And now it is : " << renderer->getDrawNormals() << endl;
+	scene->draw();
+}
+
+void resetScene(vector<Model>& currentModels, vector<Camera*>& currentCameras) {
+	for (auto c : currentCameras) {
+		c->reset();
+	}
+	for (auto &m : currentModels) {
+		m.reset();
+	}
+	scene->draw();
+}
+
+void keyboard(unsigned char key, int x, int y)
+{	
+	vector<Model>& currentModels = scene->getModels();
 	vector<Camera*>& currentCameras = scene->getCameras();
 	
 	int index = scene->getActiveModel();
-	int newIndex = 0;
-
 	int cameraIndex = scene->getActiveCamera();
-	int cameraNewIndex = 0;
-
-	CameraLookAtError err;
 
 	switch (key) {
 	case 0x1B:
 		exit(EXIT_SUCCESS);
 		break;
 	case 0x2E:
+		// Keyboard : >
 		applyTransformation(1.1);
 		break;
 	case 0x2C:
+		// Keyboard : <
 		applyTransformation(-1.1);
 		break;
 	case 0x61:
-		cout << "Selected All Axes" << endl;
-		allAxesBool = true;
-		xAxisBool = yAxisBool = zAxisBool = false;
-		selectedAxis = ALL;
+		// Keyboard : A
+		selectAllAxes();
 		break;
 	case 0x78:
-		cout << "Selected X axis" << endl;
-		xAxisBool = true;
-		yAxisBool = zAxisBool = allAxesBool = false;
-		selectedAxis = X;
+		// Keyboard : X
+		selectXAxis();
 		break;
 	case 0x79:
-		cout << "Selected Y axis" << endl;
-		yAxisBool = true;
-		xAxisBool = zAxisBool = allAxesBool = false;
-		selectedAxis = Y;
+		// Keyboard : Y
+		selectYAxis();
 		break;
 	case 0x7A:
-		cout << "Selected Z axis" << endl;
-		zAxisBool = true;
-		xAxisBool = yAxisBool = allAxesBool = false;
-		selectedAxis = Z;
+		// keyboard : Z
+		selectZAxis();
 		break;
 	case 0x53:
+		// Keyboard : Shift + s
 		cout << "Selected Spinning Action" << endl;
 		selectedAction = spin;
 		break;
 	case 0x73:
+		// Keyboard : s
 		cout << "Selected Scaling Action" << endl;
 		selectedAction = scale;
 		break;
 	case 0x72:
+		// Keyboard : r
 		cout << "Selected Rotation Action" << endl;
 		selectedAction = rotatee;
 		break;
 	case 0x74:
+		// Keyboard : t
 		cout << "Selected Translation Action" << endl;
 		selectedAction = translate;
 		break;
 	case 0x6C:
-		err = lookAt(*currentCameras[cameraIndex]);
-		switch (err)
-		{
-		case CameraLookAtError::EYE_AT_TARGET:
-			cout << "The camera chosen is at the target" << endl;
-			break;
-		case CameraLookAtError::INVALID_UP:
-			cout << "The camera's up vector in invalid" << endl;
-			break;
-		case CameraLookAtError::OK:
-			break;
-		default:
-			break;
-		}
+		// Keyboard : l
+		tempLookAt(*currentCameras[cameraIndex]);
 		break;
 	case 0x6F:
+		// Keyboard : o
 		cout << "Orthographic projection: " << endl;
 		currentCameras[cameraIndex]->Ortho(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
 		scene->draw();
 		break;
 	case 0x70:
+		// Keyboard : p
 		cout << "Perspective projection: " << endl;
 		currentCameras[cameraIndex]->Frustum(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
 		scene->draw();
 		break;
 	case 0x7F:
-		renderer->InitializeBuffer();
-		currentModels = vector<Model>();
-		renderer->SwapBuffers();
+		// Keyboard : Delete
+		deleteModels(currentModels);
 		break;
 	case 0x60:
-		c[0]->reset();
-		for (auto &m : currentModels) {
-			m.reset();
-		}
-		scene->draw();
+		// Keyboard : ~
+		resetScene(currentModels, currentCameras);
 		break;
 	case 0x5B:
-		if (scene->getActiveModel() == ALL_MODELS_ACTIVE) {
-			scene->setActiveModel(currentModels.size() - 1);
-			for (auto &m : currentModels) {
-				m.setActive(false);
-			}
-			currentModels[currentModels.size() - 1].setActive(true);
-		}
-		else {
-			cout << "Previous active model is : " << index << endl;
-			currentModels[index].setActive(false);
-			newIndex = index - 1;
-			scene->setActiveModel(newIndex % scene->getModels().size());
-			cout << "Current active model is : " << newIndex << endl;
-			currentModels[newIndex % scene->getModels().size()].setActive(true);
-		}
-		scene->draw();
+		// Keyboard : [
+		selectSpecificModel(currentModels, index, index - 1);
 		break;
 	case 0x5D:
-		if (scene->getActiveModel() == ALL_MODELS_ACTIVE) {
-			scene->setActiveModel(currentModels.size() - 1);
-			for (auto &m : currentModels) {
-				m.setActive(false);
-			}
-			currentModels[0].setActive(true);
-		}
-		else {
-			cout << "Previous active model is : " << index << endl;
-			currentModels[index].setActive(false);
-			newIndex = index + 1;
-			scene->setActiveModel(newIndex % scene->getModels().size());
-			cout << "Current active model is : " << newIndex << endl;
-			currentModels[newIndex  % scene->getModels().size()].setActive(true);
-		}
-		scene->draw();
+		// Keyboard : ]
+		selectSpecificModel(currentModels, index, index + 1);
 		break;
 	case 0x5C:
-		scene->setActiveModel(ALL_MODELS_ACTIVE);
-		for (auto &m : currentModels) {
-			m.setActive(true);
-		}
-		scene->draw();
-		// add functionality
+		// Keyboard : '\'
+		selectAllModels(currentModels);
 		break;
 	case 0x7B:
-		cout << "Previous active Camera is : " << cameraIndex << endl;
-		scene->setActiveCamera((cameraIndex - 1) % scene->getCameras().size());
-		cout << "Current active Camera is : " << cameraIndex << endl;
-		scene->draw();
-		// add funcionality
+		// Keyboard : Shift + [
+		selectSpecificCamera(cameraIndex, cameraIndex - 1);
 		break;
 	case 0x7D:
-		cout << "Previous active Camera is : " << cameraIndex << endl;
-		scene->setActiveCamera((cameraIndex + 1) % scene->getCameras().size());
-		cout << "Current active Camera is : " << cameraIndex << endl;
-		scene->draw();
-		// add funcionality
+		// Keyboard : Shift + ]
+		selectSpecificCamera(cameraIndex, cameraIndex + 1);
 		break;
 	case 0x6E:
-		bool drawNorms = renderer->getDrawNormals();
-		cout << "Draw Normals was : " << drawNorms << endl;
-		renderer->setDrawNormals(!drawNorms);
-		cout << "And now it is : " << renderer->getDrawNormals() << endl;
-		scene->draw();
+		// Keyboard : n
+		sceneDrawNormals();
 		break;
 	}
 

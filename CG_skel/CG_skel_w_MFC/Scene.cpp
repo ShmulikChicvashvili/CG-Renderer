@@ -40,9 +40,8 @@ void Scene::drawDemo()
 void Scene::loadCamera() {
 	cameras.push_back(new Camera());
 	activeCamera = cameras.size() - 1;
-	models.push_back(*cameras[activeCamera]);
+	models.push_back(std::move(*cameras[activeCamera]));
 }
-
 
 
 vector<Model>& Scene::getModels() {

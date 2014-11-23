@@ -95,6 +95,10 @@ void Model::reset(){
 	rotateTranslateInvMtx = eye;
 }
 
+const bool Model::toDel() const {
+	return true;
+}
+
 void Model::setActive(const bool isActive) {
 	this->isActive = isActive;
 }
