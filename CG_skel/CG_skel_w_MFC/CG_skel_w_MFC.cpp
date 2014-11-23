@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "CG_skel_w_MFC.h"
+#include <algorithm>
 
 
 #ifdef _DEBUG
@@ -276,11 +277,17 @@ void tempLookAt(Camera& c) {
 
 void deleteModels(vector<shared_ptr<Model>>& models) {
 	renderer->InitializeBuffer();
-	for (vector<shared_ptr<Model>>::iterator it = models.begin(); it != models.end(); ++it) {
-		if (typeid(it->get()) != typeid (Camera*)) {
-			it = models.erase(it);
-		}
-	}
+	vector<shared_ptr<Model>>::iterator it = std::remove_if(models.begin(), models.end(),[](const shared_ptr<Model>& p) {return typeid(*p) != typeid (Camera); });
+	models.erase(it, models.end());
+	//for (vector<shared_ptr<Model>>::iterator it = models.begin(); it != models.end(); ++it) {
+	//	if (typeid(*(it->get())) != typeid (Camera)) {
+	//		it = models.erase(it);
+	//	}
+	//}
+	scene->setActiveCamera(0);
+	scene->setActiveLight(0);
+	scene->setActiveModel(0);
+	scene->getModels()[0]->setActive(true);
 	scene->draw();
 }
 

@@ -45,8 +45,10 @@ void Face::calcNorm(){
 	const vec4& v1 = vertices[1].getCoords();
 	const vec4& v2 = vertices[2].getCoords();
 
-	const vec4 vec1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z, 0);
-	const vec4 vec2(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z, 0);
+	assert(v0.w == 1 && v1.w == 1 && v2.w);
+
+	const vec4& vec1 = v1 - v0;
+	const vec4& vec2 = v2 - v1;
 
 	norm = cross(vec1, vec2);
 	norm.w = 0;
@@ -62,4 +64,12 @@ const vec4& Face::getMidPoint() const{
 const vec4& Face::getNorm() const{
 	assert(hasNorm);
 	return norm;
+}
+
+bool Face::hasMidPoint() const{
+	return hasMid;
+}
+
+bool Face::hasNormal() const{
+	return hasNorm;
 }
