@@ -15,6 +15,7 @@ Renderer::Renderer() :m_width(512), m_height(512)
 	initial_height = 512;
 	CreateBuffers(512, 512);
 	drawNormals = false;
+	drawFaceNorms = false;
 }
 Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 {
@@ -23,6 +24,7 @@ Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 	initial_height = height;
 	CreateBuffers(width, height);
 	drawNormals = false;
+	drawFaceNorms = false;
 }
 
 Renderer::~Renderer(void)
@@ -145,9 +147,25 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 		for each (const Face& face in modelFaces)
 		{
+			if (face.hasNormal() && face.hasMidPoint()) {
+				drawFaceNormal(face.getNorm(), face.getMidPoint(), normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx);
+			}
 			drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
 		}
 	}
+}
+
+void Renderer::drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx) {
+		vec4 normCords = normModelViewMtx * norm;
+		normCords.w = 0;
+		normCords = 0.1 * normalize(normCords);
+
+		const vec4& midPointCords = modelViewMtx * midPoint;
+		const vec4& endNormViewCoords = vec4(midPointCords.x + normCords.x, midPointCords.y + normCords.y, midPointCords.z + normCords.z, 1);
+		const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
+		const vec3& midPointWindowCords = windowCoordinates(divideByW(projMtx * midPointCords));
+
+		drawLine(endNormWindowCoords.x, endNormWindowCoords.y, midPointWindowCords.x, midPointWindowCords.y, Color(0.5, 0.5, 0.5));
 }
 
 const vec3 Renderer::normalNDC2Window(const vec4& n) const{
@@ -202,6 +220,14 @@ bool Renderer::getDrawNormals() {
 }
 void Renderer::setDrawNormals(const bool drawNormals) {
 	this->drawNormals = drawNormals;
+}
+
+bool Renderer::getDrawFaceNormals() {
+	return this->drawFaceNorms;
+}
+
+bool Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
+	this->drawFaceNorms = drawFaceNorms;
 }
 
 /////////////////////////////////////////////////////

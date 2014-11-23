@@ -42,6 +42,8 @@ class Renderer
 	// Shmulik & Eyal stuff
 
 	void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
+	void drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx);
+
 	const vec3 normalNDC2Window(const vec4& n) const;
 	const vec3 windowCoordinates(const vec3& vector) const;
 
@@ -50,6 +52,7 @@ class Renderer
 	int initial_width, initial_height;
 
 	bool drawNormals;
+	bool drawFaceNorms;
 
 	//////////////////////////////
 
@@ -86,6 +89,9 @@ public:
 
 	bool getDrawNormals();
 	void setDrawNormals(const bool drawNormals);
+	bool getDrawFaceNormals();
+	void setDrawFaceNormals(const bool drawFaceNorms);
+
 
 	//////////////////////////////
 };
