@@ -31,3 +31,4 @@ public:
 	const mat4 getProjectionMatrix() const;
 };
 
+bool isCameraType(const Model* p);

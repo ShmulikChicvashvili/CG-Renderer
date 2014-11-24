@@ -281,7 +281,7 @@ void tempLookAt(Camera& c) {
 
 void deleteModels(vector<shared_ptr<Model>>& models) {
 	renderer->InitializeBuffer();
-	vector<shared_ptr<Model>>::iterator it = std::remove_if(models.begin(), models.end(),[](const shared_ptr<Model>& p) {return typeid(*p) != typeid (Camera); });
+	vector<shared_ptr<Model>>::iterator it = std::remove_if(models.begin(), models.end(), [](const shared_ptr<Model>& p) {return !isCameraType(p.get()); });
 	models.erase(it, models.end());
 	//for (vector<shared_ptr<Model>>::iterator it = models.begin(); it != models.end(); ++it) {
 	//	if (typeid(*(it->get())) != typeid (Camera)) {
@@ -405,6 +405,10 @@ void keyboard(unsigned char key, int x, int y)
 	case 0x6C:
 		// Keyboard : l
 		tempLookAt(*currentCameras[cameraIndex]);
+		break;
+	case 0x4C:
+		scene->setActiveCameraLookAtModel(scene->getActiveModel());
+		display();
 		break;
 	case 0x6F:
 		// Keyboard : o

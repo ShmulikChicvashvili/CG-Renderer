@@ -74,6 +74,28 @@ vector<shared_ptr<Camera>>& Scene::getCameras() {
 	return std::move(this->cameras);
 }
 
+void Scene::setActiveCameraLookAtModel(int index){
+	if (index >= models.size()){
+		cout << "ERROR: Active model is " << index << ". only " << models.size() << " models" << endl;
+		return;
+	}
+	if (isCameraType(models[index].get())){
+		cout << "Active model is a camera" << endl;
+		return;
+	}
+
+	assert(activeCamera >= 0 && activeCamera < cameras.size());
+
+	Camera& cam = *cameras[activeCamera];
+	Model& m = *models[index];
+
+	vec4 center = m.getModelMatrix() * vec4(0, 0, 0, 1);
+	CameraLookAtError err = cam.LookAt(center - vec4(0, 0, 5, 0), center, vec4(0, 1, 0, 1));
+	if (CameraLookAtError::OK != err){
+		cout << "Error: setActiveCameraLookAtModel look at returned error" << endl;
+	}
+}
+
 void Scene::deleteCamera(int index){
 	if (index >= cameras.size() || cameras.size() == 1){
 		return;

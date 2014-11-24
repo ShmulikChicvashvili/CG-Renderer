@@ -41,6 +41,8 @@ public:
 	void draw();
 	void drawDemo();
 
+	void setActiveCameraLookAtModel(int index);
+
 	const int getActiveModel() {
 		return activeModel;
 	}
