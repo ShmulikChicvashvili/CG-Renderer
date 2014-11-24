@@ -41,6 +41,7 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
+	bool isClipped(const vector<vec4>& clipCords) const;
 	void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
 	void drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx);
 
@@ -51,7 +52,7 @@ class Renderer
 
 	int initial_width, initial_height;
 
-	bool drawNormals;
+	bool drawVertexNormals;
 	bool drawFaceNorms;
 
 	//////////////////////////////

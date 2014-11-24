@@ -139,7 +139,7 @@ void doSpin(vector<shared_ptr<Model>>& currentModels, int activeModel, float int
 		currentModels[activeModel]->spin(intensity, selectedAxis);
 	}
 	else {
-		for (auto &m : currentModels) {
+		for (auto& m : currentModels) {
 			cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis" << endl;
 			m->spin(intensity, selectedAxis);
 		}
@@ -451,6 +451,7 @@ void keyboard(unsigned char key, int x, int y)
 		bool drawFaceNorms = renderer->getDrawFaceNormals();
 		renderer->setDrawFaceNormals(!drawFaceNorms);
 		scene->draw();
+		break;
 	}
 
 }

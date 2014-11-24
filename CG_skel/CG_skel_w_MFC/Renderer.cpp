@@ -14,7 +14,7 @@ Renderer::Renderer() :m_width(512), m_height(512)
 	initial_width = 512;
 	initial_height = 512;
 	CreateBuffers(512, 512);
-	drawNormals = false;
+	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
 Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
@@ -23,7 +23,7 @@ Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
 	initial_width = width;
 	initial_height = height;
 	CreateBuffers(width, height);
-	drawNormals = false;
+	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
 
@@ -177,14 +177,53 @@ const vec3 Renderer::normalNDC2Window(const vec4& n) const{
 
 }
 
+bool Renderer::isClipped(const vector<vec4>& clipCords) const{
+	for each (const auto& v in clipCords)
+	{
+		if (v.w == 0){
+			return true;
+		}
+		for (int i = 0; i<3; i++){
+			if (v[i] > v.w || v[i] < -v.w){
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
 void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c){
-	vec3* windowCords = new vec3[face.getVertices().size()];
+	vector<vec4> clipCords;
+	clipCords.reserve(face.getVertices().size());
+
+	for (const auto& v : face.getVertices()){
+		clipCords.push_back(mvpMtx * v.getCoords());
+	}
+	if (isClipped(clipCords)){
+		return;
+	}
+
+
+	vector<vec3> windowCords;
+	windowCords.reserve(face.getVertices().size());
+
+	for (const auto& v : clipCords){
+		windowCords.push_back(windowCoordinates(divideByW(v)));
+	}
+
+	for (int i = 0; i < face.getVertices().size(); i++) {
+		vec3& windowCordsFirstPoint = windowCords[i];
+		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
+		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y, c);
+	}
+
+	if (!drawVertexNormals){
+		return;
+	}
+
 	const vector<Vertex>& vertices = face.getVertices();
 	for (int i = 0; i < vertices.size(); i++) {
-		windowCords[i] = windowCoordinates(divideByW(mvpMtx * vertices[i].getCoords()));
-
-		if (drawNormals &&vertices[i].hasNormal()) {
+		if (vertices[i].hasNormal()) {
 			vec4 normCords = normModelViewMtx * vertices[i].getNorm();
 			normCords.w = 0;
 			normCords = 0.1 * normalize(normCords);
@@ -198,12 +237,9 @@ void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const ma
 
 		}
 	}
-	for (int i = 0; i < face.getVertices().size(); i++) {
-		vec3& windowCordsFirstPoint = windowCords[i];
-		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
-		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y,c);
-	}
-	delete windowCords;
+
+
+
 }
 
 
@@ -216,10 +252,10 @@ const vec3 Renderer::windowCoordinates(const vec3& vector) const {
 
 
 bool Renderer::getDrawNormals() {
-	return this->drawNormals;
+	return this->drawVertexNormals;
 }
 void Renderer::setDrawNormals(const bool drawNormals) {
-	this->drawNormals = drawNormals;
+	this->drawVertexNormals = drawNormals;
 }
 
 bool Renderer::getDrawFaceNormals() {
