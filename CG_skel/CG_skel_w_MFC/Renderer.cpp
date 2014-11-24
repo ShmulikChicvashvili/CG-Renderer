@@ -147,9 +147,7 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 		for each (const Face& face in modelFaces)
 		{
-			if (face.hasNormal() && face.hasMidPoint() && drawFaceNorms) {
-				drawFaceNormal(face.getNorm(), face.getMidPoint(), normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx);
-			}
+
 			drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
 		}
 	}
@@ -215,6 +213,10 @@ void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const ma
 		vec3& windowCordsFirstPoint = windowCords[i];
 		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
 		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y, c);
+	}
+
+	if (face.hasNormal() && face.hasMidPoint() && drawFaceNorms) {
+		drawFaceNormal(face.getNorm(), face.getMidPoint(), normModelViewMtx, modelViewMtx, projMtx);
 	}
 
 	if (!drawVertexNormals){
