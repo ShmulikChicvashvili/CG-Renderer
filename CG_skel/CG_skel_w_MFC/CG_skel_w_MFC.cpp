@@ -6,6 +6,7 @@
 #include <algorithm>
 
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -23,6 +24,7 @@
 #include "Renderer.h"
 #include "Resource.h"
 #include "InputDialog.h"
+#include "PrimMeshModel.h"
 #include <string>
 
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
@@ -43,6 +45,8 @@
 #define ROTATE_ACTION 10
 
 #define LOAD_CAMERA 1
+
+#define LOAD_CUBE 1
 
 #define SCALING_FACTOR 1
 #define MOUSE_SMOOTH 30
@@ -569,6 +573,17 @@ void actionMenu(int id) {
 	}
 }
 
+void meshMenu(int id){
+	switch (id){
+	case LOAD_CUBE:
+		scene->loadMeshModel(PrimMeshModel());
+		display();
+		break;
+	default:
+		break;
+	}
+}
+
 void cameraMenu(int id) {
 	CameraLookAtError err;
 	vector<shared_ptr<Camera>>& cameras = scene->getCameras();
@@ -615,6 +630,10 @@ void initMenu()
 	glutAddMenuEntry("all", ALL_AXES);
 
 	// my addition
+	int menuMeshModel = glutCreateMenu(meshMenu);
+	glutAddMenuEntry("Cube", LOAD_CUBE);
+
+	// my addition
 	int menuCamera = glutCreateMenu(cameraMenu);
 	glutAddMenuEntry("Load Camera", LOAD_CAMERA);
 
@@ -627,6 +646,7 @@ void initMenu()
 
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);
+	glutAddSubMenu("Predefined models", menuMeshModel);
 	glutAddSubMenu("Cameras",menuCamera);
 	glutAddMenuEntry("Demo", MAIN_DEMO);
 	glutAddSubMenu("Choose Axis", menuAxis);

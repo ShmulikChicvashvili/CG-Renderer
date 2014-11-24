@@ -5,15 +5,35 @@
 #include <math.h>
 
 using namespace std;
+
+void Scene::addModel(const shared_ptr<Model>& pModel){
+	assert(pModel);
+	models.push_back(pModel);
+
+	if (activeModel >= 0) {
+		models[activeModel]->setActive(false);
+	}
+
+	activeModel = models.size() - 1;
+	models[activeModel]->setActive(true);
+
+}
+
+void Scene::loadMeshModel(const Model& m){
+	shared_ptr<Model> pModel = shared_ptr<Model>(new Model(m));
+	addModel(pModel);
+}
+
 void Scene::loadOBJModel(string fileName)
 {
 	shared_ptr<Model> pModel = shared_ptr<Model>(new MeshModel(fileName));
-	models.push_back(pModel);
-	activeModel = models.size() - 1;
-	models[activeModel]->setActive(true);
-	if (activeModel - 1 >= 0) {
-		models[activeModel - 1]->setActive(false);
-	}
+	addModel(pModel);
+	//models.push_back(pModel);
+	//activeModel = models.size() - 1;
+	//models[activeModel]->setActive(true);
+	//if (activeModel - 1 >= 0) {
+	//	models[activeModel - 1]->setActive(false);
+	//}
 }
 
 void Scene::draw()

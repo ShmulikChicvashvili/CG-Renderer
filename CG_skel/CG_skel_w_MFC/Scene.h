@@ -29,10 +29,13 @@ class Scene {
 	int activeLight;
 	int activeCamera;
 
+	void addModel(const shared_ptr<Model>& pModel);
+
 public:
 	Scene() :activeModel(), activeLight(), activeCamera() {};
 	Scene(Renderer *renderer) : m_renderer(renderer), activeModel(), activeLight(), activeCamera() {};
 	void loadOBJModel(string fileName);
+	void loadMeshModel(const Model& m);
 	void loadCamera();
 	void deleteCamera(int index);
 	void draw();
