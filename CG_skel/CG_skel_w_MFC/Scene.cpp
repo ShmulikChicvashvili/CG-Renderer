@@ -90,7 +90,7 @@ void Scene::setActiveCameraLookAtModel(int index){
 	Model& m = *models[index];
 
 	vec4 center = m.getModelMatrix() * vec4(0, 0, 0, 1);
-	CameraLookAtError err = cam.LookAt(center - vec4(0, 0, 5, 0), center, vec4(0, 1, 0, 1));
+	CameraLookAtError err = cam.LookAt(center + vec4(0, 0, 5, 0), center, vec4(0, 1, 0, 1));
 	if (CameraLookAtError::OK != err){
 		cout << "Error: setActiveCameraLookAtModel look at returned error" << endl;
 	}

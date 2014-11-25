@@ -135,3 +135,12 @@ void Camera::setFrustrumBoundries(const float left, const float right, const flo
 		this->zFar = zFar;
 	}
 }
+
+void Camera::reset(){
+	LookAt(vec4(0, 0, 1, 1), vec4(0,0,0,1), vec4(0, 1, 0, 1));
+	left = bottom = -1;
+	right = top = 1;
+	zNear = 0.5;
+	zFar = 10;
+	Ortho();
+}

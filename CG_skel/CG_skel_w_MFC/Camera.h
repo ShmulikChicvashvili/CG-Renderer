@@ -22,6 +22,7 @@ public:
 
 	void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz) {}
 
+	void reset();
 	
 	const mat4 getViewMatrix() const;
 	const mat4 getViewNormalMatrix() const;
