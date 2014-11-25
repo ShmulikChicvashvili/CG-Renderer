@@ -15,6 +15,11 @@ Camera::Camera(){
 
 		faces.push_back(f);
 	}
+	left = bottom = -1.0;
+	right = top = 1.0;
+	zNear = 0.5;
+	zFar = 10.0;
+
 }
 
 CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {
@@ -57,9 +62,7 @@ CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up
 	//@TODO camera is a model. date modelMatrix (the inverse of the above)
 }
 
-void Camera::Frustum(const float left, const float right,
-	const float bottom, const float top,
-	const float zNear, const float zFar) {
+void Camera::Frustum() {
 	const float entry11 = ((2 * zNear) / (right - left));
 	const float entry13 = ((right + left) / (right - left));
 	const float entry22 = ((2 * zNear) / (top - bottom));
@@ -83,12 +86,16 @@ void Camera::Perspective(const float fovy, const float aspect,
 	double width = height * aspect;      // half width of near plane
 
 	// params: left, right, bottom, top, near, far
-	Frustum(-width, width, -height, height, zNear, zFar);
+	left = -width;
+	right = width;
+	bottom = -height;
+	top = height;
+	this->zNear = zNear;
+	this->zFar = zFar;
+	Frustum();
 }
 
-void Camera::Ortho(const float left, const float right,
-	const float bottom, const float top,
-	const float zNear, const float zFar) {
+void Camera::Ortho() {
 	const float entry11 = (2 / (right - left));
 	const float entry14 = ((-right - left) / (right - left));
 	const float entry22 = (2 / (top - bottom));
@@ -115,4 +122,16 @@ const mat4 Camera::getViewNormalMatrix() const{
 
 bool isCameraType(const Model* p){
 	return typeid(*p) == typeid(Camera);
+}
+
+void Camera::setFrustrumBoundries(const float left, const float right, const float bottom, 
+	const float top, const float zNear, const float zFar) {
+	if (left < right && bottom < top && zNear > 0 && zNear < zFar) {
+		this->left = left;
+		this->right = right;
+		this->bottom = bottom;
+		this->top = top;
+		this->zNear = zNear;
+		this->zFar = zFar;
+	}
 }

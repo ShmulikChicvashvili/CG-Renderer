@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "CG_skel_w_MFC.h"
 #include <algorithm>
+#include <string>
 
 
 
@@ -26,6 +27,7 @@
 #include "InputDialog.h"
 #include "PrimMeshModel.h"
 #include <string>
+#include <sstream>
 
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
 
@@ -346,6 +348,25 @@ void resetScene(vector<shared_ptr<Model>>& currentModels, vector<shared_ptr<Came
 	scene->draw();
 }
 
+void setFrustrum(Camera& c) {
+	CCmdDialog dlg("Insert Left, Right, Bottom, Top, zNear and zFar in this order");
+	if (dlg.DoModal() == IDOK) {
+		string input = dlg.GetCmd();
+		std::istringstream iss(input);
+		string params[6];
+		for (int i = 0; i < 6; i++) {
+			iss >> params[i];
+		}
+		float left = ::atof(params[0].c_str());
+		float right = ::atof(params[1].c_str());
+		float bottom = ::atof(params[2].c_str());
+		float top = ::atof(params[3].c_str());
+		float zNear = ::atof(params[4].c_str());
+		float zFar = ::atof(params[5].c_str());
+		c.setFrustrumBoundries(left, right, bottom, top, zNear, zFar);
+	}
+}
+
 void keyboard(unsigned char key, int x, int y)
 {	
 	vector<shared_ptr<Model>>& currentModels = scene->getModels();
@@ -353,6 +374,8 @@ void keyboard(unsigned char key, int x, int y)
 	
 	int index = scene->getActiveModel();
 	int cameraIndex = scene->getActiveCamera();
+
+	int newIndex;
 
 	switch (key) {
 	case 0x1B:
@@ -413,13 +436,13 @@ void keyboard(unsigned char key, int x, int y)
 	case 0x6F:
 		// Keyboard : o
 		cout << "Orthographic projection: " << endl;
-		currentCameras[cameraIndex]->Ortho(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
+		currentCameras[cameraIndex]->Ortho();
 		scene->draw();
 		break;
 	case 0x70:
 		// Keyboard : p
 		cout << "Perspective projection: " << endl;
-		currentCameras[cameraIndex]->Frustum(-1.0, 1.0, -1.0, 1.0, 0.5, 10.0);
+		currentCameras[cameraIndex]->Frustum();
 		scene->draw();
 		break;
 	case 0x7F:
@@ -453,6 +476,16 @@ void keyboard(unsigned char key, int x, int y)
 	case 0x6E:
 		// Keyboard : n
 		sceneDrawNormals();
+		break;
+	case 0x66:
+		// Keyboard : f
+		setFrustrum(*currentCameras[cameraIndex]);
+		scene->draw();
+		break;
+	case 0x63:
+		newIndex = scene->setCameraAsActiveModel(cameraIndex);
+		selectSpecificModel(currentModels, cameraIndex, newIndex);
+		cameraIndex = newIndex;
 		break;
 	case 0x4E:
 		// Keyboard : Shift + n
@@ -669,7 +702,7 @@ int my_main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(INIT_WIDTH, INIT_HEIGHT);
-	glutInitContextVersion(3, 2);
+	glutInitContextVersion(2, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
 	glewExperimental = GL_TRUE;

@@ -96,6 +96,16 @@ void Scene::setActiveCameraLookAtModel(int index){
 	}
 }
 
+int Scene::setCameraAsActiveModel(int cameraIndex) {
+	shared_ptr<Camera> c = cameras[cameraIndex];
+	for (int i = 0; i < models.size(); i++) {
+		if (models[i] == c) {
+			return i;
+		}
+	}
+	assert(false);
+}
+
 void Scene::deleteCamera(int index){
 	if (index >= cameras.size() || cameras.size() == 1){
 		return;

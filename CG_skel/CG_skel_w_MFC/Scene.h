@@ -42,6 +42,7 @@ public:
 	void drawDemo();
 
 	void setActiveCameraLookAtModel(int index);
+	int setCameraAsActiveModel(int cameraIndex);
 
 	const int getActiveModel() {
 		return activeModel;
