@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Vertex.h"
 
+void Vertex::setCoords(const vec4& _coords){
+	coords = _coords;
+}
+
 bool Vertex::setNorm(const vec4& v){
 	if (!isValidNormal(v)){
 		return false;
@@ -8,6 +12,14 @@ bool Vertex::setNorm(const vec4& v){
 	norm = v;
 	hasNorm = true;
 	return true;
+}
+
+void Vertex::setMaterial(const Material& mat){
+	material = mat;
+}
+
+const Material& Vertex::getMaterial() const{
+	return material;
 }
 
 const vec4& Vertex::getCoords() const{

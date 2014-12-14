@@ -10,7 +10,8 @@ class LitVertex :
 	vector<vec4> lightDirs;
 	vec4 eyeVec;
 public:
-	LitVertex(const vec4& _coords);
+	LitVertex();
+	//LitVertex(const vec4& _coords);
 	~LitVertex();
 
 	void addLightDir(const vec4&);

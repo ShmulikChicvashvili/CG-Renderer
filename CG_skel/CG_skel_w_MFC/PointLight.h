@@ -8,6 +8,9 @@ public:
 	PointLight(const Material& mat, const vec4& p);
 	~PointLight();
 
-	vec4 getDirection(const vec4& p) const;
+	const vec4& getPoint() const { return point; }
+
+	vec4 getDirectionFromPoint(const vec4& p) const;
 };
 
+bool isPointLight(const Light* p);

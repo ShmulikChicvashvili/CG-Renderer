@@ -6,13 +6,25 @@
 #include "GL/glew.h"
 #include "Model.h"
 #include "Camera.h"
+#include "Light.h"
 #include <memory>
 #include "LitVertex.h"
 
 
 using namespace std;
 
-typedef LitVertex Triangle[3];
+class Triangle{
+	LitVertex vertices[3];
+
+public:
+	LitVertex& operator[](const int i){
+		return vertices[i];
+	}
+
+	const LitVertex& operator[](const int i) const{
+		return vertices[i];
+	}
+};
 
 class Color {
 	float red;
@@ -21,6 +33,7 @@ class Color {
 public:
 	Color() : red(0), green(0), blue(0) {}
 	Color(float _red, float _green, float _blue) : red(_red), green(_green), blue(_blue) {}
+	Color(const vec3& v) : red(v[0]), green(v[1]), blue(v[2]){}
 	float getRed() {
 		return red;
 	}
@@ -43,6 +56,9 @@ class Renderer
 
 	//////////////////////////////
 	// Shmulik & Eyal stuff
+
+	void clipper(vector<Triangle>& triangles);
+	void zBuffer(const vector<Triangle>& polygons);
 
 	bool isClipped(const vector<vec4>& clipCords) const;
 	void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
@@ -89,7 +105,7 @@ public:
 	void InitializeBuffer();
 	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, Color c);
 	void drawSinglePixel(GLint x, GLint y, Color c);
-	void setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam);
+	void setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam, const vector<shared_ptr<Light>>& lights);
 
 	bool getDrawNormals();
 	void setDrawNormals(const bool drawNormals);
@@ -97,7 +113,6 @@ public:
 	void setDrawFaceNormals(const bool drawFaceNorms);
 
 	const bool getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const;
-	void zBuffer(const vector<Triangle>& polygons);
 
 	//////////////////////////////
 };

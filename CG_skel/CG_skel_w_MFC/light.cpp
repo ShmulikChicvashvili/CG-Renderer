@@ -11,10 +11,4 @@ Light::~Light()
 {
 }
 
-Material& Light::getMatrial(){
-	return material;
-}
 
-const Material& Light::getMaterial() const{
-	return material;
-}

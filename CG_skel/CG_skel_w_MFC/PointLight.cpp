@@ -12,9 +12,13 @@ PointLight::~PointLight()
 {
 }
 
-vec4 PointLight::getDirection(const vec4& p) const{
-	assert(p.w == 0);
-	assert(point.w == 0);
+vec4 PointLight::getDirectionFromPoint(const vec4& p) const{
+	assert(p.w == 1);
+	assert(point.w == 1);
 
 	return normalize(point - p);
+}
+
+bool isPointLight(const Light* p){
+	return typeid(*p) == typeid(PointLight);
 }

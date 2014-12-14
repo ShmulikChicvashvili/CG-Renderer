@@ -8,6 +8,9 @@ public:
 	ParallelLight(const Material& mat, const vec4& dir);
 	~ParallelLight();
 
-	vec4 getDirection(const vec4& p) const;
+	const vec4& getDirection() const { return direction; }
+
+	vec4 getDirectionFromPoint(const vec4& p) const;
 };
 
+bool isParallelLight(const Light* p);

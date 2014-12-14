@@ -4,8 +4,9 @@
 #include "InitShader.h"
 #include "GL\freeglut.h"
 #include <assert.h>
-#include "light.h"
-
+#include "PointLight.h"
+#include "ParallelLight.h"
+#include <algorithm>
 
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 #define INDEXZ(width,x,y) (x+y*width)
@@ -66,10 +67,10 @@ void Renderer::SetDemoBuffer()
 // Shmulik & Eyal stuff
 
 void Renderer::reshape(int width, int height){
-	resizingMatrix = mat4((float) initial_width / width, 0, 0, 0,
-						  0, (float) initial_height / height, 0, 0,
-						  0, 0, 1, 0,
-						  0, 0, 0, 1);
+	resizingMatrix = mat4((float)initial_width / width, 0, 0, 0,
+		0, (float)initial_height / height, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1);
 	CreateBuffers(width, height);
 }
 
@@ -134,41 +135,136 @@ void Renderer::drawSinglePixel(GLint x, GLint y, Color c) {
 	m_outBuffer[INDEX(m_width, x, y, 2)] = c.getBlue();
 }
 
-void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam) {
+vector<shared_ptr<Light>> transferLightsToCamSpace(const vector<shared_ptr<Light>> lights, const mat4& viewMtx, const mat4& normViewMtx){
+	vector<shared_ptr<Light>> ret;
+	ret.reserve(lights.size());
+	
+	for (const auto& l : lights){
+		Material material = l->getMaterial();
+		shared_ptr<Light> newLight;
+		if (isParallelLight(l.get())){
+			const mat4& normModelView = normViewMtx * l->getModelNormalMatrix();
+			const vec4& direction = normModelView * ((ParallelLight*)l.get())->getDirection();
+
+			newLight = shared_ptr<Light>(new ParallelLight(material, direction));
+		}
+		else if (isPointLight(l.get())){
+			const mat4& modelView = viewMtx * l->getModelMatrix();
+			const vec4& point = modelView * ((PointLight*)l.get())->getPoint();
+
+			newLight = shared_ptr<Light>(new PointLight(material, point));
+		}
+		else {
+			assert(false);
+		}
+
+		ret.push_back(newLight);
+	}
+
+	assert(ret.size() == lights.size());
+
+	return ret;
+}
+
+Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const mat4& normModelView, const mat4& proj, const vector<shared_ptr<Light>>& lights){
+	const vector<Vertex>& vertices = face.getVertices();
+	assert(vertices.size() == 3);
+	Triangle t;
+
+	for (int i = 0; i < 3; i++){
+		const Vertex& v = vertices[i];
+		const vec4 camSpace = modelView * v.getCoords();
+
+		// set coordinates to clip space
+		t[i].setCoords(proj * camSpace);
+		t[i].setMaterial(v.getMaterial());
+		if (v.hasNormal()){
+			// add normal if exists, and directions to all lights and camera
+			t[i].setNorm(normModelView * v.getNorm());
+		}
+		vec4& eyeVec = -camSpace;
+		eyeVec.w = 0;
+		t[i].setEyeVec(eyeVec);
+		for (const auto& pLight : lights){
+			t[i].addLightDir(pLight->getDirectionFromPoint(camSpace));
+		}
+	}
+
+	return t;
+}
+
+void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam, const vector<shared_ptr<Light>>& lights) {
 	//@TODO: Delete it later
 	cout << "The size of models is : " << models.size() << endl;
-	const mat4& viewMtx = cam.getViewMatrix(); 
-	const mat4& projMtx = cam.getProjectionMatrix() * resizingMatrix;
-	
+	const mat4& viewMtx = cam.getViewMatrix();
 	const mat4& normViewMtx = cam.getViewNormalMatrix();
-	//const mat4& vpMtx = pMtx * vMtx;
+	const mat4& projMtx = cam.getProjectionMatrix() * resizingMatrix;
+
+	
+	const vector<shared_ptr<Light>>& camSpaceLights = transferLightsToCamSpace(lights, viewMtx, normViewMtx);
+
+	vector<Triangle> clipTriangles;
+	clipTriangles.reserve(3 * models.size());
+
 	for each (const shared_ptr<Model>& pModel in models)
 	{
-		bool active = pModel->getActive();
 		const vector<Face>& modelFaces = pModel->getFaces();
 
 		const mat4& modelViewMtx = viewMtx * pModel->getModelMatrix();
+		const mat4& normalModelViewMtx = normViewMtx * pModel->getModelNormalMatrix();
 
-		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 		for each (const Face& face in modelFaces)
 		{
+			clipTriangles.push_back(transferFaceToClipSpace(face, modelViewMtx, normalModelViewMtx, projMtx, camSpaceLights));
+			//drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
+		}
+		
+		bool active = pModel->getActive();
+		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
+	}
 
-			drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
+	clipper(clipTriangles);
+}
+
+bool isTriangleFullyClipped(const Triangle& t){
+	for (int i = 0; i < 3; i++){
+		const vec4& v = t[i].getCoords();
+		if (v.w == 0){
+			return true;
+		}
+		for (int j = 0; j<3; j++){
+			if (v[j] > v.w || v[j] < -v.w){
+				return true;
+			}
 		}
 	}
+	return false;
+}
+
+void Renderer::clipper(vector<Triangle>& triangles){
+	vector<Triangle>::iterator it = std::remove_if(triangles.begin(), triangles.end(), isTriangleFullyClipped);
+	triangles.erase(it, triangles.end());
+
+	for (Triangle& t : triangles){
+		for (int i = 0; i < 3; i++){
+			t[i].setCoords(vec4(windowCoordinates(divideByW(t[i].getCoords())),1));
+		}
+	}
+
+	zBuffer(triangles);
 }
 
 void Renderer::drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx) {
-		vec4 normCords = normModelViewMtx * norm;
-		normCords.w = 0;
-		normCords = 0.1 * normalize(normCords);
+	vec4 normCords = normModelViewMtx * norm;
+	normCords.w = 0;
+	normCords = 0.1 * normalize(normCords);
 
-		const vec4& midPointCords = modelViewMtx * midPoint;
-		const vec4& endNormViewCoords = vec4(midPointCords.x + normCords.x, midPointCords.y + normCords.y, midPointCords.z + normCords.z, 1);
-		const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
-		const vec3& midPointWindowCords = windowCoordinates(divideByW(projMtx * midPointCords));
+	const vec4& midPointCords = modelViewMtx * midPoint;
+	const vec4& endNormViewCoords = vec4(midPointCords.x + normCords.x, midPointCords.y + normCords.y, midPointCords.z + normCords.z, 1);
+	const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
+	const vec3& midPointWindowCords = windowCoordinates(divideByW(projMtx * midPointCords));
 
-		drawLine(endNormWindowCoords.x, endNormWindowCoords.y, midPointWindowCords.x, midPointWindowCords.y, Color(0.5, 0.5, 0.5));
+	drawLine(endNormWindowCoords.x, endNormWindowCoords.y, midPointWindowCords.x, midPointWindowCords.y, Color(0.5, 0.5, 0.5));
 }
 
 const vec3 Renderer::normalNDC2Window(const vec4& n) const{
@@ -275,10 +371,10 @@ void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 
 const bool Renderer::getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const {
 	vec2 p = vec2(x, y);
-	
-	float Sabc = cross(b-a,c-b);
-	float Sapc = cross(p-a, c-p);
-	float Sapb = cross(b-a, p-b);
+
+	float Sabc = cross(b - a, c - b);
+	float Sapc = cross(p - a, c - p);
+	float Sapb = cross(b - a, p - b);
 
 	v = Sapc / Sabc;
 	w = Sapb / Sabc;
@@ -299,7 +395,7 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 	float z = 0;
 	for (int i = 0; i < m_width; i++){
 		for (int j = 0; j < m_height; j++){
-			m_zbuffer[INDEXZ(m_width,i,j)] = 1.1f;
+			m_zbuffer[INDEXZ(m_width, i, j)] = 1.1f;
 		}
 	}
 
@@ -317,12 +413,16 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 				c = vec2(t[2].getCoords().x, t[2].getCoords().y);
 				getBarycentricCoordinates(x, y, a, b, c, u, v, w);
 
-				z = dot(u, a) + dot(v, b) + dot(w, c);
+				z = u * t[0].getCoords().z + v * t[1].getCoords().z + w * t[2].getCoords().z;
 				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
 					//setColor(x, y, t);
 					m_zbuffer[INDEXZ(m_width, x, y)] = z;
 				}
 			}
+		}
+
+		for (int i = 0; i < 3; i++){
+			drawLine(t[i].getCoords().x, t[i].getCoords().y, t[(i + 1) % 3].getCoords().x, t[(i + 1) % 3].getCoords().y,Color(1,1,1));
 		}
 	}
 }

@@ -9,9 +9,9 @@ public:
 	Light(const Material& mat);
 	virtual ~Light();
 
-	virtual vec4 getDirection(const vec4& p) const = 0;
+	virtual vec4 getDirectionFromPoint(const vec4& p) const = 0;
 
-	Material& getMatrial();
-	const Material& getMaterial() const;
+	Material& getMatrial() { return material; }
+	const Material& getMaterial() const { return material; }
 };
 

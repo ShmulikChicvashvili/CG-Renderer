@@ -43,7 +43,7 @@ void Scene::draw()
 	m_renderer->InitializeBuffer();
 	cout << "View Matrix while drawing : " << cameras[getActiveCamera()]->getViewMatrix() << endl;
 	cout << "Projection Matrix while drawing : " << cameras[getActiveCamera()]->getProjectionMatrix() << endl;
-	m_renderer->setBuffer(models, *cameras[getActiveCamera()]);
+	m_renderer->setBuffer(models, *cameras[getActiveCamera()], lights);
 	m_renderer->SwapBuffers();
 }
 

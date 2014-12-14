@@ -3,10 +3,11 @@
 #include <assert.h>
 
 Camera::Camera(){
-	for (int i = 0; i < 3; i++){
+	for (int i = 0; i < 2; i++){
 		Face f;
-		vec4 v(0,0,0,1);
-
+		vec4 v(0,0,0.2,1);
+		f.addVertex(v);
+		v.z = 0;
 		v[i] = 0.2;
 		f.addVertex(v);
 

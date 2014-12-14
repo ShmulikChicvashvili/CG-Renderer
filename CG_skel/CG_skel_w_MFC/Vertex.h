@@ -34,10 +34,12 @@ public:
 	Vertex(const vec4& _coords) : coords(_coords), norm(), hasNorm(false){}
 	Vertex(const vec4& _coords, const vec4& _norm) : coords(_coords), norm(_norm), hasNorm(true) { assert(isValidNormal(coords)); }
 
+	void setCoords(const vec4& _coords);
 	bool setNorm(const vec4& v);
 
-	Material& getMatrial();
+	void setMaterial(const Material& mat);
 	const Material& getMaterial() const;
+
 
 	const vec4& getCoords() const;
 	const vec4& getNorm() const;
