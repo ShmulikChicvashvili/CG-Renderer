@@ -141,6 +141,12 @@ vec2 normalize( const vec2& v ) {
     return v / length(v);
 }
 
+inline
+float cross(const vec2& a, const vec2& b)
+{
+	return a.x * b.y - b.x * a.y;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 //  vec3.h - 3D vector

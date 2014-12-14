@@ -4,9 +4,13 @@
 #include "InitShader.h"
 #include "GL\freeglut.h"
 #include <assert.h>
+#include "light.h"
 
 
 #define INDEX(width,x,y,c) (x+y*width)*3+c
+#define INDEXZ(width,x,y) (x+y*width)
+
+vector<shared_ptr<Light>> lights;
 
 Renderer::Renderer() :m_width(512), m_height(512)
 {
@@ -39,6 +43,7 @@ void Renderer::CreateBuffers(int width, int height)
 	m_height = height;
 	CreateOpenGLBuffer(); //Do not remove this line.
 	m_outBuffer = new float[3 * m_width*m_height];
+	m_zbuffer = new float[m_width*m_height];
 }
 
 void Renderer::SetDemoBuffer()
@@ -266,6 +271,60 @@ bool Renderer::getDrawFaceNormals() {
 
 void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 	this->drawFaceNorms = drawFaceNorms;
+}
+
+const bool Renderer::getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const {
+	vec2 p = vec2(x, y);
+	
+	float Sabc = cross(b-a,c-b);
+	float Sapc = cross(p-a, c-p);
+	float Sapb = cross(b-a, p-b);
+
+	v = Sapc / Sabc;
+	w = Sapb / Sabc;
+	u = 1.0f - v - w;
+
+	if (u >= 0 && u <= 1 && v >= 0 && v <= 1 && w >= 0 && w <= 1) {
+		return true;
+	}
+	return false;
+}
+
+void Renderer::zBuffer(const vector<Triangle>& polygons) {
+	float xMin, xMax, yMin, yMax = 0;
+	float u = 0.0;
+	float v = 0.0;
+	float w = 0.0;
+	vec2 a, b, c;
+	float z = 0;
+	for (int i = 0; i < m_width; i++){
+		for (int j = 0; j < m_height; j++){
+			m_zbuffer[INDEXZ(m_width,i,j)] = 1.1f;
+		}
+	}
+
+	for each (auto &t in polygons)
+	{
+		xMin = min(t[0].getCoords().x, min(t[1].getCoords().x, t[2].getCoords().x));
+		xMax = max(t[0].getCoords().x, max(t[1].getCoords().x, t[2].getCoords().x));
+		yMin = min(t[0].getCoords().y, min(t[1].getCoords().y, t[2].getCoords().y));
+		yMax = max(t[0].getCoords().y, max(t[1].getCoords().y, t[2].getCoords().y));
+
+		for (int x = xMin; x < xMax; x++) {
+			for (int y = yMin; y < yMax; y++) {
+				a = vec2(t[0].getCoords().x, t[0].getCoords().y);
+				b = vec2(t[1].getCoords().x, t[1].getCoords().y);
+				c = vec2(t[2].getCoords().x, t[2].getCoords().y);
+				getBarycentricCoordinates(x, y, a, b, c, u, v, w);
+
+				z = dot(u, a) + dot(v, b) + dot(w, c);
+				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
+					//setColor(x, y, t);
+					m_zbuffer[INDEXZ(m_width, x, y)] = z;
+				}
+			}
+		}
+	}
 }
 
 /////////////////////////////////////////////////////

@@ -7,9 +7,12 @@
 #include "Model.h"
 #include "Camera.h"
 #include <memory>
+#include "LitVertex.h"
 
 
 using namespace std;
+
+typedef LitVertex Triangle[3];
 
 class Color {
 	float red;
@@ -93,6 +96,8 @@ public:
 	bool getDrawFaceNormals();
 	void setDrawFaceNormals(const bool drawFaceNorms);
 
+	const bool getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const;
+	void zBuffer(const vector<Triangle>& polygons);
 
 	//////////////////////////////
 };
