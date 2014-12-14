@@ -6,16 +6,12 @@
 #include "Renderer.h"
 #include "Model.h"
 #include "Camera.h"
+#include "Light.h"
 #include <memory>
 
 using namespace std;
 
 #define ALL_MODELS_ACTIVE -1
-
-
-class Light {
-
-};
 
 
 

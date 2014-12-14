@@ -1,12 +1,20 @@
 #include "stdafx.h"
-#include "light.h"
+#include "Light.h"
 
 
-light::light()
+Light::Light(const Material& mat) :material(mat)
 {
 }
 
 
-light::~light()
+Light::~Light()
 {
+}
+
+Material& Light::getMatrial(){
+	return material;
+}
+
+const Material& Light::getMaterial() const{
+	return material;
 }
