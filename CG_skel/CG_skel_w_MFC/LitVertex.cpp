@@ -2,7 +2,7 @@
 #include "LitVertex.h"
 
 
-LitVertex::LitVertex()
+LitVertex::LitVertex(const vec4& _coords) : Vertex(_coords)
 {
 }
 

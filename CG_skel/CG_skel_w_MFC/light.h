@@ -3,12 +3,13 @@
 class light :
 	public Model
 {
-	vec3 ka;
-	vec3 kd;
-	vec3 ks;
+	Material material;
 
 public:
 	light();
 	virtual ~light();
+
+	Material& getMatrial();
+	const Material& getMaterial() const;
 };
 
