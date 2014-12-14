@@ -398,9 +398,12 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 			m_zbuffer[INDEXZ(m_width, i, j)] = 1.1f;
 		}
 	}
-
+	int count = 0;
 	for each (auto &t in polygons)
 	{
+		const vec4& v1 = t[0].getCoords();
+		const vec4& v2 = t[1].getCoords();
+		const vec4& v3 = t[2].getCoords();
 		xMin = min(t[0].getCoords().x, min(t[1].getCoords().x, t[2].getCoords().x));
 		xMax = max(t[0].getCoords().x, max(t[1].getCoords().x, t[2].getCoords().x));
 		yMin = min(t[0].getCoords().y, min(t[1].getCoords().y, t[2].getCoords().y));
@@ -411,11 +414,13 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 				a = vec2(t[0].getCoords().x, t[0].getCoords().y);
 				b = vec2(t[1].getCoords().x, t[1].getCoords().y);
 				c = vec2(t[2].getCoords().x, t[2].getCoords().y);
-				getBarycentricCoordinates(x, y, a, b, c, u, v, w);
+				if (!getBarycentricCoordinates(x, y, a, b, c, u, v, w)){ continue; }
+			
 
 				z = u * t[0].getCoords().z + v * t[1].getCoords().z + w * t[2].getCoords().z;
 				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
 					//setColor(x, y, t);
+					drawSinglePixel(x, y, count%2==0?Color(1, 0, 0):Color(0,0,1));
 					m_zbuffer[INDEXZ(m_width, x, y)] = z;
 				}
 			}
@@ -424,6 +429,7 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 		for (int i = 0; i < 3; i++){
 			drawLine(t[i].getCoords().x, t[i].getCoords().y, t[(i + 1) % 3].getCoords().x, t[(i + 1) % 3].getCoords().y,Color(1,1,1));
 		}
+		count++;
 	}
 }
 

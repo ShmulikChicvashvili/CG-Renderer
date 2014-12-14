@@ -6,12 +6,15 @@ Camera::Camera(){
 	for (int i = 0; i < 2; i++){
 		Face f;
 		vec4 v(0,0,0.2,1);
-		f.addVertex(v);
-		v.z = 0;
-		v[i] = 0.2;
+		v.x = 0.1;
 		f.addVertex(v);
 
-		v[i] = -0.2;
+		v.x = -0.1;
+		f.addVertex(v);
+
+		v.z = 0;
+		v.x = 0;
+		v.y = i % 2 == 0 ? 0.1 : -0.1;
 		f.addVertex(v);
 
 		faces.push_back(f);

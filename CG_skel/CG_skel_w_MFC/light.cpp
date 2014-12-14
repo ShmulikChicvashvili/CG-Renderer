@@ -4,6 +4,7 @@
 
 Light::Light(const Material& mat) :material(mat)
 {
+
 }
 
 
