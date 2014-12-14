@@ -180,7 +180,9 @@ Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const 
 		t[i].setMaterial(v.getMaterial());
 		if (v.hasNormal()){
 			// add normal if exists, and directions to all lights and camera
-			t[i].setNorm(normModelView * v.getNorm());
+			vec4& norm = normModelView * v.getNorm();
+			norm.w = 0;
+			t[i].setNorm(norm);
 		}
 		vec4& eyeVec = -camSpace;
 		eyeVec.w = 0;
@@ -216,11 +218,29 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		for each (const Face& face in modelFaces)
 		{
 			clipTriangles.push_back(transferFaceToClipSpace(face, modelViewMtx, normalModelViewMtx, projMtx, camSpaceLights));
-			//drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  c);
+			//drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  Color(1,1,1));
 		}
 		
 		bool active = pModel->getActive();
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
+	}
+
+	//@TODO remove
+	for (auto& t : clipTriangles){
+		for (int i = 0; i < 3; i++){
+			LitVertex& v = t[i];
+			if (v.hasNormal()){
+				vec4 norm = v.getNorm();
+				assert(norm.w == 0);
+				assert(abs(length(norm) - 1) < 0.0001);
+				norm *= 0.1;
+				//norm.w = 1;
+				const vec3& endPoint = windowCoordinates(divideByW(v.getCoords() + projMtx*norm));
+				const vec3& startPoint = windowCoordinates(divideByW(v.getCoords()));
+
+				drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y,Color(0,0,1));
+			}
+		} 
 	}
 
 	clipper(clipTriangles);
@@ -335,9 +355,9 @@ void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const ma
 			const vec4& endNormViewCoords = vec4(viewPointCords.x + normCords.x, viewPointCords.y + normCords.y, viewPointCords.z + normCords.z, 1);
 			const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
 
+
 			drawLine(windowCords[i].x,
 				windowCords[i].y, endNormWindowCoords.x, endNormWindowCoords.y, Color(1, 0, 0));
-
 		}
 	}
 
@@ -420,7 +440,7 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 				z = u * t[0].getCoords().z + v * t[1].getCoords().z + w * t[2].getCoords().z;
 				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
 					//setColor(x, y, t);
-					drawSinglePixel(x, y, count%2==0?Color(1, 0, 0):Color(0,0,1));
+					//drawSinglePixel(x, y, count%2==0?Color(1, 0, 0):Color(0,0,1));
 					m_zbuffer[INDEXZ(m_width, x, y)] = z;
 				}
 			}
