@@ -52,6 +52,11 @@
 
 #define SCALING_FACTOR 1
 #define MOUSE_SMOOTH 30
+
+#define FLAT_SHADING 1
+#define GOURAUD_SHADING 2
+#define PHONG_SHADING 3
+
 Scene *scene;
 Renderer *renderer;
 
@@ -655,6 +660,23 @@ void mainMenu(int id)
 	}
 }
 
+void shadingMenu(int id) {
+	switch (id)
+	{
+	case FLAT_SHADING:
+		renderer->setColorMethod(ColorMethod::FLAT);
+		break;
+	case GOURAUD_SHADING:
+		renderer->setColorMethod(ColorMethod::GOURAUD);
+		break;
+	case PHONG_SHADING:
+		renderer->setColorMethod(ColorMethod::PHONG);
+		break;
+	default:
+		break;
+	}
+}
+
 void initMenu()
 {
 	int menuFile = glutCreateMenu(fileMenu);
@@ -666,6 +688,11 @@ void initMenu()
 	glutAddMenuEntry("y", Y_AXIS);
 	glutAddMenuEntry("z", Z_AXIS);
 	glutAddMenuEntry("all", ALL_AXES);
+
+	int menuShading = glutCreateMenu(shadingMenu);
+	glutAddMenuEntry("Flat", FLAT_SHADING);
+	glutAddMenuEntry("Gouraud", GOURAUD_SHADING);
+	glutAddMenuEntry("Phong", PHONG_SHADING);
 
 	// my addition
 	int menuMeshModel = glutCreateMenu(meshMenu);
@@ -689,6 +716,7 @@ void initMenu()
 	glutAddMenuEntry("Demo", MAIN_DEMO);
 	glutAddSubMenu("Choose Axis", menuAxis);
 	glutAddSubMenu("Choose Action", menuAction);
+	glutAddSubMenu("Choose Shading Algorithm", menuShading);
 	glutAddMenuEntry("About", MAIN_ABOUT);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
