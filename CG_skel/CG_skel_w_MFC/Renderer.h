@@ -57,8 +57,12 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
-	void clipper(vector<Triangle>& triangles);
-	void zBuffer(const vector<Triangle>& polygons);
+	void clipper(vector<Triangle>& triangles, const vector<shared_ptr<Light>>& lights);
+	void zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr<Light>>& lights);
+	void setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights, const float& u, const float& v, const float& w);
+	vec4& reflect(const vec4& V1, const vec4& V2);
+	vec4& calculateIlluminationIntensity(const Material& pixelMaterial, const Material& lightMaterial, 
+		const vec4& lightDirection, const vec4& norm, const vec4& viewDirection);
 
 	bool isClipped(const vector<vec4>& clipCords) const;
 	void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);

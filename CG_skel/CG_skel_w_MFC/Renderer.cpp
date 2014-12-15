@@ -7,11 +7,14 @@
 #include "PointLight.h"
 #include "ParallelLight.h"
 #include <algorithm>
+#include <math.h>
+#include "Vertex.h"
+
 
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 #define INDEXZ(width,x,y) (x+y*width)
 
-vector<shared_ptr<Light>> lights;
+#define SPEC_SHININESS 3
 
 Renderer::Renderer() :m_width(512), m_height(512)
 {
@@ -225,25 +228,25 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 	}
 
-	//@TODO remove
-	for (auto& t : clipTriangles){
-		for (int i = 0; i < 3; i++){
-			LitVertex& v = t[i];
-			if (v.hasNormal()){
-				vec4 norm = v.getNorm();
-				assert(norm.w == 0);
-				assert(abs(length(norm) - 1) < 0.0001);
-				norm *= 0.1;
-				//norm.w = 1;
-				const vec3& endPoint = windowCoordinates(divideByW(v.getCoords() + projMtx*norm));
-				const vec3& startPoint = windowCoordinates(divideByW(v.getCoords()));
+	////@TODO remove
+	//for (auto& t : clipTriangles){
+	//	for (int i = 0; i < 3; i++){
+	//		LitVertex& v = t[i];
+	//		if (v.hasNormal()){
+	//			vec4 norm = v.getNorm();
+	//			assert(norm.w == 0);
+	//			assert(abs(length(norm) - 1) < 0.0001);
+	//			norm *= 0.1;
+	//			//norm.w = 1;
+	//			const vec3& endPoint = windowCoordinates(divideByW(v.getCoords() + projMtx*norm));
+	//			const vec3& startPoint = windowCoordinates(divideByW(v.getCoords()));
 
-				drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y,Color(0,0,1));
-			}
-		} 
-	}
+	//			drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y,Color(0,0,1));
+	//		}
+	//	} 
+	//}
 
-	clipper(clipTriangles);
+	clipper(clipTriangles, lights);
 }
 
 bool isTriangleFullyClipped(const Triangle& t){
@@ -261,7 +264,7 @@ bool isTriangleFullyClipped(const Triangle& t){
 	return false;
 }
 
-void Renderer::clipper(vector<Triangle>& triangles){
+void Renderer::clipper(vector<Triangle>& triangles, const vector<shared_ptr<Light>>& lights){
 	vector<Triangle>::iterator it = std::remove_if(triangles.begin(), triangles.end(), isTriangleFullyClipped);
 	triangles.erase(it, triangles.end());
 
@@ -271,7 +274,7 @@ void Renderer::clipper(vector<Triangle>& triangles){
 		}
 	}
 
-	zBuffer(triangles);
+	zBuffer(triangles, lights);
 }
 
 void Renderer::drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx) {
@@ -406,7 +409,7 @@ const bool Renderer::getBarycentricCoordinates(const int x, const int y, const v
 	return false;
 }
 
-void Renderer::zBuffer(const vector<Triangle>& polygons) {
+void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr<Light>>& lights) {
 	float xMin, xMax, yMin, yMax = 0;
 	float u = 0.0;
 	float v = 0.0;
@@ -439,7 +442,7 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 
 				z = u * t[0].getCoords().z + v * t[1].getCoords().z + w * t[2].getCoords().z;
 				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
-					//setColor(x, y, t);
+					setColor(x, y, t, lights, u, v, w);
 					//drawSinglePixel(x, y, count%2==0?Color(1, 0, 0):Color(0,0,1));
 					m_zbuffer[INDEXZ(m_width, x, y)] = z;
 				}
@@ -452,6 +455,69 @@ void Renderer::zBuffer(const vector<Triangle>& polygons) {
 		count++;
 	}
 }
+
+vec4& Renderer::reflect(const vec4& V1, const vec4& V2) {
+	return V1 - 2.0 * (dot(V1, V2)) * V2;
+}
+
+vec4& Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, const Material& lightMaterial,
+	const vec4& lightDirection, const vec4& norm, const vec4& viewDirection) {
+	vec4 illuminationIntensity = 0.0;
+	// Ambient illumination
+	illuminationIntensity += pixelMaterial.getAmbient() * lightMaterial.getAmbient();
+	// Defuse illumination
+	illuminationIntensity += pixelMaterial.getDiffuse() * (lightDirection * norm)
+		* lightMaterial.getDiffuse();
+	// Specular illumination
+	vec4 R = reflect(lightDirection, viewDirection);
+	float temp = max(dot(R, viewDirection), 0);
+	illuminationIntensity += pixelMaterial.getSpecular() * (pow(temp, SPEC_SHININESS)) * lightMaterial.getDiffuse();
+	return illuminationIntensity;
+}
+
+void Renderer::setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights,
+	const float& u, const float& v, const float& w) {
+	int shadingMode = 0; //@TODO: recieve it by a paramater to the function.
+	vec4 illuminationIntensity = 0.0;
+	vec4 illuminationIntensityAtVertex1 = 0.0;
+	vec4 illuminationIntensityAtVertex2 = 0.0;
+	vec4 illuminationIntensityAtVertex3 = 0.0;
+	vec4 norm = 0.0;
+	switch (shadingMode)
+	{
+	case 0:
+		for (int i = 0; i < lights.size(); i++) {
+			illuminationIntensity += calculateIlluminationIntensity(t[0].getMaterial(),lights[i]->getMatrial(),t[0].getLightDirs().at(i),
+				t[0].getNorm(), t[0].getEyeVec());
+		}
+		drawSinglePixel(x, y, vec3(illuminationIntensity.x, illuminationIntensity.y, illuminationIntensity.z));
+		break;
+	case 1:
+		for (int i = 0; i < lights.size(); i++) {
+			illuminationIntensityAtVertex1 += calculateIlluminationIntensity(t[0].getMaterial(), lights[i]->getMatrial(), t[0].getLightDirs().at(i),
+				t[0].getNorm(), t[0].getEyeVec());
+			illuminationIntensityAtVertex2 += calculateIlluminationIntensity(t[1].getMaterial(), lights[i]->getMatrial(), t[1].getLightDirs().at(i),
+				t[1].getNorm(), t[1].getEyeVec());
+			illuminationIntensityAtVertex3 += calculateIlluminationIntensity(t[2].getMaterial(), lights[i]->getMatrial(), t[2].getLightDirs().at(i),
+				t[2].getNorm(), t[2].getEyeVec());
+		}
+		illuminationIntensity = u * illuminationIntensityAtVertex1 + v * illuminationIntensityAtVertex2 + w * illuminationIntensityAtVertex3;
+		drawSinglePixel(x, y, vec3(illuminationIntensity.x, illuminationIntensity.y, illuminationIntensity.z));
+		break;
+	case 2:
+		illuminationIntensity = 0.0;
+		norm = u * t[0].getNorm() + v * t[1].getNorm() + w * t[2].getNorm();
+		for (int i = 0; i < lights.size(); i++) {
+			illuminationIntensity += calculateIlluminationIntensity(t[0].getMaterial(), lights[i]->getMatrial(), t[0].getLightDirs().at(i),
+				norm, t[0].getEyeVec());
+		}
+		break;
+	default:
+		assert(false);
+		break;
+	}
+}
+
 
 /////////////////////////////////////////////////////
 

@@ -3,6 +3,8 @@
 #include "MeshModel.h"
 #include <string>
 #include <math.h>
+#include "PointLight.h"
+#include "ParallelLight.h"
 
 using namespace std;
 
@@ -65,6 +67,12 @@ void Scene::loadCamera() {
 	activeCamera = cameras.size() - 1;
 }
 
+void Scene::loadLight() {
+	shared_ptr<Light> pLight = shared_ptr<Light>(new ParallelLight(Material(), vec4(0, 0, 1, 1)));
+	models.push_back(pLight);
+	lights.push_back(pLight);
+	activeLight = lights.size() - 1;
+}
 
 vector<shared_ptr<Model>>& Scene::getModels() {
 	return std::move(this->models);
