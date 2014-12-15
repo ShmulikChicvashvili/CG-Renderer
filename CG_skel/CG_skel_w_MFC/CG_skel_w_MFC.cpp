@@ -715,9 +715,9 @@ void initMenu()
 	glutAddSubMenu("File", menuFile);
 	glutAddSubMenu("Predefined models", menuMeshModel);
 	glutAddSubMenu("Cameras",menuCamera);
-	glutAddMenuEntry("Demo", MAIN_DEMO);
-	glutAddSubMenu("Choose Axis", menuAxis);
-	glutAddSubMenu("Choose Action", menuAction);
+	//glutAddMenuEntry("Demo", MAIN_DEMO);
+	//glutAddSubMenu("Choose Axis", menuAxis);
+	//glutAddSubMenu("Choose Action", menuAction);
 	glutAddSubMenu("Choose Shading Algorithm", menuShading);
 	glutAddMenuEntry("About", MAIN_ABOUT);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
