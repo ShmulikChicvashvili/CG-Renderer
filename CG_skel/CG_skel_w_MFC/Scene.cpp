@@ -69,12 +69,8 @@ void Scene::loadCamera() {
 	activeModel = models.size() - 1;
 }
 
-void Scene::loadLight() {
-	Material mat;
-	mat.setAmbient(		vec3(0.1, 0.1, 0));
-	mat.setDiffuse(		vec3(0.1, 0.1, 0));
-	mat.setSpecular(	vec3(0.5, 0.5, 0));
-	shared_ptr<Light> pLight = shared_ptr<Light>(new ParallelLight(mat, vec4(0, 0, -1, 0)));
+void Scene::loadLight(const shared_ptr<Light>& l) {
+	shared_ptr<Light> pLight = shared_ptr<Light>(l);
 	models.push_back(pLight);
 	lights.push_back(pLight);
 	activeLight = lights.size() - 1;

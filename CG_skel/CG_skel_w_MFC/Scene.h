@@ -40,7 +40,7 @@ public:
 	void setActiveCameraLookAtModel(int index);
 	int setCameraAsActiveModel(int cameraIndex);
 
-	void loadLight();
+	void loadLight(const shared_ptr<Light>& l);
 
 	const int getActiveModel() {
 		return activeModel;

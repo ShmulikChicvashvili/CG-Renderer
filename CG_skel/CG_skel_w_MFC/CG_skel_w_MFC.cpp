@@ -6,6 +6,8 @@
 #include "CG_skel_w_MFC.h"
 #include <algorithm>
 #include <string>
+#include "PointLight.h"
+#include "ParallelLight.h"
 
 
 
@@ -57,6 +59,9 @@
 #define FLAT_SHADING 1
 #define GOURAUD_SHADING 2
 #define PHONG_SHADING 3
+
+#define POINT_LIGHT 1
+#define PARALLEL_LIGHT 2
 
 Scene *scene;
 Renderer *renderer;
@@ -674,6 +679,88 @@ void shadingMenu(int id) {
 		renderer->setColorMethod(ColorMethod::PHONG);
 		break;
 	default:
+		assert(false);
+		break;
+	}
+	scene->draw();
+}
+
+void lightMenu(int id) {
+	switch (id)
+	{
+	case POINT_LIGHT:
+	{
+		CXyzDialog ambientDlg("Ambient Color");
+		CXyzDialog diffuseDlg("Diffuse Color");
+		CXyzDialog specularDlg("Specular Color");
+		CXyzDialog pointDlg("Point");
+		vec3 ambient;
+		vec3 diffuse;
+		vec3 specular;
+		vec4 point;
+
+		cout << "Choose Ambient Color" << endl;
+		if (ambientDlg.DoModal() == IDOK) {
+			ambient = ambientDlg.GetXYZ();
+		}
+		if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
+		cout << "Choose Diffuse Color" << endl;
+		if (diffuseDlg.DoModal() == IDOK) {
+			diffuse = diffuseDlg.GetXYZ();
+		}
+		if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
+		cout << "Choose Specular Color" << endl;
+		if (specularDlg.DoModal() == IDOK) {
+			specular = specularDlg.GetXYZ();
+		}
+		if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
+		cout << "Choose Camera Point" << endl;
+		if (pointDlg.DoModal() == IDOK) {
+			vec3 temp = pointDlg.GetXYZ();
+			point = vec4(temp.x, temp.y, temp.z, 1);
+		}
+		shared_ptr<Light> l(new PointLight(Material(ambient,diffuse,specular), point));
+		scene->loadLight(l);
+	}
+		break;
+	case PARALLEL_LIGHT:
+	{
+		CXyzDialog ambientDlg("Ambient Color");
+		CXyzDialog diffuseDlg("Diffuse Color");
+		CXyzDialog specularDlg("Specular Color");
+		CXyzDialog normalDlg("Point");
+		vec3 ambient;
+		vec3 diffuse;
+		vec3 specular;
+		vec4 normal;
+
+		cout << "Choose Ambient Color" << endl;
+		if (ambientDlg.DoModal() == IDOK) {
+			ambient = ambientDlg.GetXYZ();
+		}
+		if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
+		cout << "Choose Diffuse Color" << endl;
+		if (diffuseDlg.DoModal() == IDOK) {
+			diffuse = diffuseDlg.GetXYZ();
+		}
+		if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
+		cout << "Choose Specular Color" << endl;
+		if (specularDlg.DoModal() == IDOK) {
+			specular = specularDlg.GetXYZ();
+		}
+		if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
+		cout << "Choose Light Direction" << endl;
+		if (normalDlg.DoModal() == IDOK) {
+			vec3 temp = normalDlg.GetXYZ();
+			normal = vec4(temp.x, temp.y, temp.z, 0);
+		}
+		if (normal == vec4(0, 0, 0, 0)) { return;  }
+		shared_ptr<Light> l(new ParallelLight(Material(ambient, diffuse, specular), normal));
+		scene->loadLight(l);
+	}
+		break;
+	default:
+		assert(false);
 		break;
 	}
 	scene->draw();
@@ -684,27 +771,33 @@ void initMenu()
 	int menuFile = glutCreateMenu(fileMenu);
 	glutAddMenuEntry("Open..", FILE_OPEN);
 
-	// my addition
+	// Axis menu
 	int menuAxis = glutCreateMenu(axisMenu);
 	glutAddMenuEntry("x", X_AXIS);
 	glutAddMenuEntry("y", Y_AXIS);
 	glutAddMenuEntry("z", Z_AXIS);
 	glutAddMenuEntry("all", ALL_AXES);
 
+	// Load Light
+	int menuLight = glutCreateMenu(lightMenu);
+	glutAddMenuEntry("Point Light", POINT_LIGHT);
+	glutAddMenuEntry("Parallel Light", PARALLEL_LIGHT);
+
+	// Shading menu
 	int menuShading = glutCreateMenu(shadingMenu);
 	glutAddMenuEntry("Flat", FLAT_SHADING);
 	glutAddMenuEntry("Gouraud", GOURAUD_SHADING);
 	glutAddMenuEntry("Phong", PHONG_SHADING);
 
-	// my addition
+	// Predefined shapes
 	int menuMeshModel = glutCreateMenu(meshMenu);
 	glutAddMenuEntry("Cube", LOAD_CUBE);
 
-	// my addition
+	// Load menu
 	int menuCamera = glutCreateMenu(cameraMenu);
 	glutAddMenuEntry("Load Camera", LOAD_CAMERA);
 
-	// my addition
+	// Action menu
 	int menuAction = glutCreateMenu(actionMenu);
 	glutAddMenuEntry("Translation", TRANSLATION_ACTION);
 	glutAddMenuEntry("Spin", SPIN_ACTION);
@@ -752,7 +845,8 @@ int my_main(int argc, char **argv)
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	scene->loadLight();
+	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	scene->loadLight(p);
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks
 
