@@ -12,7 +12,7 @@ LitVertex::~LitVertex()
 }
 
 void LitVertex::addLightDir(const vec4& lightDir){
-	//assert(lightDir.w == 0);
+	assert(lightDir.w == 0);
 	lightDirs.push_back(lightDir);
 }
 

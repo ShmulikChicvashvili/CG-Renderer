@@ -427,20 +427,20 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 		const vec4& v1 = t[0].getCoords();
 		const vec4& v2 = t[1].getCoords();
 		const vec4& v3 = t[2].getCoords();
-		xMin = min(t[0].getCoords().x, min(t[1].getCoords().x, t[2].getCoords().x));
-		xMax = max(t[0].getCoords().x, max(t[1].getCoords().x, t[2].getCoords().x));
-		yMin = min(t[0].getCoords().y, min(t[1].getCoords().y, t[2].getCoords().y));
-		yMax = max(t[0].getCoords().y, max(t[1].getCoords().y, t[2].getCoords().y));
+		xMin = min(v1.x, min(v2.x, v3.x));
+		xMax = max(v1.x, max(v2.x, v3.x));
+		yMin = min(v1.y, min(v2.y, v3.y));
+		yMax = max(v1.y, max(v2.y, v3.y));
 
 		for (int x = xMin; x < xMax; x++) {
 			for (int y = yMin; y < yMax; y++) {
-				a = vec2(t[0].getCoords().x, t[0].getCoords().y);
-				b = vec2(t[1].getCoords().x, t[1].getCoords().y);
-				c = vec2(t[2].getCoords().x, t[2].getCoords().y);
+				a = vec2(v1.x, v1.y);
+				b = vec2(v2.x, v2.y);
+				c = vec2(v3.x, v3.y);
 				if (!getBarycentricCoordinates(x, y, a, b, c, u, v, w)){ continue; }
 			
 
-				z = u * t[0].getCoords().z + v * t[1].getCoords().z + w * t[2].getCoords().z;
+				z = u * v1.z + v * v2.z + w * v3.z;
 				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
 					setColor(x, y, t, lights, u, v, w);
 					//drawSinglePixel(x, y, count%2==0?Color(1, 0, 0):Color(0,0,1));
@@ -460,18 +460,22 @@ vec4& Renderer::reflect(const vec4& V1, const vec4& V2) {
 	return V1 - 2.0 * (dot(V1, V2)) * V2;
 }
 
-vec4& Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, const Material& lightMaterial,
+vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, const Material& lightMaterial,
 	const vec4& lightDirection, const vec4& norm, const vec4& viewDirection) {
-	vec4 illuminationIntensity = 0.0;
+	assert(length(viewDirection) == 1 && viewDirection.w == 0);
+	assert(length(lightDirection) == 1 && lightDirection.w == 0);
+	assert(length(norm) == 1 && norm.w == 0);
+
+	vec3 illuminationIntensity = 0.0;
 	// Ambient illumination
 	illuminationIntensity += pixelMaterial.getAmbient() * lightMaterial.getAmbient();
 	// Defuse illumination
-	illuminationIntensity += pixelMaterial.getDiffuse() * (lightDirection * norm)
+	illuminationIntensity += pixelMaterial.getDiffuse() * (dot(lightDirection, norm))
 		* lightMaterial.getDiffuse();
 	// Specular illumination
 	vec4 R = reflect(lightDirection, viewDirection);
 	float temp = max(dot(R, viewDirection), 0);
-	illuminationIntensity += pixelMaterial.getSpecular() * (pow(temp, SPEC_SHININESS)) * lightMaterial.getDiffuse();
+	illuminationIntensity += pixelMaterial.getSpecular() * (pow(temp, SPEC_SHININESS)) * lightMaterial.getSpecular();
 	return illuminationIntensity;
 }
 

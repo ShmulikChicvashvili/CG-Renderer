@@ -3,28 +3,28 @@
 #include <assert.h>
 
 class Material{
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
 
 public:
-	Material() : ambient(1, 1, 1, 1), diffuse(1, 1, 1, 1), specular(1, 1, 1, 1){}
-	void setAmbient(const vec4& ambient) {
+	Material() : ambient(1, 1, 1), diffuse(1, 1, 1), specular(1, 1, 1){}
+	void setAmbient(const vec3& ambient) {
 		this->ambient = ambient;
 	}
-	void setDiffuse(const vec4& diffuse) {
+	void setDiffuse(const vec3& diffuse) {
 		this->diffuse = diffuse;
 	}
-	void setSpecular(const vec4& specular) {
+	void setSpecular(const vec3& specular) {
 		this->specular = specular;
 	}
-	const vec4& getAmbient() const {
+	const vec3& getAmbient() const {
 		return ambient;
 	}
-	const vec4& getDiffuse() const {
+	const vec3& getDiffuse() const {
 		return diffuse;
 	}
-	const vec4& getSpecular() const {
+	const vec3& getSpecular() const {
 		return specular;
 	}
 };
