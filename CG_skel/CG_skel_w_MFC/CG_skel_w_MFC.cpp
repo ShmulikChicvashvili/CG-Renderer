@@ -812,6 +812,7 @@ void initMenu()
 	//glutAddSubMenu("Choose Axis", menuAxis);
 	//glutAddSubMenu("Choose Action", menuAction);
 	glutAddSubMenu("Choose Shading Algorithm", menuShading);
+	glutAddSubMenu("Add Light", menuLight);
 	glutAddMenuEntry("About", MAIN_ABOUT);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -845,8 +846,8 @@ int my_main(int argc, char **argv)
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
-	scene->loadLight(p);
+	//shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	//scene->loadLight(p);
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks
 
