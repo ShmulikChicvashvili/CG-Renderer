@@ -490,12 +490,22 @@ vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, con
 
 void Renderer::setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights,
 	const float& u, const float& v, const float& w) {
-	int shadingMode = 1; //@TODO: recieve it by a paramater to the function.
+	int shadingMode = 2; //@TODO: recieve it by a paramater to the function.
 	vec3 illuminationIntensity = 0.0;
+
 	vec3 illuminationIntensityAtVertex1 = 0.0;
 	vec3 illuminationIntensityAtVertex2 = 0.0;
 	vec3 illuminationIntensityAtVertex3 = 0.0;
+
 	vec4 norm = 0.0;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	Material phongMaterial;
+	vec4 phongLightDir;
+	vec4 phongEyeVec;
+
 	switch (shadingMode)
 	{
 	case 0:
@@ -519,12 +529,29 @@ void Renderer::setColor(const int x, const int y, const Triangle& t, const vecto
 		break;
 	case 2:
 		illuminationIntensity = 0.0;
+		
 		norm = normalize(u * t[0].getNorm() + v * t[1].getNorm() + w * t[2].getNorm());
-		//@TODO interpolate material
+
+		ambient = u * t[0].getMaterial().getAmbient() + v * t[1].getMaterial().getAmbient() + w * t[2].getMaterial().getAmbient();
+		diffuse = u * t[0].getMaterial().getDiffuse() + v * t[1].getMaterial().getDiffuse() + w * t[2].getMaterial().getDiffuse();
+		specular = u * t[0].getMaterial().getSpecular() + v * t[1].getMaterial().getSpecular() + w * t[2].getMaterial().getSpecular();
+
+		phongEyeVec = u * t[0].getEyeVec() + v * t[1].getEyeVec() + w * t[2].getEyeVec();
+		phongEyeVec = normalize(phongEyeVec);
+
+		phongMaterial.setAmbient(ambient);
+		phongMaterial.setDiffuse(diffuse);
+		phongMaterial.setSpecular(specular);
+
 		for (int i = 0; i < lights.size(); i++) {
-			illuminationIntensity += calculateIlluminationIntensity(t[0].getMaterial(), lights[i]->getMatrial(), t[0].getLightDirs().at(i),
-				norm, t[0].getEyeVec());
+			phongLightDir = u * t[0].getLightDirs().at(i) + v * t[1].getLightDirs().at(i) + t[2].getLightDirs().at(i);
+			phongLightDir = normalize(phongLightDir);
+
+			illuminationIntensity += calculateIlluminationIntensity(phongMaterial, lights[i]->getMatrial(), phongLightDir,
+				norm, phongEyeVec);
 		}
+
+		drawSinglePixel(x, y, illuminationIntensity);
 		break;
 	default:
 		assert(false);
