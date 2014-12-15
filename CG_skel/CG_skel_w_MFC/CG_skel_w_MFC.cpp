@@ -703,7 +703,7 @@ int my_main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(INIT_WIDTH, INIT_HEIGHT);
-	glutInitContextVersion(3, 2);
+	glutInitContextVersion(2,0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
 	glewExperimental = GL_TRUE;
@@ -722,6 +722,7 @@ int my_main(int argc, char **argv)
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
+	scene->loadLight();
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks
 
