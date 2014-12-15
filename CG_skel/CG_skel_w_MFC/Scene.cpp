@@ -74,7 +74,7 @@ void Scene::loadLight() {
 	mat.setAmbient(		vec3(0.1, 0.1, 0));
 	mat.setDiffuse(		vec3(0.1, 0.1, 0));
 	mat.setSpecular(	vec3(0.5, 0.5, 0));
-	shared_ptr<Light> pLight = shared_ptr<Light>(new PointLight(mat, vec4(0, 0, 1, 1)));
+	shared_ptr<Light> pLight = shared_ptr<Light>(new ParallelLight(mat, vec4(0, 0, -1, 0)));
 	models.push_back(pLight);
 	lights.push_back(pLight);
 	activeLight = lights.size() - 1;

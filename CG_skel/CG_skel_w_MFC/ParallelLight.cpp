@@ -34,7 +34,7 @@ ParallelLight::~ParallelLight()
 
 vec4 ParallelLight::getDirectionFromPoint(const vec4& p) const{
 	assert(direction.w == 0);
-	assert(length(direction) == 1);
+	assert(cmpFloat(length(direction), 1));
 	return -direction;
 }
 

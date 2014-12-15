@@ -490,7 +490,7 @@ vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, con
 
 void Renderer::setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights,
 	const float& u, const float& v, const float& w) {
-	int shadingMode = 0; //@TODO: recieve it by a paramater to the function.
+	int shadingMode = 1; //@TODO: recieve it by a paramater to the function.
 	vec3 illuminationIntensity = 0.0;
 	vec3 illuminationIntensityAtVertex1 = 0.0;
 	vec3 illuminationIntensityAtVertex2 = 0.0;
