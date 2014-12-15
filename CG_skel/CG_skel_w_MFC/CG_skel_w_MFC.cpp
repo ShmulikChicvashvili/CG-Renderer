@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "GlVersion.h"
 #include "CG_skel_w_MFC.h"
 #include <algorithm>
 #include <string>
@@ -675,6 +676,7 @@ void shadingMenu(int id) {
 	default:
 		break;
 	}
+	scene->draw();
 }
 
 void initMenu()
@@ -731,7 +733,7 @@ int my_main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(INIT_WIDTH, INIT_HEIGHT);
-	glutInitContextVersion(2, 0);
+	glutInitContextVersion(OPEN_GL_VERSION);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("CG");
 	glewExperimental = GL_TRUE;
