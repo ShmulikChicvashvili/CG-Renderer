@@ -17,6 +17,7 @@ Camera::Camera(){
 		v.y = i % 2 == 0 ? 0.1 : -0.1;
 		f.addVertex(v);
 
+		f.calcNorm();
 		faces.push_back(f);
 	}
 	left = bottom = -1.0;
@@ -24,6 +25,7 @@ Camera::Camera(){
 	zNear = 0.5;
 	zFar = 10.0;
 
+	Ortho();
 }
 
 CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up) {

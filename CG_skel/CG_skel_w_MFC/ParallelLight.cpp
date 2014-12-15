@@ -5,22 +5,25 @@
 ParallelLight::ParallelLight(const Material& mat, const vec4& dir):
 Light(mat), direction(normalize(dir))
 {
-	vec4 temp = dir;
+	assert(dir.w == 0);
+	vec4 temp(0,0,0,1);
 	Face firstTriangle;
 	firstTriangle.addVertex(temp);
 	temp.x -= 0.5;
 	firstTriangle.addVertex(temp);
 	temp.y -= 0.25;
 	firstTriangle.addVertex(temp);
+	firstTriangle.calcNorm();
 	faces.push_back(firstTriangle);
 
-	temp = dir;
+	temp = vec4(0, 0, 0, 1);
 	Face secondTriangle;
 	secondTriangle.addVertex(temp);
 	temp.y -= 0.25;
 	secondTriangle.addVertex(temp);
 	temp.x -= 0.5;
 	secondTriangle.addVertex(temp);
+	secondTriangle.calcNorm();
 	faces.push_back(secondTriangle);
 }
 

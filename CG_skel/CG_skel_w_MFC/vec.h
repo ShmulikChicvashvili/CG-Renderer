@@ -13,6 +13,13 @@
 #include <cmath>
 #include "GL/glew.h"
 #define M_PI 3.14159265358979323846264338327
+
+#define EPSILON 0.0001
+
+inline bool cmpFloat(const GLfloat& f1, const GLfloat& f2){
+	return abs(f1 - f2) < EPSILON;
+}
+
 struct vec2 {
 
     GLfloat  x;

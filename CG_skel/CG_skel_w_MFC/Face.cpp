@@ -38,6 +38,7 @@ void Face::calcMidPoint(){
 }
 
 void Face::calcNorm(){
+	assert(vertices.size() == 3);
 	if (vertices.size() != 3){
 		std::cout << "Tried to calc normal for non triangle face" << std::endl;
 	}

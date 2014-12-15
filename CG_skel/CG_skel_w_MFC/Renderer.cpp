@@ -16,6 +16,9 @@
 
 #define SPEC_SHININESS 3
 
+
+
+
 Renderer::Renderer() :m_width(512), m_height(512)
 {
 	InitOpenGLRendering();
@@ -147,7 +150,8 @@ vector<shared_ptr<Light>> transferLightsToCamSpace(const vector<shared_ptr<Light
 		shared_ptr<Light> newLight;
 		if (isParallelLight(l.get())){
 			const mat4& normModelView = normViewMtx * l->getModelNormalMatrix();
-			const vec4& direction = normModelView * ((ParallelLight*)l.get())->getDirection();
+			vec4& direction = normModelView * ((ParallelLight*)l.get())->getDirection();
+			direction.w = 0;
 
 			newLight = shared_ptr<Light>(new ParallelLight(material, direction));
 		}
@@ -185,10 +189,15 @@ Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const 
 			// add normal if exists, and directions to all lights and camera
 			vec4& norm = normModelView * v.getNorm();
 			norm.w = 0;
-			t[i].setNorm(norm);
+			t[i].setNorm(normalize(norm));
+		}
+		else {
+			assert(face.hasNormal());
+			t[i].setNorm(normalize(face.getNorm()));
 		}
 		vec4& eyeVec = -camSpace;
 		eyeVec.w = 0;
+		eyeVec = eyeVec == vec4(0, 0, 0, 0) ? eyeVec : normalize(eyeVec);
 		t[i].setEyeVec(eyeVec);
 		for (const auto& pLight : lights){
 			t[i].addLightDir(pLight->getDirectionFromPoint(camSpace));
@@ -246,7 +255,7 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 	//	} 
 	//}
 
-	clipper(clipTriangles, lights);
+	clipper(clipTriangles, camSpaceLights);
 }
 
 bool isTriangleFullyClipped(const Triangle& t){
@@ -449,9 +458,9 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 			}
 		}
 
-		for (int i = 0; i < 3; i++){
-			drawLine(t[i].getCoords().x, t[i].getCoords().y, t[(i + 1) % 3].getCoords().x, t[(i + 1) % 3].getCoords().y,Color(1,1,1));
-		}
+		//for (int i = 0; i < 3; i++){
+		//	drawLine(t[i].getCoords().x, t[i].getCoords().y, t[(i + 1) % 3].getCoords().x, t[(i + 1) % 3].getCoords().y,Color(1,1,1));
+		//}
 		count++;
 	}
 }
@@ -462,18 +471,18 @@ vec4& Renderer::reflect(const vec4& V1, const vec4& V2) {
 
 vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, const Material& lightMaterial,
 	const vec4& lightDirection, const vec4& norm, const vec4& viewDirection) {
-	assert(length(viewDirection) == 1 && viewDirection.w == 0);
-	assert(length(lightDirection) == 1 && lightDirection.w == 0);
-	assert(length(norm) == 1 && norm.w == 0);
+	assert(cmpFloat(length(viewDirection), 1) && viewDirection.w == 0);
+	assert((cmpFloat(length(lightDirection), 1) || lightDirection == vec4(0, 0, 0, 0)) && lightDirection.w == 0);
+	assert(cmpFloat(length(norm), 1) && norm.w == 0);
 
 	vec3 illuminationIntensity = 0.0;
 	// Ambient illumination
 	illuminationIntensity += pixelMaterial.getAmbient() * lightMaterial.getAmbient();
 	// Defuse illumination
-	illuminationIntensity += pixelMaterial.getDiffuse() * (dot(lightDirection, norm))
+	illuminationIntensity += pixelMaterial.getDiffuse() * max((dot(lightDirection, norm)),0)
 		* lightMaterial.getDiffuse();
 	// Specular illumination
-	vec4 R = reflect(lightDirection, viewDirection);
+	vec4 R = normalize(reflect(-lightDirection, norm));
 	float temp = max(dot(R, viewDirection), 0);
 	illuminationIntensity += pixelMaterial.getSpecular() * (pow(temp, SPEC_SHININESS)) * lightMaterial.getSpecular();
 	return illuminationIntensity;
@@ -482,10 +491,10 @@ vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, con
 void Renderer::setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights,
 	const float& u, const float& v, const float& w) {
 	int shadingMode = 0; //@TODO: recieve it by a paramater to the function.
-	vec4 illuminationIntensity = 0.0;
-	vec4 illuminationIntensityAtVertex1 = 0.0;
-	vec4 illuminationIntensityAtVertex2 = 0.0;
-	vec4 illuminationIntensityAtVertex3 = 0.0;
+	vec3 illuminationIntensity = 0.0;
+	vec3 illuminationIntensityAtVertex1 = 0.0;
+	vec3 illuminationIntensityAtVertex2 = 0.0;
+	vec3 illuminationIntensityAtVertex3 = 0.0;
 	vec4 norm = 0.0;
 	switch (shadingMode)
 	{
@@ -494,7 +503,7 @@ void Renderer::setColor(const int x, const int y, const Triangle& t, const vecto
 			illuminationIntensity += calculateIlluminationIntensity(t[0].getMaterial(),lights[i]->getMatrial(),t[0].getLightDirs().at(i),
 				t[0].getNorm(), t[0].getEyeVec());
 		}
-		drawSinglePixel(x, y, vec3(illuminationIntensity.x, illuminationIntensity.y, illuminationIntensity.z));
+		drawSinglePixel(x, y, illuminationIntensity);
 		break;
 	case 1:
 		for (int i = 0; i < lights.size(); i++) {
@@ -506,11 +515,12 @@ void Renderer::setColor(const int x, const int y, const Triangle& t, const vecto
 				t[2].getNorm(), t[2].getEyeVec());
 		}
 		illuminationIntensity = u * illuminationIntensityAtVertex1 + v * illuminationIntensityAtVertex2 + w * illuminationIntensityAtVertex3;
-		drawSinglePixel(x, y, vec3(illuminationIntensity.x, illuminationIntensity.y, illuminationIntensity.z));
+		drawSinglePixel(x, y, illuminationIntensity);
 		break;
 	case 2:
 		illuminationIntensity = 0.0;
-		norm = u * t[0].getNorm() + v * t[1].getNorm() + w * t[2].getNorm();
+		norm = normalize(u * t[0].getNorm() + v * t[1].getNorm() + w * t[2].getNorm());
+		//@TODO interpolate material
 		for (int i = 0; i < lights.size(); i++) {
 			illuminationIntensity += calculateIlluminationIntensity(t[0].getMaterial(), lights[i]->getMatrial(), t[0].getLightDirs().at(i),
 				norm, t[0].getEyeVec());

@@ -27,6 +27,7 @@ const vec4& Vertex::getCoords() const{
 }
 
 const vec4& Vertex::getNorm() const{
+	assert(hasNorm);
 	return norm;
 }
 
