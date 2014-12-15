@@ -19,6 +19,7 @@ enum class ColorMethod{
 
 class Triangle{
 	LitVertex vertices[3];
+	bool drawWireframe;
 
 public:
 	LitVertex& operator[](const int i){
@@ -28,6 +29,9 @@ public:
 	const LitVertex& operator[](const int i) const{
 		return vertices[i];
 	}
+
+	bool getDrawWireframe() const { return drawWireframe; }
+	void setDrawWireframe(bool draw){ drawWireframe = draw; }
 };
 
 class Color {

@@ -177,7 +177,7 @@ vector<shared_ptr<Light>> transferLightsToCamSpace(const vector<shared_ptr<Light
 	return ret;
 }
 
-Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const mat4& normModelView, const mat4& proj, const vector<shared_ptr<Light>>& lights){
+Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const mat4& normModelView, const mat4& proj, const vector<shared_ptr<Light>>& lights, bool drawWireframe){
 	const vector<Vertex>& vertices = face.getVertices();
 	assert(vertices.size() == 3);
 	Triangle t;
@@ -208,6 +208,8 @@ Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const 
 		}
 	}
 
+	t.setDrawWireframe(drawWireframe);
+
 	return t;
 }
 
@@ -233,7 +235,7 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 
 		for each (const Face& face in modelFaces)
 		{
-			clipTriangles.push_back(transferFaceToClipSpace(face, modelViewMtx, normalModelViewMtx, projMtx, camSpaceLights));
+			clipTriangles.push_back(transferFaceToClipSpace(face, modelViewMtx, normalModelViewMtx, projMtx, camSpaceLights, pModel->getActive()));
 			//drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  Color(1,1,1));
 		}
 		
@@ -462,10 +464,16 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 			}
 		}
 
-		//for (int i = 0; i < 3; i++){
-		//	drawLine(t[i].getCoords().x, t[i].getCoords().y, t[(i + 1) % 3].getCoords().x, t[(i + 1) % 3].getCoords().y,Color(1,1,1));
-		//}
+
 		count++;
+	}
+
+	for (const auto& t : polygons){
+		if (t.getDrawWireframe()){
+			for (int i = 0; i < 3; i++){
+				drawLine(t[i].getCoords().x, t[i].getCoords().y, t[(i + 1) % 3].getCoords().x, t[(i + 1) % 3].getCoords().y,Color(1,0,0));
+			}
+		}
 	}
 }
 
