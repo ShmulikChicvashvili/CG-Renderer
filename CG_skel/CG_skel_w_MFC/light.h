@@ -11,7 +11,7 @@ public:
 
 	virtual vec4 getDirectionFromPoint(const vec4& p) const = 0;
 
-	Material& getMatrial() { return material; }
+	void setMaterial(const Material& mat) { material = mat; }
 	const Material& getMaterial() const { return material; }
 };
 

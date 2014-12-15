@@ -8,6 +8,7 @@ class Material{
 	vec3 specular;
 
 public:
+	Material(const vec3& a, const vec3& d, const vec3& s) : ambient(a), diffuse(d), specular(s){}
 	Material() : ambient(1, 1, 1), diffuse(1, 1, 1), specular(1, 1, 1){}
 	void setAmbient(const vec3& ambient) {
 		this->ambient = ambient;
@@ -28,6 +29,16 @@ public:
 		return specular;
 	}
 };
+
+inline
+Material operator*(const GLfloat& f, const Material& mat){
+	return Material(f * mat.getAmbient(), f*mat.getDiffuse(), f*mat.getSpecular());
+}
+
+inline
+Material operator+(const Material& m1, const Material& m2){
+	return Material(m1.getAmbient() + m2.getAmbient(), m1.getDiffuse() + m2.getDiffuse(), m1.getSpecular() + m2.getSpecular());
+}
 
 class Vertex
 {

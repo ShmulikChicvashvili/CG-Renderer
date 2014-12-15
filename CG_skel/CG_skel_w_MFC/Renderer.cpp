@@ -72,6 +72,10 @@ void Renderer::SetDemoBuffer()
 /////////////////////////////////////////////////////
 // Shmulik & Eyal stuff
 
+void Renderer::setColorMethod(const ColorMethod& cm){
+	colorMethod = cm;
+}
+
 void Renderer::reshape(int width, int height){
 	resizingMatrix = mat4((float)initial_width / width, 0, 0, 0,
 		0, (float)initial_height / height, 0, 0,
@@ -490,69 +494,63 @@ vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, con
 
 void Renderer::setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights,
 	const float& u, const float& v, const float& w) {
-	int shadingMode = 2; //@TODO: recieve it by a paramater to the function.
+	
 	vec3 illuminationIntensity = 0.0;
 
-	vec3 illuminationIntensityAtVertex1 = 0.0;
-	vec3 illuminationIntensityAtVertex2 = 0.0;
-	vec3 illuminationIntensityAtVertex3 = 0.0;
+	const LitVertex& v1 = t[0];
+	const LitVertex& v2 = t[1];
+	const LitVertex& v3 = t[2];
 
-	vec4 norm = 0.0;
-
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-	Material phongMaterial;
-	vec4 phongLightDir;
-	vec4 phongEyeVec;
-
-	switch (shadingMode)
+	switch (colorMethod)
 	{
-	case 0:
+	case ColorMethod::FLAT:
 		for (int i = 0; i < lights.size(); i++) {
-			illuminationIntensity += calculateIlluminationIntensity(t[0].getMaterial(),lights[i]->getMatrial(),t[0].getLightDirs().at(i),
-				t[0].getNorm(), t[0].getEyeVec());
+			illuminationIntensity += calculateIlluminationIntensity(v1.getMaterial(), lights[i]->getMaterial(), v1.getLightDirs().at(i),
+				v1.getNorm(), v1.getEyeVec());
 		}
 		drawSinglePixel(x, y, illuminationIntensity);
 		break;
-	case 1:
+	case ColorMethod::GOURAUD:{
+		vec3 illuminationIntensityAtVertex1 = 0.0;
+		vec3 illuminationIntensityAtVertex2 = 0.0;
+		vec3 illuminationIntensityAtVertex3 = 0.0;
+
 		for (int i = 0; i < lights.size(); i++) {
-			illuminationIntensityAtVertex1 += calculateIlluminationIntensity(t[0].getMaterial(), lights[i]->getMatrial(), t[0].getLightDirs().at(i),
-				t[0].getNorm(), t[0].getEyeVec());
-			illuminationIntensityAtVertex2 += calculateIlluminationIntensity(t[1].getMaterial(), lights[i]->getMatrial(), t[1].getLightDirs().at(i),
-				t[1].getNorm(), t[1].getEyeVec());
-			illuminationIntensityAtVertex3 += calculateIlluminationIntensity(t[2].getMaterial(), lights[i]->getMatrial(), t[2].getLightDirs().at(i),
-				t[2].getNorm(), t[2].getEyeVec());
+			illuminationIntensityAtVertex1 += calculateIlluminationIntensity(v1.getMaterial(), lights[i]->getMaterial(), v1.getLightDirs().at(i),
+				v1.getNorm(), v1.getEyeVec());
+			illuminationIntensityAtVertex2 += calculateIlluminationIntensity(v2.getMaterial(), lights[i]->getMaterial(), v2.getLightDirs().at(i),
+				v2.getNorm(), v2.getEyeVec());
+			illuminationIntensityAtVertex3 += calculateIlluminationIntensity(v3.getMaterial(), lights[i]->getMaterial(), v3.getLightDirs().at(i),
+				v3.getNorm(), v3.getEyeVec());
 		}
 		illuminationIntensity = u * illuminationIntensityAtVertex1 + v * illuminationIntensityAtVertex2 + w * illuminationIntensityAtVertex3;
 		drawSinglePixel(x, y, illuminationIntensity);
 		break;
-	case 2:
+	}
+	case ColorMethod::PHONG:{
+		vec4 phongNorm = 0.0;
+		Material phongMaterial;
+		vec4 phongLightDir;
+		vec4 phongEyeVec;
 		illuminationIntensity = 0.0;
-		
-		norm = normalize(u * t[0].getNorm() + v * t[1].getNorm() + w * t[2].getNorm());
 
-		ambient = u * t[0].getMaterial().getAmbient() + v * t[1].getMaterial().getAmbient() + w * t[2].getMaterial().getAmbient();
-		diffuse = u * t[0].getMaterial().getDiffuse() + v * t[1].getMaterial().getDiffuse() + w * t[2].getMaterial().getDiffuse();
-		specular = u * t[0].getMaterial().getSpecular() + v * t[1].getMaterial().getSpecular() + w * t[2].getMaterial().getSpecular();
+		phongNorm = normalize(u * v1.getNorm() + v * v2.getNorm() + w * v3.getNorm());
 
-		phongEyeVec = u * t[0].getEyeVec() + v * t[1].getEyeVec() + w * t[2].getEyeVec();
-		phongEyeVec = normalize(phongEyeVec);
+		phongEyeVec = normalize(u * v1.getEyeVec() + v * v2.getEyeVec() + w * v3.getEyeVec());
 
-		phongMaterial.setAmbient(ambient);
-		phongMaterial.setDiffuse(diffuse);
-		phongMaterial.setSpecular(specular);
+		phongMaterial = u * v1.getMaterial() + v * v2.getMaterial() + w * v3.getMaterial();
 
 		for (int i = 0; i < lights.size(); i++) {
-			phongLightDir = u * t[0].getLightDirs().at(i) + v * t[1].getLightDirs().at(i) + t[2].getLightDirs().at(i);
+			phongLightDir = u * v1.getLightDirs().at(i) + v * v2.getLightDirs().at(i) + w * v3.getLightDirs().at(i);
 			phongLightDir = normalize(phongLightDir);
 
-			illuminationIntensity += calculateIlluminationIntensity(phongMaterial, lights[i]->getMatrial(), phongLightDir,
-				norm, phongEyeVec);
+			illuminationIntensity += calculateIlluminationIntensity(phongMaterial, lights[i]->getMaterial(), phongLightDir,
+				phongNorm, phongEyeVec);
 		}
 
 		drawSinglePixel(x, y, illuminationIntensity);
-		break;
+		break; 
+	}
 	default:
 		assert(false);
 		break;
