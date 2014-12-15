@@ -6,23 +6,25 @@ PointLight::PointLight(const Material& mat, const vec4& p) :
 Light(mat), point(p)
 {
 	assert(p.w == 1);
-	vec4 temp (0,0,0,1);
+	vec4 temp(-0.1, -0.1, 0, 1);
 	Face firstTriangle;
 	firstTriangle.addVertex(temp);
-	temp.x -= 0.1;
+	temp.x = 0.1;
 	firstTriangle.addVertex(temp);
-	temp.y -= 0.1;
+	temp.y = 0.1;
 	firstTriangle.addVertex(temp);
+	
 	firstTriangle.calcNorm();
 	faces.push_back(firstTriangle);
 
-	temp = vec4(0,0,0,1);
+	temp = vec4(0.1, 0.1, 0, 1);
 	Face secondTriangle;
 	secondTriangle.addVertex(temp);
-	temp.y -= 0.1;
+	temp.x = -0.1;
 	secondTriangle.addVertex(temp);
-	temp.x -= 0.1;
+	temp.y = -0.1;
 	secondTriangle.addVertex(temp);
+	
 	secondTriangle.calcNorm();
 	faces.push_back(secondTriangle);
 

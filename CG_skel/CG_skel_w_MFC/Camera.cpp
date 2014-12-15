@@ -6,10 +6,11 @@ Camera::Camera(){
 	for (int i = 0; i < 2; i++){
 		Face f;
 		vec4 v(0,0,0.2,1);
-		v.x = 0.1;
+		int sign = i % 2 == 0 ? 1 : -1;
+		v.x = -sign * 0.1;
 		f.addVertex(v);
 
-		v.x = -0.1;
+		v.x = sign * 0.1;
 		f.addVertex(v);
 
 		v.z = 0;
