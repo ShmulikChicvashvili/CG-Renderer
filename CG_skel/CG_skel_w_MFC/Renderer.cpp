@@ -19,7 +19,7 @@
 
 
 
-Renderer::Renderer() :m_width(512), m_height(512)
+Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT)
 {
 	InitOpenGLRendering();
 	initial_width = 512;
@@ -28,7 +28,7 @@ Renderer::Renderer() :m_width(512), m_height(512)
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : m_width(width), m_height(height)
+Renderer::Renderer(int width, int height) : m_width(width), m_height(height), colorMethod(ColorMethod::FLAT)
 {
 	InitOpenGLRendering();
 	initial_width = width;
