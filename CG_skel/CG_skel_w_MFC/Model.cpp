@@ -95,6 +95,18 @@ void Model::reset(){
 	rotateTranslateInvMtx = eye;
 }
 
+void Model::setMaterial(const Material& mat){
+	for (auto& f : faces){
+		f.setMaterial(mat);
+	}
+}
+
+void Model::setRandomMaterial(){
+	for (auto& f : faces){
+
+	}
+}
+
 void Model::setActive(const bool isActive) {
 	this->isActive = isActive;
 }

@@ -27,5 +27,7 @@ public:
 	const vec4& getMidPoint() const;
 	const vec4& getNorm() const;
 
+	void setMaterial(const Material& mat);
+
 };
 

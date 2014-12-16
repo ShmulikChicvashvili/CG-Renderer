@@ -74,3 +74,9 @@ bool Face::hasMidPoint() const{
 bool Face::hasNormal() const{
 	return hasNorm;
 }
+
+void Face::setMaterial(const Material& mat){
+	for (auto& v : vertices){
+		v.setMaterial(mat);
+	}
+}

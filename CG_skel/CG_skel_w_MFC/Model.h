@@ -32,6 +32,7 @@ public:
 
 	virtual void reset();
 	virtual void setMaterial(const Material& mat);
+	virtual void setRandomMaterial();
 
 	void spin(const GLfloat deg, const Axes axis);
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
