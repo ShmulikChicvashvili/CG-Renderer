@@ -179,40 +179,53 @@ vector<shared_ptr<Light>> transferLightsToCamSpace(const vector<shared_ptr<Light
 	return ret;
 }
 
-Triangle transferFaceToClipSpace(const Face& face, const mat4& modelView, const mat4& normModelView, const mat4& proj, const vector<shared_ptr<Light>>& lights, bool drawWireframe){
+void transferFaceToClipSpace(const Face& face, 
+	const mat4& modelView, 
+	const mat4& normModelView, 
+	const mat4& proj, 
+	const vector<shared_ptr<Light>>& lights, 
+	bool drawWireframe,
+	Triangle& t){
+
 	const vector<Vertex>& vertices = face.getVertices();
 	assert(vertices.size() == 3);
-	Triangle t;
+	//Triangle t;
 
 	for (int i = 0; i < 3; i++){
 		const Vertex& v = vertices[i];
 		const vec4 camSpace = modelView * v.getCoords();
+		LitVertex& l = t[i];
 
 		// set coordinates to clip space
-		t[i].setCoords(proj * camSpace);
-		t[i].setMaterial(v.getMaterial());
+		l.setCoords(proj * camSpace);
+		
+		l.setMaterial(v.getMaterial());
+		
 		if (v.hasNormal()){
 			// add normal if exists, and directions to all lights and camera
 			vec4& norm = normModelView * v.getNorm();
 			norm.w = 0;
-			t[i].setNorm(normalize(norm));
+			l.setNorm(normalize(norm));
 		}
 		else {
 			assert(face.hasNormal());
-			t[i].setNorm(normalize(face.getNorm()));
+			l.setNorm(normalize(face.getNorm()));
 		}
+
 		vec4& eyeVec = -camSpace;
 		eyeVec.w = 0;
 		eyeVec = eyeVec == vec4(0, 0, 0, 0) ? eyeVec : normalize(eyeVec);
-		t[i].setEyeVec(eyeVec);
+		l.setEyeVec(eyeVec);
+		
+		l.clearLightDirs();
 		for (const auto& pLight : lights){
-			t[i].addLightDir(pLight->getDirectionFromPoint(camSpace));
+			l.addLightDir(pLight->getDirectionFromPoint(camSpace));
 		}
 	}
 
 	t.setDrawWireframe(drawWireframe);
 
-	return t;
+	//return t;
 }
 
 void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam, const vector<shared_ptr<Light>>& lights) {
@@ -237,6 +250,7 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 
 	begin = clock();
 
+	Triangle t;
 	for each (const shared_ptr<Model>& pModel in models)
 	{
 		const vector<Face>& modelFaces = pModel->getFaces();
@@ -246,7 +260,8 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 
 		for each (const Face& face in modelFaces)
 		{
-			clipTriangles.push_back(transferFaceToClipSpace(face, modelViewMtx, normalModelViewMtx, projMtx, camSpaceLights, pModel->getActive()));
+			transferFaceToClipSpace(face, modelViewMtx, normalModelViewMtx, projMtx, camSpaceLights, pModel->getActive(), t);
+			clipTriangles.push_back(t);
 			//drawFace(face,normViewMtx * pModel->getModelNormalMatrix(), modelViewMtx, projMtx, projMtx * modelViewMtx,  Color(1,1,1));
 		}
 		

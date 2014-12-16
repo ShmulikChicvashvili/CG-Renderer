@@ -17,6 +17,7 @@ public:
 	void addLightDir(const vec4&);
 	void setEyeVec(const vec4&);
 
+	void clearLightDirs();
 	const vector<vec4>& getLightDirs() const;
 	const vec4& getEyeVec() const;
 };

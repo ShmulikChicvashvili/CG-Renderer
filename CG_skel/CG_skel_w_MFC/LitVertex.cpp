@@ -22,6 +22,10 @@ void LitVertex::setEyeVec(const vec4& _eyeVec){
 	eyeVec = _eyeVec;
 }
 
+void LitVertex::clearLightDirs(){
+	lightDirs.clear();
+}
+
 const vector<vec4>& LitVertex::getLightDirs() const{
 	return lightDirs;
 }
