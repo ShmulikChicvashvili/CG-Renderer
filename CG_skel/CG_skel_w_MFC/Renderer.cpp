@@ -156,14 +156,14 @@ vector<shared_ptr<Light>> transferLightsToCamSpace(const vector<shared_ptr<Light
 		shared_ptr<Light> newLight;
 		if (isParallelLight(l.get())){
 			const mat4& normModelView = normViewMtx * l->getModelNormalMatrix();
-			vec4& direction = normModelView * ((ParallelLight*)l.get())->getDirection();
+			vec4& direction = normModelView * vec4(0,0,1,0);
 			direction.w = 0;
 
 			newLight = shared_ptr<Light>(new ParallelLight(material, direction));
 		}
 		else if (isPointLight(l.get())){
 			const mat4& modelView = viewMtx * l->getModelMatrix();
-			const vec4& point = modelView * ((PointLight*)l.get())->getPoint();
+			const vec4& point = modelView * vec4(0,0,1,1);
 
 			newLight = shared_ptr<Light>(new PointLight(material, point));
 		}
@@ -209,7 +209,9 @@ void transferFaceToClipSpace(const Face& face,
 		}
 		else {
 			assert(face.hasNormal());
-			l.setNorm(normalize(face.getNorm()));
+			vec4& norm = normModelView * face.getNorm();
+			norm.w = 0;
+			l.setNorm(normalize(norm));
 		}
 
 		vec4& eyeVec = -camSpace;
