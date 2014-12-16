@@ -163,7 +163,7 @@ vector<shared_ptr<Light>> transferLightsToCamSpace(const vector<shared_ptr<Light
 		}
 		else if (isPointLight(l.get())){
 			const mat4& modelView = viewMtx * l->getModelMatrix();
-			const vec4& point = modelView * vec4(0,0,1,1);
+			const vec4& point = modelView * vec4(0,0,0,1);
 
 			newLight = shared_ptr<Light>(new PointLight(material, point));
 		}
