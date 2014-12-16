@@ -277,6 +277,11 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 
 	clipper(clipTriangles, camSpaceLights);
 	cout << "Clipper to End time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+
+	cout << "@@@ clipTriangles size: " << clipTriangles.size() << endl;
+	begin = clock();
+	clipTriangles.clear();
+	cout << "@@@ clipTriangles clear time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 }
 
 bool isTriangleFullyClipped(const Triangle& t){
