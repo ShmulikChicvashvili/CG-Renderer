@@ -31,6 +31,7 @@ public:
 	const vector<Face>& getFaces() const;
 
 	virtual void reset();
+	virtual void setMaterial();
 
 	void spin(const GLfloat deg, const Axes axis);
 	virtual void scale(const GLfloat sx, const GLfloat sy, const GLfloat sz);
