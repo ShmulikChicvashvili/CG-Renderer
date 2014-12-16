@@ -42,13 +42,13 @@ public:
 	Color() : red(0), green(0), blue(0) {}
 	Color(float _red, float _green, float _blue) : red(_red), green(_green), blue(_blue) {}
 	Color(const vec3& v) : red(v[0]), green(v[1]), blue(v[2]){}
-	float getRed() {
+	float getRed() const {
 		return red;
 	}
-	float getGreen() {
+	float getGreen() const {
 		return green;
 	}
-	float getBlue() {
+	float getBlue() const {
 		return blue;
 	}
 };
@@ -74,10 +74,10 @@ class Renderer
 		const vec4& lightDirection, const vec4& norm, const vec4& viewDirection);
 
 	bool isClipped(const vector<vec4>& clipCords) const;
-	void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
-	void drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx);
+	//void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
+	//void drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx);
 
-	const vec3 normalNDC2Window(const vec4& n) const;
+	//const vec3 normalNDC2Window(const vec4& n) const;
 	const vec3 windowCoordinates(const vec3& vector) const;
 
 	mat4 resizingMatrix;
@@ -102,10 +102,10 @@ public:
 	Renderer(int width, int height);
 	~Renderer(void);
 	void Init();
-	void DrawTriangles(const vector<vec3>* vertices, const vector<vec3>* normals=NULL);
-	void SetCameraTransform(const mat4& cTransform);
-	void SetProjection(const mat4& projection);
-	void SetObjectMatrices(const mat4& oTransform, const mat3& nTransform);
+	//void DrawTriangles(const vector<vec3>* vertices, const vector<vec3>* normals=NULL);
+	//void SetCameraTransform(const mat4& cTransform);
+	//void SetProjection(const mat4& projection);
+	//void SetObjectMatrices(const mat4& oTransform, const mat3& nTransform);
 	void SwapBuffers();
 	void ClearColorBuffer();
 	void ClearDepthBuffer();

@@ -10,6 +10,8 @@
 #include <math.h>
 #include "Vertex.h"
 
+#include <time.h>
+
 
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 #define INDEXZ(width,x,y) (x+y*width)
@@ -224,7 +226,16 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 	const vector<shared_ptr<Light>>& camSpaceLights = transferLightsToCamSpace(lights, viewMtx, normViewMtx);
 
 	vector<Triangle> clipTriangles;
-	clipTriangles.reserve(3 * models.size());
+	int numTriangles = 0;
+	for (const auto& pModel : models){
+		numTriangles += pModel->getFaces().size();
+	}
+
+	clock_t begin = clock();
+	clipTriangles.reserve(numTriangles);
+	cout << "SetBuffer reserve: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+
+	begin = clock();
 
 	for each (const shared_ptr<Model>& pModel in models)
 	{
@@ -242,6 +253,7 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		bool active = pModel->getActive();
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 	}
+	cout << "SetBuffer transfer to cam space: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 
 	////@TODO remove
 	//for (auto& t : clipTriangles){
@@ -261,7 +273,10 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 	//	} 
 	//}
 
+	begin = clock();
+
 	clipper(clipTriangles, camSpaceLights);
+	cout << "Clipper to End time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 }
 
 bool isTriangleFullyClipped(const Triangle& t){
@@ -280,39 +295,24 @@ bool isTriangleFullyClipped(const Triangle& t){
 }
 
 void Renderer::clipper(vector<Triangle>& triangles, const vector<shared_ptr<Light>>& lights){
+	clock_t begin = clock();
 	vector<Triangle>::iterator it = std::remove_if(triangles.begin(), triangles.end(), isTriangleFullyClipped);
 	triangles.erase(it, triangles.end());
+	cout << "clipper remove triangles time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 
+	begin = clock();
 	for (Triangle& t : triangles){
 		for (int i = 0; i < 3; i++){
 			t[i].setCoords(vec4(windowCoordinates(divideByW(t[i].getCoords())),1));
 		}
 	}
+	cout << "clipper transfer to window Coords time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+
 
 	zBuffer(triangles, lights);
 }
 
-void Renderer::drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx) {
-	vec4 normCords = normModelViewMtx * norm;
-	normCords.w = 0;
-	normCords = 0.1 * normalize(normCords);
 
-	const vec4& midPointCords = modelViewMtx * midPoint;
-	const vec4& endNormViewCoords = vec4(midPointCords.x + normCords.x, midPointCords.y + normCords.y, midPointCords.z + normCords.z, 1);
-	const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
-	const vec3& midPointWindowCords = windowCoordinates(divideByW(projMtx * midPointCords));
-
-	drawLine(endNormWindowCoords.x, endNormWindowCoords.y, midPointWindowCords.x, midPointWindowCords.y, Color(0.5, 0.5, 0.5));
-}
-
-const vec3 Renderer::normalNDC2Window(const vec4& n) const{
-	vec4& ndc = mat4((GLfloat)2 / m_width, 0, 0, 0,
-		0, (GLfloat)2 / m_height, 0, 0,
-		0, 0, 2, 0,
-		-1, -1, -1, 1) * n;
-	return vec3(ndc.x, ndc.y, ndc.z);
-
-}
 
 bool Renderer::isClipped(const vector<vec4>& clipCords) const{
 	for each (const auto& v in clipCords)
@@ -329,59 +329,7 @@ bool Renderer::isClipped(const vector<vec4>& clipCords) const{
 	return false;
 }
 
-void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c){
-	vector<vec4> clipCords;
-	clipCords.reserve(face.getVertices().size());
 
-	for (const auto& v : face.getVertices()){
-		clipCords.push_back(mvpMtx * v.getCoords());
-	}
-	if (isClipped(clipCords)){
-		return;
-	}
-
-
-	vector<vec3> windowCords;
-	windowCords.reserve(face.getVertices().size());
-
-	for (const auto& v : clipCords){
-		windowCords.push_back(windowCoordinates(divideByW(v)));
-	}
-
-	for (int i = 0; i < face.getVertices().size(); i++) {
-		vec3& windowCordsFirstPoint = windowCords[i];
-		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
-		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y, c);
-	}
-
-	if (face.hasNormal() && face.hasMidPoint() && drawFaceNorms) {
-		drawFaceNormal(face.getNorm(), face.getMidPoint(), normModelViewMtx, modelViewMtx, projMtx);
-	}
-
-	if (!drawVertexNormals){
-		return;
-	}
-
-	const vector<Vertex>& vertices = face.getVertices();
-	for (int i = 0; i < vertices.size(); i++) {
-		if (vertices[i].hasNormal()) {
-			vec4 normCords = normModelViewMtx * vertices[i].getNorm();
-			normCords.w = 0;
-			normCords = 0.1 * normalize(normCords);
-
-			const vec4& viewPointCords = modelViewMtx * vertices[i].getCoords();
-			const vec4& endNormViewCoords = vec4(viewPointCords.x + normCords.x, viewPointCords.y + normCords.y, viewPointCords.z + normCords.z, 1);
-			const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
-
-
-			drawLine(windowCords[i].x,
-				windowCords[i].y, endNormWindowCoords.x, endNormWindowCoords.y, Color(1, 0, 0));
-		}
-	}
-
-
-
-}
 
 
 
@@ -425,6 +373,8 @@ const bool Renderer::getBarycentricCoordinates(const int x, const int y, const v
 }
 
 void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr<Light>>& lights) {
+	cout << "Coloring " << polygons.size() << " triangles" << endl;
+	cout << "# of lights: " << lights.size() << endl;
 	float xMin, xMax, yMin, yMax = 0;
 	float u = 0.0;
 	float v = 0.0;
@@ -437,6 +387,8 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 		}
 	}
 	int count = 0;
+	clock_t begin = clock();
+	clock_t color_time = 0;
 	for each (auto &t in polygons)
 	{
 		const vec4& v1 = t[0].getCoords();
@@ -457,7 +409,9 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 
 				z = u * v1.z + v * v2.z + w * v3.z;
 				if (z < m_zbuffer[INDEXZ(m_width, x, y)]) {
+					color_time -= clock();
 					setColor(x, y, t, lights, u, v, w);
+					color_time += clock();
 					//drawSinglePixel(x, y, count%2==0?Color(1, 0, 0):Color(0,0,1));
 					m_zbuffer[INDEXZ(m_width, x, y)] = z;
 				}
@@ -467,7 +421,10 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 
 		count++;
 	}
+	cout << "zBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+	cout << "zBuffer setting color time: " << (double)(color_time) / CLOCKS_PER_SEC << " secs" << endl;
 
+	begin = clock();
 	for (const auto& t : polygons){
 		if (t.getDrawWireframe()){
 			for (int i = 0; i < 3; i++){
@@ -475,6 +432,8 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 			}
 		}
 	}
+	cout << "Draw wireframe time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+
 }
 
 vec4& Renderer::reflect(const vec4& V1, const vec4& V2) {
@@ -645,3 +604,79 @@ void Renderer::SwapBuffers()
 	glutSwapBuffers();
 	a = glGetError();
 }
+
+//void Renderer::drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx) {
+//	vec4 normCords = normModelViewMtx * norm;
+//	normCords.w = 0;
+//	normCords = 0.1 * normalize(normCords);
+//
+//	const vec4& midPointCords = modelViewMtx * midPoint;
+//	const vec4& endNormViewCoords = vec4(midPointCords.x + normCords.x, midPointCords.y + normCords.y, midPointCords.z + normCords.z, 1);
+//	const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
+//	const vec3& midPointWindowCords = windowCoordinates(divideByW(projMtx * midPointCords));
+//
+//	drawLine(endNormWindowCoords.x, endNormWindowCoords.y, midPointWindowCords.x, midPointWindowCords.y, Color(0.5, 0.5, 0.5));
+//}
+//
+//const vec3 Renderer::normalNDC2Window(const vec4& n) const{
+//	vec4& ndc = mat4((GLfloat)2 / m_width, 0, 0, 0,
+//		0, (GLfloat)2 / m_height, 0, 0,
+//		0, 0, 2, 0,
+//		-1, -1, -1, 1) * n;
+//	return vec3(ndc.x, ndc.y, ndc.z);
+//
+//}
+//
+//void Renderer::drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c){
+//	vector<vec4> clipCords;
+//	clipCords.reserve(face.getVertices().size());
+//
+//	for (const auto& v : face.getVertices()){
+//		clipCords.push_back(mvpMtx * v.getCoords());
+//	}
+//	if (isClipped(clipCords)){
+//		return;
+//	}
+//
+//
+//	vector<vec3> windowCords;
+//	windowCords.reserve(face.getVertices().size());
+//
+//	for (const auto& v : clipCords){
+//		windowCords.push_back(windowCoordinates(divideByW(v)));
+//	}
+//
+//	for (int i = 0; i < face.getVertices().size(); i++) {
+//		vec3& windowCordsFirstPoint = windowCords[i];
+//		vec3& windowCordsSecondPoint = windowCords[(i + 1) % face.getVertices().size()];
+//		drawLine(windowCordsFirstPoint.x, windowCordsFirstPoint.y, windowCordsSecondPoint.x, windowCordsSecondPoint.y, c);
+//	}
+//
+//	if (face.hasNormal() && face.hasMidPoint() && drawFaceNorms) {
+//		drawFaceNormal(face.getNorm(), face.getMidPoint(), normModelViewMtx, modelViewMtx, projMtx);
+//	}
+//
+//	if (!drawVertexNormals){
+//		return;
+//	}
+//
+//	const vector<Vertex>& vertices = face.getVertices();
+//	for (int i = 0; i < vertices.size(); i++) {
+//		if (vertices[i].hasNormal()) {
+//			vec4 normCords = normModelViewMtx * vertices[i].getNorm();
+//			normCords.w = 0;
+//			normCords = 0.1 * normalize(normCords);
+//
+//			const vec4& viewPointCords = modelViewMtx * vertices[i].getCoords();
+//			const vec4& endNormViewCoords = vec4(viewPointCords.x + normCords.x, viewPointCords.y + normCords.y, viewPointCords.z + normCords.z, 1);
+//			const vec3& endNormWindowCoords = windowCoordinates(divideByW(projMtx * endNormViewCoords));
+//
+//
+//			drawLine(windowCords[i].x,
+//				windowCords[i].y, endNormWindowCoords.x, endNormWindowCoords.y, Color(1, 0, 0));
+//		}
+//	}
+//
+//
+//
+//}

@@ -6,6 +6,8 @@
 #include "PointLight.h"
 #include "ParallelLight.h"
 
+#include <time.h>
+
 using namespace std;
 
 void Scene::addModel(const shared_ptr<Model>& pModel){
@@ -42,11 +44,18 @@ void Scene::draw()
 {
 	// 1. Send the renderer the current camera transform and the projection
 	// 2. Tell all models to draw themselves
+	clock_t begin = clock();
 	m_renderer->InitializeBuffer();
+	cout << "Scene draw InitializeBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 	cout << "View Matrix while drawing : " << cameras[getActiveCamera()]->getViewMatrix() << endl;
 	cout << "Projection Matrix while drawing : " << cameras[getActiveCamera()]->getProjectionMatrix() << endl;
+
+	begin = clock();
 	m_renderer->setBuffer(models, *cameras[getActiveCamera()], lights);
+	cout << "Scene draw setBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+	begin = clock();
 	m_renderer->SwapBuffers();
+	cout << "Scene draw SwapBuffers time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 }
 
 void Scene::drawDemo()
