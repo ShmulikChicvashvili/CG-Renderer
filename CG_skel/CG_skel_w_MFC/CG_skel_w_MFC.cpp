@@ -81,6 +81,28 @@ Axes selectedAxis = ALL;
 
 Action selectedAction = scale;
 
+void materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
+	CXyzDialog ambientDlg("Ambient Color");
+	CXyzDialog diffuseDlg("Diffuse Color");
+	CXyzDialog specularDlg("Specular Color");
+
+	cout << "Choose Ambient Color" << endl;
+	if (ambientDlg.DoModal() == IDOK) {
+		ambient = ambientDlg.GetXYZ();
+	}
+	if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
+	cout << "Choose Diffuse Color" << endl;
+	if (diffuseDlg.DoModal() == IDOK) {
+		diffuse = diffuseDlg.GetXYZ();
+	}
+	if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
+	cout << "Choose Specular Color" << endl;
+	if (specularDlg.DoModal() == IDOK) {
+		specular = specularDlg.GetXYZ();
+	}
+	if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
+}
+
 void doTranslation(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
 		cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis Model number" << activeModel << endl;
@@ -317,6 +339,9 @@ void selectSpecificModel(vector<shared_ptr<Model>>& currentModels, int index, in
 		currentModels[currentModels.size() - 1]->setActive(true);
 	}
 	else {
+		if (newIndex == -1) {
+			newIndex = currentModels.size() - 1;
+		}
 		cout << "Previous active model is : " << index << endl;
 		currentModels[index]->setActive(false);
 		scene->setActiveModel(newIndex % scene->getModels().size());
@@ -350,9 +375,6 @@ void sceneDrawNormals() {
 }
 
 void resetScene(vector<shared_ptr<Model>>& currentModels, vector<shared_ptr<Camera>>& currentCameras) {
-	for (auto& c : currentCameras) {
-		c->reset();
-	}
 	for (auto& m : currentModels) {
 		m->reset();
 	}
@@ -376,6 +398,16 @@ void setFrustrum(Camera& c) {
 		float zFar = ::atof(params[5].c_str());
 		c.setFrustrumBoundries(left, right, bottom, top, zNear, zFar);
 	}
+}
+
+void changeMaterial(vector<shared_ptr<Model>>& currentModels, const int activeModel) {
+	vec3 ambient = 0.0;
+	vec3 diffuse = 0.0;
+	vec3 specular = 0.0;
+
+	materialDialog(ambient, diffuse, specular);
+
+	currentModels[activeModel]->setMaterial(Material(ambient, diffuse, specular));
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -498,6 +530,16 @@ void keyboard(unsigned char key, int x, int y)
 		newIndex = scene->setCameraAsActiveModel(cameraIndex);
 		selectSpecificModel(currentModels, index, newIndex);
 		index = newIndex;
+		break;
+	case 0x6D:
+		// Keyboard : m
+		changeMaterial(currentModels, index);
+		scene->draw();
+		break;
+	case 0x4D:
+		// Keyboard : Shift + m
+		currentModels[index]->setRandomMaterial();
+		scene->draw();
 		break;
 	case 0x4E:
 		// Keyboard : Shift + n
@@ -686,34 +728,16 @@ void shadingMenu(int id) {
 }
 
 void lightMenu(int id) {
+	vec3 ambient = 0.0;
+	vec3 diffuse = 0.0;
+	vec3 specular = 0.0;
 	switch (id)
 	{
 	case POINT_LIGHT:
 	{
-		CXyzDialog ambientDlg("Ambient Color");
-		CXyzDialog diffuseDlg("Diffuse Color");
-		CXyzDialog specularDlg("Specular Color");
 		CXyzDialog pointDlg("Point");
-		vec3 ambient;
-		vec3 diffuse;
-		vec3 specular;
 		vec4 point;
-
-		cout << "Choose Ambient Color" << endl;
-		if (ambientDlg.DoModal() == IDOK) {
-			ambient = ambientDlg.GetXYZ();
-		}
-		if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
-		cout << "Choose Diffuse Color" << endl;
-		if (diffuseDlg.DoModal() == IDOK) {
-			diffuse = diffuseDlg.GetXYZ();
-		}
-		if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
-		cout << "Choose Specular Color" << endl;
-		if (specularDlg.DoModal() == IDOK) {
-			specular = specularDlg.GetXYZ();
-		}
-		if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
+		materialDialog(ambient, diffuse, specular);
 		cout << "Choose Camera Point" << endl;
 		if (pointDlg.DoModal() == IDOK) {
 			vec3 temp = pointDlg.GetXYZ();
@@ -725,30 +749,9 @@ void lightMenu(int id) {
 		break;
 	case PARALLEL_LIGHT:
 	{
-		CXyzDialog ambientDlg("Ambient Color");
-		CXyzDialog diffuseDlg("Diffuse Color");
-		CXyzDialog specularDlg("Specular Color");
-		CXyzDialog normalDlg("Point");
-		vec3 ambient;
-		vec3 diffuse;
-		vec3 specular;
+		CXyzDialog normalDlg("Parallel");
 		vec4 normal;
 
-		cout << "Choose Ambient Color" << endl;
-		if (ambientDlg.DoModal() == IDOK) {
-			ambient = ambientDlg.GetXYZ();
-		}
-		if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
-		cout << "Choose Diffuse Color" << endl;
-		if (diffuseDlg.DoModal() == IDOK) {
-			diffuse = diffuseDlg.GetXYZ();
-		}
-		if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
-		cout << "Choose Specular Color" << endl;
-		if (specularDlg.DoModal() == IDOK) {
-			specular = specularDlg.GetXYZ();
-		}
-		if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
 		cout << "Choose Light Direction" << endl;
 		if (normalDlg.DoModal() == IDOK) {
 			vec3 temp = normalDlg.GetXYZ();
@@ -841,13 +844,27 @@ int my_main(int argc, char **argv)
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
-
+	clock_t begin = clock();
+	vector<Triangle> v;
+	v.reserve(100000);
+	cout << "Vector creation" << (double)((clock() - begin))/CLOCKS_PER_SEC << endl;
+	begin = clock();
+	for (int j = 0; j < 100000; j++){
+		Triangle t;
+		for (int i = 0; i < 3; i++){
+			t[i].setCoords(vec4(i, i+2, i*5, 1));
+		}
+		v.push_back(t);
+	}
+	v.clear();
+	cout << "Vector destruction" << (double)((clock() - begin)) / CLOCKS_PER_SEC << endl;
 
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	//shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
-	//scene->loadLight(p);
+	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	scene->loadLight(p);
+
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks
 

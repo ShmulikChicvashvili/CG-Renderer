@@ -76,6 +76,10 @@ void Scene::loadCamera() {
 	cameras.push_back(pCam);
 	activeCamera = cameras.size() - 1;
 	activeModel = models.size() - 1;
+	for (int i = 0; i < activeModel; i++) {
+		models[i]->setActive(false);
+	}
+	models[activeModel]->setActive(true);
 }
 
 void Scene::loadLight(const shared_ptr<Light>& l) {
@@ -84,6 +88,10 @@ void Scene::loadLight(const shared_ptr<Light>& l) {
 	lights.push_back(pLight);
 	activeLight = lights.size() - 1;
 	activeModel = models.size() - 1;
+	for (int i = 0; i < activeModel; i++) {
+		models[i]->setActive(false);
+	}
+	models[activeModel]->setActive(true);
 }
 
 vector<shared_ptr<Model>>& Scene::getModels() {
