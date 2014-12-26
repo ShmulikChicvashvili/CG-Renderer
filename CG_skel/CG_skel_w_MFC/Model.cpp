@@ -103,7 +103,7 @@ void Model::setMaterial(const Material& mat){
 
 void Model::setRandomMaterial(){
 	for (auto& f : faces){
-
+		f.setMaterial(randomizeMaterial(0.2, 0.5, 0.6));
 	}
 }
 

@@ -11,10 +11,10 @@ public:
 
 	virtual vec4 getDirectionFromPoint(const vec4& p) const = 0;
 
-	void setMaterial(const Material& mat) { 
-		Model::setMaterial(mat);
-		material = mat;
-	}
+	void setMaterial(const Material& mat);
+
+	void setRandomMaterial();
+
 	const Material& getMaterial() const { return material; }
 };
 

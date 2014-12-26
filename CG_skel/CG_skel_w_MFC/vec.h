@@ -475,4 +475,14 @@ vec3 cross(const vec4& a, const vec4& b )
 		 a.x * b.y - a.y * b.x );
 }
 
+inline 
+vec3 randomizeVec3(const GLfloat max){
+	vec3 ret;
+	for (int i = 0; i < 3; i++){
+		double frac = ((double)(rand() % 1000)) / 1000;
+		ret[i] = max * frac;
+	}
+
+	return ret;
+}
 //----------------------------------------------------------------------------

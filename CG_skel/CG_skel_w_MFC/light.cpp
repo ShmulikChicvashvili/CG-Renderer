@@ -12,4 +12,14 @@ Light::~Light()
 {
 }
 
+void Light::setMaterial(const Material& mat) {
+	Model::setMaterial(mat);
+	material = mat;
+}
+
+void Light::setRandomMaterial(){
+	Material mat = randomizeMaterial(0.3, 0.5, 0.6);
+	setMaterial(mat);
+}
+
 

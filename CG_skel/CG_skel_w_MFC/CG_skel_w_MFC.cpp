@@ -570,6 +570,8 @@ void mouse(int button, int state, int x, int y)
 	}
 
 	// add your code
+	last_x = x;
+	last_y = y;
 }
 
 void motion(int x, int y)
@@ -582,14 +584,14 @@ void motion(int x, int y)
 
 	last_x = x;
 	last_y = y;
-	last_dx = abs(dx);
+	/*last_dx = abs(dx);
 	last_dy = abs(dy);
 
 	//cout << "dx_diff:" << dx_diff << ", dy_diff:" << dy_diff << endl;
 	if (dx_diff > MOUSE_SMOOTH || dy_diff > MOUSE_SMOOTH){
 		//cout << "Smoothed" << endl;
 		return;
-	}
+	}*/
 
 	// my addition
 	float sensitivity = 1.f;

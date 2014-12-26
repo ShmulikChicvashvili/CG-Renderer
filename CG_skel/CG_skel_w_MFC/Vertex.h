@@ -36,6 +36,11 @@ Material operator*(const GLfloat& f, const Material& mat){
 }
 
 inline
+Material randomizeMaterial(const GLfloat maxA, const GLfloat maxD, const GLfloat maxS){
+	return Material(randomizeVec3(maxA), randomizeVec3(maxD), randomizeVec3(maxS));
+}
+
+inline
 Material operator+(const Material& m1, const Material& m2){
 	return Material(m1.getAmbient() + m2.getAmbient(), m1.getDiffuse() + m2.getDiffuse(), m1.getSpecular() + m2.getSpecular());
 }

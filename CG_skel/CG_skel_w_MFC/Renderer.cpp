@@ -301,38 +301,9 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 	cout << "@@@ clipTriangles clear time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 }
 
-bool isTriangleFullyClipped(const Triangle& t){
-	for (int i = 0; i < 3; i++){
-		const vec4& v = t[i].getCoords();
-		if (v.w == 0){
-			return true;
-		}
-		for (int j = 0; j<3; j++){
-			if (v[j] > v.w || v[j] < -v.w){
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-void Renderer::clipper(vector<Triangle>& triangles, const vector<shared_ptr<Light>>& lights){
-	clock_t begin = clock();
-	vector<Triangle>::iterator it = std::remove_if(triangles.begin(), triangles.end(), isTriangleFullyClipped);
-	triangles.erase(it, triangles.end());
-	cout << "clipper remove triangles time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
-
-	begin = clock();
-	for (Triangle& t : triangles){
-		for (int i = 0; i < 3; i++){
-			t[i].setCoords(vec4(windowCoordinates(divideByW(t[i].getCoords())),1));
-		}
-	}
-	cout << "clipper transfer to window Coords time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 
 
-	zBuffer(triangles, lights);
-}
+
 
 
 
