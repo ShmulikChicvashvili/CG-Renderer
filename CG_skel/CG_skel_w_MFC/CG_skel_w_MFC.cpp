@@ -105,7 +105,9 @@ void materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
 
 void doTranslation(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
+#ifdef DEBUG_PRINT
 		cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis Model number" << activeModel << endl;
+#endif
 		currentModels[activeModel]->translate((allAxesBool + xAxisBool)*intensity,
 			(allAxesBool + yAxisBool)*intensity,
 			(allAxesBool + zAxisBool)*intensity);
@@ -113,7 +115,9 @@ void doTranslation(vector<shared_ptr<Model>>& currentModels, int activeModel, fl
 	else {
 		for (auto &m : currentModels)
 		{
+#ifdef DEBUG_PRINT
 			cout << "Translating by : " << intensity << " In " << selectedAxis << " Axis" << endl;
+#endif
 			m->translate((allAxesBool + xAxisBool)*intensity,
 				(allAxesBool + yAxisBool)*intensity,
 				(allAxesBool + zAxisBool)*intensity);
@@ -127,7 +131,9 @@ void doScaling(vector<shared_ptr<Model>>& currentModels, int activeModel, float 
 		intensity = 1 / abs(intensity);
 	}
 	if (activeModel != ALL_MODELS_ACTIVE) {
+#ifdef DEBUG_PRINT
 		cout << " Scaling by : " << intensity << "The model :" << activeModel << endl;
+#endif
 		switch (selectedAxis)
 		{
 		case X:
@@ -149,7 +155,9 @@ void doScaling(vector<shared_ptr<Model>>& currentModels, int activeModel, float 
 	else {
 		for (auto &m : currentModels)
 		{
+#ifdef DEBUG_PRINT
 			cout << " Scaling by : " << intensity << endl;
+#endif
 			switch (selectedAxis)
 			{
 			case X:
@@ -174,12 +182,16 @@ void doScaling(vector<shared_ptr<Model>>& currentModels, int activeModel, float 
 
 void doSpin(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
+#ifdef DEBUG_PRINT
 		cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis The model : " << activeModel << endl;
+#endif
 		currentModels[activeModel]->spin(intensity, selectedAxis);
 	}
 	else {
 		for (auto& m : currentModels) {
+#ifdef DEBUG_PRINT
 			cout << "spinning by : " << intensity << " In" << selectedAxis << " Axis" << endl;
+#endif
 			m->spin(intensity, selectedAxis);
 		}
 	}
@@ -188,12 +200,16 @@ void doSpin(vector<shared_ptr<Model>>& currentModels, int activeModel, float int
 
 void doRotate(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
 	if (activeModel != ALL_MODELS_ACTIVE) {
+#ifdef DEBUG_PRINT
 		cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis The model : " << activeModel << endl;
+#endif
 		currentModels[activeModel]->rotate(intensity, selectedAxis);
 	}
 	else {
 		for (auto &m : currentModels) {
+#ifdef DEBUG_PRINT
 			cout << "Rotating By : " << intensity << "In " << selectedAxis << " Axis" << endl;
+#endif
 			m->rotate(intensity, selectedAxis);
 		}
 	}
@@ -846,25 +862,22 @@ int my_main(int argc, char **argv)
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
-	clock_t begin = clock();
-	vector<Triangle> v;
-	v.reserve(100000);
-	cout << "Vector creation" << (double)((clock() - begin))/CLOCKS_PER_SEC << endl;
-	begin = clock();
-	for (int j = 0; j < 100000; j++){
-		Triangle t;
-		for (int i = 0; i < 3; i++){
-			t[i].setCoords(vec4(i, i+2, i*5, 1));
-		}
-		v.push_back(t);
-	}
-	v.clear();
-	cout << "Vector destruction" << (double)((clock() - begin)) / CLOCKS_PER_SEC << endl;
+#ifdef NDEBUG
+	printf("NDEBUG is defined\n");
+#else
+	printf("NDEBUG is NOT defined\n");
+#endif
+#ifdef DEBUG_PRINT
+	printf("DEBUG_PRINT is defined\n");
+#else
+	printf("DEBUG_PRINT is NOT defined\n");
+#endif
 
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	//shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
 	scene->loadLight(p);
 
 	//----------------------------------------------------------------------------

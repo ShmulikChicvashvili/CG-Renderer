@@ -46,16 +46,22 @@ void Scene::draw()
 	// 2. Tell all models to draw themselves
 	clock_t begin = clock();
 	m_renderer->InitializeBuffer();
+#ifdef DEBUG_PRINT
 	cout << "Scene draw InitializeBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 	cout << "View Matrix while drawing : " << cameras[getActiveCamera()]->getViewMatrix() << endl;
 	cout << "Projection Matrix while drawing : " << cameras[getActiveCamera()]->getProjectionMatrix() << endl;
+#endif
 
 	begin = clock();
 	m_renderer->setBuffer(models, *cameras[getActiveCamera()], lights);
+#ifdef DEBUG_PRINT
 	cout << "Scene draw setBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 	begin = clock();
 	m_renderer->SwapBuffers();
+#ifdef DEBUG_PRINT
 	cout << "Scene draw SwapBuffers time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 }
 
 void Scene::drawDemo()

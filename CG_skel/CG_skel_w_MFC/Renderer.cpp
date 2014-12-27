@@ -232,7 +232,9 @@ void transferFaceToClipSpace(const Face& face,
 
 void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam, const vector<shared_ptr<Light>>& lights) {
 	//@TODO: Delete it later
+#ifdef DEBUG_PRINT
 	cout << "The size of models is : " << models.size() << endl;
+#endif
 	const mat4& viewMtx = cam.getViewMatrix();
 	const mat4& normViewMtx = cam.getViewNormalMatrix();
 	const mat4& projMtx = cam.getProjectionMatrix() * resizingMatrix;
@@ -248,7 +250,9 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 
 	clock_t begin = clock();
 	clipTriangles.reserve(numTriangles);
+#ifdef DEBUG_PRINT
 	cout << "SetBuffer reserve: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 
 	begin = clock();
 
@@ -270,7 +274,9 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 		bool active = pModel->getActive();
 		Color c = active ? Color(1, 1, 0) : Color(1, 1, 1);
 	}
+#ifdef DEBUG_PRINT
 	cout << "SetBuffer transfer to cam space: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 
 	////@TODO remove
 	//for (auto& t : clipTriangles){
@@ -293,12 +299,18 @@ void Renderer::setBuffer(const vector<shared_ptr<Model>>& models, const Camera& 
 	begin = clock();
 
 	clipper(clipTriangles, camSpaceLights);
+#ifdef DEBUG_PRINT
 	cout << "Clipper to End time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 
+#ifdef DEBUG_PRINT
 	cout << "@@@ clipTriangles size: " << clipTriangles.size() << endl;
+#endif
 	begin = clock();
 	clipTriangles.clear();
+#ifdef DEBUG_PRINT
 	cout << "@@@ clipTriangles clear time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 }
 
 
@@ -366,8 +378,11 @@ const bool Renderer::getBarycentricCoordinates(const int x, const int y, const v
 }
 
 void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr<Light>>& lights) {
+#ifdef DEBUG_PRINT
 	cout << "Coloring " << polygons.size() << " triangles" << endl;
 	cout << "# of lights: " << lights.size() << endl;
+#endif
+
 	float xMin, xMax, yMin, yMax = 0;
 	float u = 0.0;
 	float v = 0.0;
@@ -414,8 +429,10 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 
 		count++;
 	}
+#ifdef DEBUG_PRINT
 	cout << "zBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
 	cout << "zBuffer setting color time: " << (double)(color_time) / CLOCKS_PER_SEC << " secs" << endl;
+#endif
 
 	begin = clock();
 	for (const auto& t : polygons){
@@ -425,11 +442,12 @@ void Renderer::zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr
 			}
 		}
 	}
+#ifdef DEBUG_PRINT
 	cout << "Draw wireframe time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
-
+#endif
 }
 
-vec4& Renderer::reflect(const vec4& V1, const vec4& V2) {
+vec4 Renderer::reflect(const vec4& V1, const vec4& V2) {
 	return V1 - 2.0 * (dot(V1, V2)) * V2;
 }
 
