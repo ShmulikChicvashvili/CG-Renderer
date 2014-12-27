@@ -439,7 +439,7 @@ vec3 Renderer::calculateIlluminationIntensity(const Material& pixelMaterial, con
 	assert((cmpFloat(length(lightDirection), 1) || lightDirection == vec4(0, 0, 0, 0)) && lightDirection.w == 0);
 	assert(cmpFloat(length(norm), 1) && norm.w == 0);
 
-	vec3 illuminationIntensity = 0.0;
+	vec3 illuminationIntensity = 0.0; 
 	// Ambient illumination
 	illuminationIntensity += pixelMaterial.getAmbient() * lightMaterial.getAmbient();
 	// Defuse illumination
