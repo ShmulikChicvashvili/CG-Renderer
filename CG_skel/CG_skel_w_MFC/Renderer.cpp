@@ -520,7 +520,7 @@ void Renderer::setColor(const int x, const int y, const Triangle& t, const vecto
 
 		for (int i = 0; i < lights.size(); i++) {
 			phongLightDir = u * v1.getLightDirs().at(i) + v * v2.getLightDirs().at(i) + w * v3.getLightDirs().at(i);
-			phongLightDir = normalize(phongLightDir);
+			phongLightDir = length(phongLightDir) == 0 ? phongLightDir : normalize(phongLightDir);
 
 			illuminationIntensity += calculateIlluminationIntensity(phongMaterial, lights[i]->getMaterial(), phongLightDir,
 				phongNorm, phongEyeVec);

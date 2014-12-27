@@ -876,8 +876,8 @@ int my_main(int argc, char **argv)
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	//shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
-	shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
+	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	//shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
 	scene->loadLight(p);
 
 	//----------------------------------------------------------------------------
