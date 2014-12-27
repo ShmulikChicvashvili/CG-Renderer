@@ -45,6 +45,11 @@ Material operator+(const Material& m1, const Material& m2){
 	return Material(m1.getAmbient() + m2.getAmbient(), m1.getDiffuse() + m2.getDiffuse(), m1.getSpecular() + m2.getSpecular());
 }
 
+inline
+Material operator-(const Material& m1, const Material& m2){
+	return Material(m1.getAmbient() - m2.getAmbient(), m1.getDiffuse() - m2.getDiffuse(), m1.getSpecular() - m2.getSpecular());
+}
+
 class Vertex
 {
 	vec4 coords;
