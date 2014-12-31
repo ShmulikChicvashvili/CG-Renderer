@@ -81,7 +81,7 @@ Axes selectedAxis = ALL;
 
 Action selectedAction = scale;
 
-void materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
+bool materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
 	CXyzDialog ambientDlg("Ambient Color");
 	CXyzDialog diffuseDlg("Diffuse Color");
 	CXyzDialog specularDlg("Specular Color");
@@ -90,17 +90,27 @@ void materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
 	if (ambientDlg.DoModal() == IDOK) {
 		ambient = ambientDlg.GetXYZ();
 	}
-	if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
+	else {
+		return false;
+	}
+	//if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return false; }
 	cout << "Choose Diffuse Color" << endl;
 	if (diffuseDlg.DoModal() == IDOK) {
 		diffuse = diffuseDlg.GetXYZ();
 	}
-	if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
+	else {
+		return false;
+	}
+	//if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return false; }
 	cout << "Choose Specular Color" << endl;
 	if (specularDlg.DoModal() == IDOK) {
 		specular = specularDlg.GetXYZ();
 	}
-	if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
+	else {
+		return false;
+	}
+	//if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return false; }
+	return true;
 }
 
 void doTranslation(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
@@ -421,9 +431,11 @@ void changeMaterial(vector<shared_ptr<Model>>& currentModels, const int activeMo
 	vec3 diffuse = 0.0;
 	vec3 specular = 0.0;
 
-	materialDialog(ambient, diffuse, specular);
+	bool canBeChanged = materialDialog(ambient, diffuse, specular);
 
-	currentModels[activeModel]->setMaterial(Material(ambient, diffuse, specular));
+	if (canBeChanged) {
+		currentModels[activeModel]->setMaterial(Material(ambient, diffuse, specular));
+	}
 }
 
 void keyboard(unsigned char key, int x, int y)
