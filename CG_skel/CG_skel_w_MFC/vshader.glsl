@@ -1,16 +1,21 @@
 #version 150
 
+in vec4 vPosition;
+in vec4 vNormal;
+in vec4 vFaceNormal;
 
-in  vec2 vTexCoord;
-in  vec2 vPosition;
+uniform mat4 uModelviewMtx;
+uniform mat4 uNormModelviewMtx;
+uniform mat4 uProjMtx;
 
-
-out vec2 texCoord;
+out vec4 fNormal;
+out vec4 fFaceNormal;
 
 void main()
 {
-    gl_Position.xy = vPosition;
-    gl_Position.z=0;
-    gl_Position.w=1;
-    texCoord = vTexCoord;
+	vec4 camSpace = uModelviewMtx * vPosition;
+    
+	gl_Position = uProjMtx * camSpace;
+	fNormal = uNormModelviewMtx * vNormal;
+	fFaceNormal = uNormModelviewMtx * vFaceNormal;
 }
