@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Face.h"
+#include <exception>
 
 const vector<Vertex>& Face::getVertices() const{
 	return vertices;
@@ -41,6 +42,7 @@ void Face::calcNorm(){
 	assert(vertices.size() == 3);
 	if (vertices.size() != 3){
 		std::cout << "Tried to calc normal for non triangle face" << std::endl;
+		throw std::exception("Tried to calc normal for non triangle face");
 	}
 	const vec4& v0 = vertices[0].getCoords();
 	const vec4& v1 = vertices[1].getCoords();
@@ -55,6 +57,14 @@ void Face::calcNorm(){
 	norm.w = 0;
 
 	hasNorm = length(norm) != 0;
+	assert(hasNorm);
+	if (hasNorm){
+		for (auto& v : vertices){
+			if (!v.hasNormal()){
+				v.setNorm(norm);
+			}
+		}
+	}
 }
 
 const vec4& Face::getMidPoint() const{

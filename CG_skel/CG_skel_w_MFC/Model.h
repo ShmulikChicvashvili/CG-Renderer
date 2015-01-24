@@ -13,7 +13,7 @@ private:
 	GLuint vao;
 protected:
 	Renderer* renderer;
-	Model(Renderer* _renderer) : renderer(_renderer){}
+	Model() : renderer(NULL) {}
 
 	vector<Face> faces;
 
@@ -48,6 +48,6 @@ public:
 	void setActive(const bool isActive);
 	bool getActive() const;
 
-	void addToRenderer();
+	void setRenderer(Renderer* renderer);
 	void draw() const;
 };

@@ -11,19 +11,19 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CG_skel_w_MFC", "CG_skel_w_
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 2
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://eyalt.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = CG_skel_w_MFC\\CG_skel_w_MFC.vcxproj
-		SccProjectName1 = CG_skel_w_MFC
-		SccLocalPath1 = CG_skel_w_MFC
-		SccProjectUniqueName2 = freeglut\\freeglut.vcxproj
-		SccProjectName2 = freeglut
-		SccLocalPath2 = freeglut
-		SccProjectUniqueName3 = glew\\glew.vcxproj
-		SccProjectName3 = glew
-		SccLocalPath3 = glew
+		SccProjectUniqueName0 = freeglut\\freeglut.vcxproj
+		SccProjectName0 = freeglut
+		SccAuxPath0 = https://eyalt.visualstudio.com/defaultcollection
+		SccLocalPath0 = freeglut
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = glew\\glew.vcxproj
+		SccProjectName1 = glew
+		SccAuxPath1 = https://eyalt.visualstudio.com/defaultcollection
+		SccLocalPath1 = glew
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

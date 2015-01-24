@@ -114,7 +114,8 @@ bool Model::getActive() const {
 	return this->isActive;
 }
 
-void Model::addToRenderer(){
+void Model::setRenderer(Renderer* renderer){
+	this->renderer = renderer;
 	vao = renderer->addModel(getFaces());
 }
 

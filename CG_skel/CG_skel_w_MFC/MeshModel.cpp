@@ -67,7 +67,7 @@ vec2 vec2fFromStream(std::istream & aStream)
 	return vec2(x, y);
 }
 
-MeshModel::MeshModel(string fileName, Renderer* _renderer) : Model(_renderer)
+MeshModel::MeshModel(string fileName)
 {
 	loadFile(fileName);
 }

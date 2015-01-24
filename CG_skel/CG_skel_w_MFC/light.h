@@ -6,7 +6,7 @@ class Light :
 	Material material;
 
 public:
-	Light(const Material& mat, Renderer* _renderer);
+	Light(const Material& mat);
 	virtual ~Light();
 
 	virtual vec4 getDirectionFromPoint(const vec4& p) const = 0;

@@ -2,7 +2,7 @@
 #include "PrimMeshModel.h"
 
 
-PrimMeshModel::PrimMeshModel(Renderer* _renderer) : Model(_renderer)
+PrimMeshModel::PrimMeshModel()
 {
 	const GLfloat side = 0.5;
 	for (int i = 0; i < 3; i++){

@@ -5,7 +5,7 @@ class PointLight :
 {
 	vec4 point;
 public:
-	PointLight(const Material& mat, const vec4& p, Renderer* _renderer);
+	PointLight(const Material& mat, const vec4& p);
 	~PointLight();
 
 	const vec4& getPoint() const { return point; }

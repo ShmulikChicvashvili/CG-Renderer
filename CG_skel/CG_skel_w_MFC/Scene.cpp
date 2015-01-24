@@ -13,6 +13,7 @@ using namespace std;
 void Scene::addModel(const shared_ptr<Model>& pModel){
 	assert(pModel);
 	models.push_back(pModel);
+	pModel->setRenderer(m_renderer);
 
 	if (activeModel >= 0) {
 		models[activeModel]->setActive(false);
@@ -30,7 +31,7 @@ void Scene::loadMeshModel(const Model& m){
 
 void Scene::loadOBJModel(string fileName)
 {
-	shared_ptr<Model> pModel = shared_ptr<Model>(new MeshModel(fileName, m_renderer));
+	shared_ptr<Model> pModel = shared_ptr<Model>(new MeshModel(fileName));
 	addModel(pModel);
 }
 
@@ -80,28 +81,20 @@ void Scene::drawDemo()
 // Shmulik & Eyal stuff
 
 void Scene::loadCamera() {
-	shared_ptr<Camera> pCam = shared_ptr<Camera>(new Camera(m_renderer));
+	shared_ptr<Camera> pCam = shared_ptr<Camera>(new Camera());
 	pCam->translate(0, 0, 1);
-	models.push_back(pCam);
+	
+	addModel(pCam);
 	cameras.push_back(pCam);
 	activeCamera = cameras.size() - 1;
-	activeModel = models.size() - 1;
-	for (int i = 0; i < activeModel; i++) {
-		models[i]->setActive(false);
-	}
-	models[activeModel]->setActive(true);
 }
 
 void Scene::loadLight(const shared_ptr<Light>& l) {
 	shared_ptr<Light> pLight = shared_ptr<Light>(l);
-	models.push_back(pLight);
+	
+	addModel(pLight);
 	lights.push_back(pLight);
 	activeLight = lights.size() - 1;
-	activeModel = models.size() - 1;
-	for (int i = 0; i < activeModel; i++) {
-		models[i]->setActive(false);
-	}
-	models[activeModel]->setActive(true);
 }
 
 vector<shared_ptr<Model>>& Scene::getModels() {

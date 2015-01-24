@@ -6,11 +6,11 @@ using namespace std;
 class MeshModel : public Model
 {
 protected :
-	MeshModel(Renderer* _renderer) : Model(_renderer) {}
+	MeshModel() {}
 
 public:
 
-	MeshModel(string fileName, Renderer* _renderer);
+	MeshModel(string fileName);
 	~MeshModel(void);
 	void loadFile(string fileName);
 

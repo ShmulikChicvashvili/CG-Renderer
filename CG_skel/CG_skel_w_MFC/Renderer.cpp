@@ -18,7 +18,14 @@
 
 #define SPEC_SHININESS 3
 
-
+void checkError()
+{
+	int a = glGetError();
+	if (a != GL_NO_ERROR)
+	{
+		throw exception("An openGL error occured: " + a);
+	}
+}
 
 
 Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT)
@@ -36,7 +43,7 @@ Renderer::Renderer(int width, int height) : m_width(width), m_height(height), co
 	glViewport(0, 0, m_width, m_height);
 
 	program = InitShader("vshader.glsl", "fshader.glsl");
-
+	
 	fillShaderParams();
 }
 
@@ -46,12 +53,20 @@ Renderer::~Renderer(void)
 
 
 void Renderer::fillShaderParams() {
+	glUseProgram(program);
+	checkError();
 	shaderParams[ShaderParamName::V_POSITION] = ShaderParam(glGetAttribLocation(program, "vPosition"), 4);
+	checkError();
 	shaderParams[ShaderParamName::V_NORMAL] = ShaderParam(glGetAttribLocation(program, "vNormal"), 4);
+	checkError();
 	shaderParams[ShaderParamName::V_FACE_NORMAL] = ShaderParam(glGetAttribLocation(program, "vFaceNormal"), 4);
+	checkError();
 	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelViewMtx"), 16);
+	checkError();
 	shaderParams[ShaderParamName::U_NORM_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uNormModelViewMtx"), 16);
+	checkError();
 	shaderParams[ShaderParamName::U_PROJ_MTX] = ShaderParam(glGetUniformLocation(program, "uProjMtx"), 16);
+	checkError();
 }
 
 void Renderer::CreateBuffers(int width, int height)
@@ -161,9 +176,17 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 
 	for (auto it = vbos.begin(); it != vbos.end(); ++it) {
 		ShaderParam& param = shaderParams.at(it->first);
-		glBindBuffer(GL_ARRAY_BUFFER, it->second);
-		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, 0, 0);
+
+		assert(param.id != -1 && it->second != -1);
+
 		glEnableVertexAttribArray(param.id);
+		checkError();
+		cout << "Enabled attribute with id: " << param.id << endl;
+		glBindBuffer(GL_ARRAY_BUFFER, it->second);
+		checkError();
+		cout << "Binded vbo with id: " << it->second << endl;
+		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, 0, 0);
+		checkError();
 	}
 
 	return vao;
@@ -177,14 +200,20 @@ void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat
 
 void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
 	glUseProgram(program);
+	checkError();
 
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_MODELVIEW_MTX).id, 1, GL_TRUE, viewMtx * modelMtx);
+	checkError();
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_NORM_MODELVIEW_MTX).id, 1, GL_TRUE, normViewMtx * normModelMtx);
+	checkError();
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx);
+	checkError();
 
 	glBindVertexArray(vao);
+	checkError();
 
 	glDrawArrays(GL_TRIANGLES, 0, size);
+	checkError();
 }
 
 /////////////////////////////////////////////////////
@@ -249,20 +278,20 @@ void Renderer::CreateOpenGLBuffer()
 
 void Renderer::SwapBuffers()
 {
-
-	int a = glGetError();
-	glActiveTexture(GL_TEXTURE0);
-	a = glGetError();
-	glBindTexture(GL_TEXTURE_2D, gScreenTex);
-	a = glGetError();
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGB, GL_FLOAT, m_outBuffer);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	a = glGetError();
-
-	glBindVertexArray(gScreenVtc);
-	a = glGetError();
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	a = glGetError();
 	glutSwapBuffers();
-	a = glGetError();
+	//int a = glGetError();
+	//glActiveTexture(GL_TEXTURE0);
+	//a = glGetError();
+	//glBindTexture(GL_TEXTURE_2D, gScreenTex);
+	//a = glGetError();
+	//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, GL_RGB, GL_FLOAT, m_outBuffer);
+	//glGenerateMipmap(GL_TEXTURE_2D);
+	//a = glGetError();
+
+	//glBindVertexArray(gScreenVtc);
+	//a = glGetError();
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	//a = glGetError();
+	//glutSwapBuffers();
+	//a = glGetError();
 }
