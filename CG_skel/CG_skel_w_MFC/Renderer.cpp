@@ -23,6 +23,7 @@ void checkError()
 	int a = glGetError();
 	if (a != GL_NO_ERROR)
 	{
+		cout << "Throwing openGL error exception. erro no. " << a << endl;
 		throw exception("An openGL error occured: " + a);
 	}
 }
@@ -55,7 +56,7 @@ Renderer::~Renderer(void)
 void Renderer::fillShaderParams() {
 	cout << "Filling shader parameters" << endl;
 	glUseProgram(program);
-	cout << "Calles useProgram" << endl;
+	cout << "Called useProgram" << endl;
 	checkError();
 	cout << "Using program: " << program << endl;
 	shaderParams[ShaderParamName::V_POSITION] = ShaderParam(glGetAttribLocation(program, "vPosition"), 4);
@@ -71,6 +72,7 @@ void Renderer::fillShaderParams() {
 	checkError();
 	shaderParams[ShaderParamName::U_PROJ_MTX] = ShaderParam(glGetUniformLocation(program, "uProjMtx"), 16);
 	checkError();
+	cout << "All shader parameters were filled" << endl;
 }
 
 void Renderer::CreateBuffers(int width, int height)
