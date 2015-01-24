@@ -4,39 +4,33 @@
 #include "GL/freeglut_ext.h"
 #include "InitShader.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <exception>
+
 // Create a NULL-terminated string by reading the provided file
-static char*
+static std::string
 readShaderSource(const char* shaderFile)
 {
-    FILE* fp = fopen(shaderFile, "r");
+	std::ifstream fp(shaderFile);
+	std::stringstream buffer;
+	buffer << fp.rdbuf();
 
-    if ( fp == NULL ) { return NULL; }
-
-    fseek(fp, 0L, SEEK_END);
-    long size = ftell(fp);
-
-    fseek(fp, 0L, SEEK_SET);
-    char* buf = new char[size + 1];
-    fread(buf, 1, size, fp);
-
-    buf[size] = '\0';
-    fclose(fp);
-
-    return buf;
+	return buffer.str();
 }
-
 
 // Create a GLSL program object from vertex and fragment shader files
 GLuint
 InitShader(const char* vShaderFile, const char* fShaderFile)
 {
-    struct Shader {
+	struct Shader {
 		const char*  filename;
 		GLenum       type;
-		GLchar*      source;
+		std::string	 source;
+		//GLchar*      source;
 	}  shaders[2] = {
-			{ vShaderFile, GL_VERTEX_SHADER, NULL },
-			{ fShaderFile, GL_FRAGMENT_SHADER, NULL }
+			{ vShaderFile, GL_VERTEX_SHADER, "" },
+			{ fShaderFile, GL_FRAGMENT_SHADER, "" }
 	};
 
 	GLuint program = glCreateProgram();
@@ -44,13 +38,15 @@ InitShader(const char* vShaderFile, const char* fShaderFile)
 	for (int i = 0; i < 2; ++i) {
 		Shader& s = shaders[i];
 		s.source = readShaderSource(s.filename);
-		if (shaders[i].source == NULL) {
+		if (shaders[i].source.empty()) {
 			std::cerr << "Failed to read " << s.filename << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
 		GLuint shader = glCreateShader(s.type);
-		glShaderSource(shader, 1, (const GLchar**)&s.source, NULL);
+		const char* shaderContainer = s.source.c_str();
+		GLint size = s.source.length();
+		glShaderSource(shader, 1, (const GLchar**)&(shaderContainer), &size);
 		glCompileShader(shader);
 
 		GLint  compiled;
@@ -66,8 +62,6 @@ InitShader(const char* vShaderFile, const char* fShaderFile)
 
 			exit(EXIT_FAILURE);
 		}
-
-		delete[] s.source;
 
 		glAttachShader(program, shader);
 	}
@@ -89,8 +83,8 @@ InitShader(const char* vShaderFile, const char* fShaderFile)
 		exit(EXIT_FAILURE);
 	}
 
-    /* use program object */
-    glUseProgram(program);
+	/* use program object */
+	glUseProgram(program);
 
-    return program;
+	return program;
 }

@@ -11,7 +11,7 @@
 #include <memory>
 #include "Face.h"
 
-#define NUMBER_VBOS 6
+#define NUMBER_VBOS 3
 #define VERTICES 0
 #define NORMALS 1
 #define FACE_NORMALS 2
@@ -52,7 +52,7 @@ enum class ShaderParamName{
 };
 
 struct ShaderParam{
-	GLuint id;
+	GLint id;
 	GLuint size;
 
 	ShaderParam() : ShaderParam(0, 0){}

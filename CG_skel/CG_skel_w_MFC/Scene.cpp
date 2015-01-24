@@ -49,7 +49,7 @@ void Scene::draw()
 
 	begin = clock();
 	Camera& cam = *cameras[getActiveCamera()];
-	m_renderer->setCamera(cam.getViewMatrix(),cam.getViewNormalMatrix(),cam.getProjectionMatrix());
+	m_renderer->setCamera(cam.getViewMatrix(), cam.getViewNormalMatrix(), cam.getProjectionMatrix());
 #ifdef DEBUG_PRINT
 	cout << "Set renderer cam" << endl;
 #endif

@@ -843,10 +843,11 @@ void initMenu()
 
 int my_main(int argc, char **argv)
 {
+
 	//----------------------------------------------------------------------------
 	// Initialize window
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(INIT_WIDTH, INIT_HEIGHT);
 	glutInitContextVersion(OPEN_GL_VERSION);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
@@ -872,13 +873,14 @@ int my_main(int argc, char **argv)
 #else
 	printf("DEBUG_PRINT is NOT defined\n");
 #endif
+	glEnable(GL_DEPTH_TEST);
 
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
 	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
 	//shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
-	scene->loadLight(p);
+	//scene->loadLight(p);
 
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks

@@ -18,16 +18,16 @@
 
 #define SPEC_SHININESS 3
 
+
 void checkError()
 {
 	int a = glGetError();
 	if (a != GL_NO_ERROR)
 	{
-		cout << "Throwing openGL error exception. erro no. " << a << endl;
-		throw exception("An openGL error occured: " + a);
+		std::cout << "Throwing openGL error exception. erro no. " << a << endl;
+		throw std::exception("An openGL error occured: " + a);
 	}
 }
-
 
 Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT)
 {
@@ -44,7 +44,9 @@ Renderer::Renderer(int width, int height) : m_width(width), m_height(height), co
 	glViewport(0, 0, m_width, m_height);
 
 	program = InitShader("vshader.glsl", "fshader.glsl");
-	
+	checkError();
+	cout << "Renderer loaded program" << endl;
+
 	fillShaderParams();
 }
 
@@ -55,23 +57,34 @@ Renderer::~Renderer(void)
 
 void Renderer::fillShaderParams() {
 	cout << "Filling shader parameters" << endl;
-	glUseProgram(program);
-	cout << "Called useProgram" << endl;
+	//glUseProgram(program);
 	checkError();
 	cout << "Using program: " << program << endl;
+	
 	shaderParams[ShaderParamName::V_POSITION] = ShaderParam(glGetAttribLocation(program, "vPosition"), 4);
 	checkError();
-	cout << "Inserted vPosition" << endl;
+	cout << "V_POSITION id: " << shaderParams[ShaderParamName::V_POSITION].id << endl;
+	
 	shaderParams[ShaderParamName::V_NORMAL] = ShaderParam(glGetAttribLocation(program, "vNormal"), 4);
 	checkError();
+	cout << "V_NORMAL id: " << shaderParams[ShaderParamName::V_NORMAL].id << endl;
+	
 	shaderParams[ShaderParamName::V_FACE_NORMAL] = ShaderParam(glGetAttribLocation(program, "vFaceNormal"), 4);
 	checkError();
-	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelViewMtx"), 16);
+	cout << "V_FACE_NORMAL id: " << shaderParams[ShaderParamName::V_FACE_NORMAL].id << endl;
+	
+	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelviewMtx"), 16);
 	checkError();
-	shaderParams[ShaderParamName::U_NORM_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uNormModelViewMtx"), 16);
+	cout << "U_MODELVIEW_MTX id: " << shaderParams[ShaderParamName::U_MODELVIEW_MTX].id << endl;
+	
+	shaderParams[ShaderParamName::U_NORM_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uNormModelviewMtx"), 16);
 	checkError();
+	cout << "U_NORM_MODELVIEW_MTX id: " << shaderParams[ShaderParamName::U_NORM_MODELVIEW_MTX].id << endl;
+	
 	shaderParams[ShaderParamName::U_PROJ_MTX] = ShaderParam(glGetUniformLocation(program, "uProjMtx"), 16);
 	checkError();
+	cout << "U_PROJ_MTX id: " << shaderParams[ShaderParamName::U_PROJ_MTX].id << endl;
+	
 	cout << "All shader parameters were filled" << endl;
 }
 
@@ -142,13 +155,14 @@ void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 
 
 GLuint Renderer::addModel(const vector<Face>& faces) {
+	cout << "Adding model to renderer with " << faces.size() << " faces" << endl;
 	GLuint vao;
 	map<ShaderParamName, GLuint> vbos;
 
 	// First we arrange everything in vectors
-	vector<vec4> vertices;
-	vector<vec4> normals;
-	vector<vec4> faceNormals;
+	vector<vec4>& vertices = *(new vector<vec4>());
+	vector<vec4>& normals = *(new vector<vec4>());
+	vector<vec4>& faceNormals = *(new vector<vec4>());
 	for (auto& f : faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
@@ -156,41 +170,52 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 			faceNormals.push_back(f.getNorm());
 		}
 	}
+	assert(vertices.size() == faces.size() * 3);
+	assert(normals.size() == faces.size() * 3);
+	assert(faceNormals.size() == faces.size() * 3);
 
 	// Now we will create the vbos
 	GLuint buffers[NUMBER_VBOS];
 	glGenBuffers(NUMBER_VBOS, buffers);
+	checkError();
 
 	// Vertices vbo
 	vbos[ShaderParamName::V_POSITION] = buffers[VERTICES];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+	checkError();
 
 	// Normals vbo
 	vbos[ShaderParamName::V_NORMAL] = buffers[NORMALS];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * normals.size(), normals.data(), GL_STATIC_DRAW);
+	checkError();
 
 	// Face's normals vbo
 	vbos[ShaderParamName::V_FACE_NORMAL] = buffers[FACE_NORMALS];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_FACE_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceNormals.size(), faceNormals.data(), GL_STATIC_DRAW);
+	checkError();
 
 	// Now we create the vao
 	glGenVertexArrays(1, &vao);
+	checkError();
 	glBindVertexArray(vao);
+
+	cout << "Binded vao " << vao << endl;
 
 	for (auto it = vbos.begin(); it != vbos.end(); ++it) {
 		ShaderParam& param = shaderParams.at(it->first);
+		GLuint vbo = it->second;
 
-		assert(param.id != -1 && it->second != -1);
+		assert(param.id != -1 && vbo != -1);
 
 		glEnableVertexAttribArray(param.id);
 		checkError();
 		cout << "Enabled attribute with id: " << param.id << endl;
-		glBindBuffer(GL_ARRAY_BUFFER, it->second);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		checkError();
-		cout << "Binded vbo with id: " << it->second << endl;
+		cout << "Binded vbo with id: " << vbo << endl;
 		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, 0, 0);
 		checkError();
 	}
@@ -215,9 +240,20 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx);
 	checkError();
 
+//#ifdef DEBUG_PRINT
+	cout << "Drawing vao " << vao << endl;
+	cout << "Number of vertices: " << size << endl;
+	cout << "ModelView: " << viewMtx * modelMtx << endl;
+	cout << "NormModelView: " << normViewMtx * normModelMtx << endl;
+	cout << "ProjMtx: " << projMtx << endl;
+//#endif
+
 	glBindVertexArray(vao);
 	checkError();
 
+
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
 }
