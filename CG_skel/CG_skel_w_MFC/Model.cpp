@@ -114,3 +114,11 @@ bool Model::getActive() const {
 	return this->isActive;
 }
 
+void Model::addToRenderer(){
+	vao = renderer->addModel(getFaces());
+}
+
+void Model::draw() const{
+	renderer->drawModel(vao, getModelMatrix(), getModelNormalMatrix());
+}
+

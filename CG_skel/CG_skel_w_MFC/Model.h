@@ -9,6 +9,8 @@ using std::vector;
 enum Axes {X, Y, Z, ALL};
 
 class Model {
+private:
+	GLuint vao;
 protected:
 	Renderer* renderer;
 	Model(Renderer* _renderer) : renderer(_renderer){}
@@ -45,4 +47,7 @@ public:
 
 	void setActive(const bool isActive);
 	bool getActive() const;
+
+	void addToRenderer();
+	void draw() const;
 };

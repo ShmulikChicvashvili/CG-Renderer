@@ -30,14 +30,8 @@ void Scene::loadMeshModel(const Model& m){
 
 void Scene::loadOBJModel(string fileName)
 {
-	shared_ptr<Model> pModel = shared_ptr<Model>(new MeshModel(fileName));
+	shared_ptr<Model> pModel = shared_ptr<Model>(new MeshModel(fileName, m_renderer));
 	addModel(pModel);
-	//models.push_back(pModel);
-	//activeModel = models.size() - 1;
-	//models[activeModel]->setActive(true);
-	//if (activeModel - 1 >= 0) {
-	//	models[activeModel - 1]->setActive(false);
-	//}
 }
 
 void Scene::draw()
@@ -53,10 +47,21 @@ void Scene::draw()
 #endif
 
 	begin = clock();
-	m_renderer->setBuffer(models, *cameras[getActiveCamera()], lights);
+	Camera& cam = *cameras[getActiveCamera()];
+	m_renderer->setCamera(cam.getViewMatrix(),cam.getViewNormalMatrix(),cam.getProjectionMatrix());
 #ifdef DEBUG_PRINT
-	cout << "Scene draw setBuffer time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
+	cout << "Set renderer cam" << endl;
 #endif
+	
+	for (const auto& pModel : models){
+		pModel->draw();
+	}
+#ifdef DEBUG_PRINT
+	cout << "All models were drawn" << endl;
+#endif
+
+	//m_renderer->setBuffer(models, *cameras[getActiveCamera()], lights);
+
 	begin = clock();
 	m_renderer->SwapBuffers();
 #ifdef DEBUG_PRINT
@@ -75,8 +80,7 @@ void Scene::drawDemo()
 // Shmulik & Eyal stuff
 
 void Scene::loadCamera() {
-	shared_ptr<Camera> pCam = shared_ptr<Camera>(new Camera());
-	//shared_ptr<Camera> pCam = dynamic_pointer_cast<Camera, Model>(pModel);
+	shared_ptr<Camera> pCam = shared_ptr<Camera>(new Camera(m_renderer));
 	pCam->translate(0, 0, 1);
 	models.push_back(pCam);
 	cameras.push_back(pCam);

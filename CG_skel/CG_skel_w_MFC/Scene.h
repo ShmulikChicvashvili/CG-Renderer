@@ -68,4 +68,5 @@ public:
 
 	vector<shared_ptr<Model>>& getModels();
 	vector<shared_ptr<Camera>>& getCameras();
+	Renderer* getRenderer();
 };
