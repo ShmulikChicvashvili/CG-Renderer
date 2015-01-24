@@ -685,7 +685,7 @@ void actionMenu(int id) {
 void meshMenu(int id){
 	switch (id){
 	case LOAD_CUBE:
-		scene->loadMeshModel(PrimMeshModel(renderer));
+		scene->loadMeshModel(PrimMeshModel());
 		display();
 		break;
 	default:
@@ -761,7 +761,7 @@ void lightMenu(int id) {
 			vec3 temp = pointDlg.GetXYZ();
 			point = vec4(temp.x, temp.y, temp.z, 1);
 		}
-		shared_ptr<Light> l(new PointLight(Material(ambient,diffuse,specular), point, renderer));
+		shared_ptr<Light> l(new PointLight(Material(ambient,diffuse,specular), point));
 		scene->loadLight(l);
 	}
 		break;
@@ -776,7 +776,7 @@ void lightMenu(int id) {
 			normal = vec4(temp.x, temp.y, temp.z, 0);
 		}
 		if (normal == vec4(0, 0, 0, 0)) { return;  }
-		shared_ptr<Light> l(new ParallelLight(Material(ambient, diffuse, specular), normal, renderer));
+		shared_ptr<Light> l(new ParallelLight(Material(ambient, diffuse, specular), normal));
 		scene->loadLight(l);
 	}
 		break;
@@ -876,7 +876,7 @@ int my_main(int argc, char **argv)
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1), renderer));
+	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
 	//shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
 	scene->loadLight(p);
 

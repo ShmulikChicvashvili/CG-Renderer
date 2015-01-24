@@ -53,10 +53,14 @@ Renderer::~Renderer(void)
 
 
 void Renderer::fillShaderParams() {
+	cout << "Filling shader parameters" << endl;
 	glUseProgram(program);
+	cout << "Calles useProgram" << endl;
 	checkError();
+	cout << "Using program: " << program << endl;
 	shaderParams[ShaderParamName::V_POSITION] = ShaderParam(glGetAttribLocation(program, "vPosition"), 4);
 	checkError();
+	cout << "Inserted vPosition" << endl;
 	shaderParams[ShaderParamName::V_NORMAL] = ShaderParam(glGetAttribLocation(program, "vNormal"), 4);
 	checkError();
 	shaderParams[ShaderParamName::V_FACE_NORMAL] = ShaderParam(glGetAttribLocation(program, "vFaceNormal"), 4);
