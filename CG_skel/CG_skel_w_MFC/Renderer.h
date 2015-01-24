@@ -118,10 +118,19 @@ public:
 	//////////////////////////////
 	// Shmulik & Eyal stuff.
 
+	void reshape(int width, int height);
+	void InitializeBuffer();
+
+	void setColorMethod(const ColorMethod& cm);
+
+	bool getDrawNormals();
+	void setDrawNormals(const bool drawNormals);
+	bool getDrawFaceNormals();
+	void setDrawFaceNormals(const bool drawFaceNorms);
 	
-	GLuint addModel(const vector<Face>& faces);
+	GLuint addModel(const vector<Face>& faces) const;
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
-	void drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx);
+	void drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const;
 	//////////////////////////////
 };
 

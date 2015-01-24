@@ -82,6 +82,43 @@ void Renderer::SetDemoBuffer()
 /////////////////////////////////////////////////////
 // Shmulik & Eyal stuff
 
+void Renderer::setColorMethod(const ColorMethod& cm){
+	colorMethod = cm;
+}
+
+void Renderer::reshape(int width, int height){
+	resizingMatrix = mat4((float)initial_width / width, 0, 0, 0,
+		0, (float)initial_height / height, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1);
+	CreateBuffers(width, height);
+}
+
+void Renderer::InitializeBuffer() {
+	for (int x = 0; x < m_width; x++) {
+		for (int y = 0; y < m_height; y++) {
+			m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
+			m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
+			m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
+		}
+	}
+}
+
+bool Renderer::getDrawNormals() {
+	return this->drawVertexNormals;
+}
+void Renderer::setDrawNormals(const bool drawNormals) {
+	this->drawVertexNormals = drawNormals;
+}
+
+bool Renderer::getDrawFaceNormals() {
+	return this->drawFaceNorms;
+}
+
+void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
+	this->drawFaceNorms = drawFaceNorms;
+}
+
 
 GLuint Renderer::addModel(const vector<Face>& faces) {
 	GLuint vao;
@@ -122,7 +159,10 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	
+	for (auto it = vbos.begin(); it != vbos.end(); ++it) {
+		glVertexAttribPointer(shaderParams.at(it->first).first, shaderParams.at(it->first).second, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(shaderParams.at(it->first).first);
+	}
 
 	return vao;
 }
