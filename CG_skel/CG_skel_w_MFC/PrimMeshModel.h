@@ -4,6 +4,6 @@ class PrimMeshModel :
 	public Model
 {
 public:
-	PrimMeshModel();
+	PrimMeshModel(Renderer* _renderer);
 };
 

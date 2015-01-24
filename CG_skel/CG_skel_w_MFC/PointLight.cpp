@@ -2,8 +2,8 @@
 #include "PointLight.h"
 
 
-PointLight::PointLight(const Material& mat, const vec4& p) :
-Light(mat), point(p)
+PointLight::PointLight(const Material& mat, const vec4& p, Renderer* _renderer) :
+Light(mat, _renderer), point(p)
 {
 	assert(p.w == 1);
 	vec4 temp(-0.1, -0.1, 0, 1);

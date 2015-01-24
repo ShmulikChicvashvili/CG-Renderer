@@ -2,8 +2,8 @@
 #include "ParallelLight.h"
 
 
-ParallelLight::ParallelLight(const Material& mat, const vec4& dir):
-Light(mat), direction(normalize(dir))
+ParallelLight::ParallelLight(const Material& mat, const vec4& dir, Renderer* _renderer) :
+Light(mat, _renderer), direction(normalize(dir))
 {
 	assert(dir.w == 0);
 	assert(length(dir) != 0);

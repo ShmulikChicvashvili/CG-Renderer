@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include <assert.h>
 
-Camera::Camera(){
+Camera::Camera(Renderer* _renderer) : Model(_renderer){
 	for (int i = 0; i < 2; i++){
 		Face f;
 		vec4 v(0,0,0.2,1);

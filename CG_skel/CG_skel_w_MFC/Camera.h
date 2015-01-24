@@ -11,7 +11,7 @@ class Camera : public Model {
 	mat4 projection;
 	float left, right, bottom, top, zNear, zFar;
 public:
-	Camera();
+	Camera(Renderer* _renderer);
 
 	CameraLookAtError LookAt(const vec4& eye, const vec4& at, const vec4& up);
 	void Ortho();

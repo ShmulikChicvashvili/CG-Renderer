@@ -2,6 +2,7 @@
 #include <vector>
 #include "mat.h"
 #include "Face.h"
+#include "Renderer.h"
 
 using std::vector;
 
@@ -9,6 +10,9 @@ enum Axes {X, Y, Z, ALL};
 
 class Model {
 protected:
+	Renderer* renderer;
+	Model(Renderer* _renderer) : renderer(_renderer){}
+
 	vector<Face> faces;
 
 	mat4 spinScaleMtx; // spinning and scaling are done in model spcae

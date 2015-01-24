@@ -5,7 +5,7 @@ class ParallelLight :
 {
 	vec4 direction;
 public:
-	ParallelLight(const Material& mat, const vec4& dir);
+	ParallelLight(const Material& mat, const vec4& dir, Renderer* _renderer);
 	~ParallelLight();
 
 	const vec4& getDirection() const { return direction; }

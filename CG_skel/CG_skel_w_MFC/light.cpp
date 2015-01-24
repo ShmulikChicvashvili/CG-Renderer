@@ -2,7 +2,7 @@
 #include "Light.h"
 
 
-Light::Light(const Material& mat) :material(mat)
+Light::Light(const Material& mat, Renderer* _renderer) : Model(_renderer), material(mat)
 {
 
 }
