@@ -120,7 +120,7 @@ void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 }
 
 
-GLuint Renderer::addModel(const vector<Face>& faces) {
+GLuint Renderer::addModel(const vector<Face>& faces) const {
 	GLuint vao;
 	map<ShaderParam, GLuint> vbos;
 
@@ -165,6 +165,14 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	}
 
 	return vao;
+}
+
+void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx) {
+
+}
+
+void Renderer::drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const {
+
 }
 
 /////////////////////////////////////////////////////
