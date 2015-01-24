@@ -118,7 +118,7 @@ public:
 	
 	GLuint addModel(const vector<Face>& faces) const;
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
-	void drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const;
+	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	//////////////////////////////
 };
 

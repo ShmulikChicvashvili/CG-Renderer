@@ -169,17 +169,20 @@ GLuint Renderer::addModel(const vector<Face>& faces) const {
 
 void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx) {
 	this->viewMtx = viewMtx;
-	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_MODELVIEW_MTX).first, 1, GL_TRUE, viewMtx);
-
 	this->normViewMtx = normViewMtx;
-	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_NORM_MODELVIEW_MTX).first, 1, GL_TRUE, normViewMtx);
-
 	this->projMtx = projMtx;
-	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_PROJ_MTX).first, 1, GL_TRUE, projMtx);
 }
 
-void Renderer::drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const {
+void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
+	glUseProgram(program);
 
+	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_MODELVIEW_MTX).first, 1, GL_TRUE, viewMtx * modelMtx);
+	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_NORM_MODELVIEW_MTX).first, 1, GL_TRUE, normViewMtx * normModelMtx);
+	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_PROJ_MTX).first, 1, GL_TRUE, projMtx);
+
+	glBindVertexArray(vao);
+
+	glDrawArrays(GL_TRIANGLES, 0, size);
 }
 
 /////////////////////////////////////////////////////
