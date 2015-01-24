@@ -81,7 +81,7 @@ Axes selectedAxis = ALL;
 
 Action selectedAction = scale;
 
-bool materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
+void materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
 	CXyzDialog ambientDlg("Ambient Color");
 	CXyzDialog diffuseDlg("Diffuse Color");
 	CXyzDialog specularDlg("Specular Color");
@@ -90,27 +90,17 @@ bool materialDialog(vec3& ambient, vec3& diffuse, vec3& specular) {
 	if (ambientDlg.DoModal() == IDOK) {
 		ambient = ambientDlg.GetXYZ();
 	}
-	else {
-		return false;
-	}
-	//if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return false; }
+	if (ambient.x < 0 || ambient.x > 1 || ambient.y < 0 || ambient.y > 1 || ambient.z < 0 || ambient.z > 1) { return; }
 	cout << "Choose Diffuse Color" << endl;
 	if (diffuseDlg.DoModal() == IDOK) {
 		diffuse = diffuseDlg.GetXYZ();
 	}
-	else {
-		return false;
-	}
-	//if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return false; }
+	if (diffuse.x < 0 || diffuse.x > 1 || diffuse.y < 0 || diffuse.y > 1 || diffuse.z < 0 || diffuse.z > 1) { return; }
 	cout << "Choose Specular Color" << endl;
 	if (specularDlg.DoModal() == IDOK) {
 		specular = specularDlg.GetXYZ();
 	}
-	else {
-		return false;
-	}
-	//if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return false; }
-	return true;
+	if (specular.x < 0 || specular.x > 1 || specular.y < 0 || specular.y > 1 || specular.z < 0 || specular.z > 1) { return; }
 }
 
 void doTranslation(vector<shared_ptr<Model>>& currentModels, int activeModel, float intensity) {
@@ -431,11 +421,9 @@ void changeMaterial(vector<shared_ptr<Model>>& currentModels, const int activeMo
 	vec3 diffuse = 0.0;
 	vec3 specular = 0.0;
 
-	bool canBeChanged = materialDialog(ambient, diffuse, specular);
+	materialDialog(ambient, diffuse, specular);
 
-	if (canBeChanged) {
-		currentModels[activeModel]->setMaterial(Material(ambient, diffuse, specular));
-	}
+	currentModels[activeModel]->setMaterial(Material(ambient, diffuse, specular));
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -697,7 +685,7 @@ void actionMenu(int id) {
 void meshMenu(int id){
 	switch (id){
 	case LOAD_CUBE:
-		scene->loadMeshModel(PrimMeshModel());
+		scene->loadMeshModel(PrimMeshModel(renderer));
 		display();
 		break;
 	default:
@@ -773,7 +761,7 @@ void lightMenu(int id) {
 			vec3 temp = pointDlg.GetXYZ();
 			point = vec4(temp.x, temp.y, temp.z, 1);
 		}
-		shared_ptr<Light> l(new PointLight(Material(ambient,diffuse,specular), point));
+		shared_ptr<Light> l(new PointLight(Material(ambient,diffuse,specular), point, renderer));
 		scene->loadLight(l);
 	}
 		break;
@@ -788,7 +776,7 @@ void lightMenu(int id) {
 			normal = vec4(temp.x, temp.y, temp.z, 0);
 		}
 		if (normal == vec4(0, 0, 0, 0)) { return;  }
-		shared_ptr<Light> l(new ParallelLight(Material(ambient, diffuse, specular), normal));
+		shared_ptr<Light> l(new ParallelLight(Material(ambient, diffuse, specular), normal, renderer));
 		scene->loadLight(l);
 	}
 		break;
@@ -888,7 +876,7 @@ int my_main(int argc, char **argv)
 	renderer = new Renderer(INIT_WIDTH, INIT_HEIGHT);
 	scene = new Scene(renderer);
 	scene->loadCamera();
-	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
+	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1), renderer));
 	//shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
 	scene->loadLight(p);
 
