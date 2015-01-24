@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
+#include <map>
 #include "CG_skel_w_MFC.h"
 #include "vec.h"
 #include "mat.h"
 #include "GL/glew.h"
-#include "Model.h"
-#include "Camera.h"
-#include "Light.h"
+//#include "Model.h"
+//#include "Camera.h"
+//#include "Light.h"
 #include <memory>
 #include "LitVertex.h"
 
@@ -57,8 +58,18 @@ public:
 	}
 };
 
+enum class ShaderParam{
+	V_POSITION,
+	V_NORMAL,
+	V_FACE_NORMAL,
+	U_MODELVIEW_MTX,
+	U_NORM_MODELVIEW_MTX,
+	U_PROJ_MTX
+};
+
 class Renderer
 {
+	map<ShaderParam, pair<GLuint, int>> shaderParams;
 	float *m_outBuffer; // 3*width*height
 	float *m_zbuffer; // width*height
 	int m_width, m_height;
@@ -66,9 +77,6 @@ class Renderer
 
 	void CreateBuffers(int width, int height);
 	void CreateLocalBuffer();
-
-	GLuint vao;
-	GLuint vbos[NUMBER_VBOS];
 
 	//////////////////////////////
 	// Shmulik & Eyal stuff
@@ -136,7 +144,9 @@ public:
 
 	const bool getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const;
 
-	void makeModel(const vector<Face>& faces);
+	GLuint addModel(const vector<Face>& faces);
+	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
+	void drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx);
 	//////////////////////////////
 };
 

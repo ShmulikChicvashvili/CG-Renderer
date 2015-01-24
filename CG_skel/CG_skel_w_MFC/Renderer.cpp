@@ -545,8 +545,8 @@ void Renderer::makeModel(const vector<Face>& faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
 			normals.push_back(v.getNorm());
+			faceNormals.push_back(f.getNorm());
 		}
-		faceNormals.push_back(f.getNorm());
 	}
 
 	// Now we will create the vbos
