@@ -69,7 +69,8 @@ enum class ShaderParam{
 
 class Renderer
 {
-	map<ShaderParam, pair<GLuint, int>> shaderParams;
+	GLuint program;
+	map<ShaderParam, pair<GLuint, GLuint>> shaderParams;
 	float *m_outBuffer; // 3*width*height
 	float *m_zbuffer; // width*height
 	int m_width, m_height;
@@ -81,20 +82,6 @@ class Renderer
 	//////////////////////////////
 	// Shmulik & Eyal stuff
 
-	void clipper(vector<Triangle>& triangles, const vector<shared_ptr<Light>>& lights);
-	void zBuffer(const vector<Triangle>& polygons, const vector<shared_ptr<Light>>& lights);
-	void setColor(const int x, const int y, const Triangle& t, const vector<shared_ptr<Light>>& lights, const float& u, const float& v, const float& w);
-	vec4 reflect(const vec4& V1, const vec4& V2);
-	vec3 calculateIlluminationIntensity(const Material& pixelMaterial, const Material& lightMaterial, 
-		const vec4& lightDirection, const vec4& norm, const vec4& viewDirection);
-
-	bool isClipped(const vector<vec4>& clipCords) const;
-	//void drawFace(const Face& face, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx, const mat4& mvpMtx, Color c);
-	//void drawFaceNormal(const vec4& norm, const vec4& midPoint, const mat4& normModelViewMtx, const mat4& modelViewMtx, const mat4& projMtx);
-
-	//const vec3 normalNDC2Window(const vec4& n) const;
-	const vec3 windowCoordinates(const vec3& vector) const;
-
 	mat4 resizingMatrix;
 
 	int initial_width, initial_height;
@@ -103,6 +90,8 @@ class Renderer
 	bool drawFaceNorms;
 
 	//////////////////////////////
+
+	void fillShaderParams();
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.
@@ -129,21 +118,7 @@ public:
 	//////////////////////////////
 	// Shmulik & Eyal stuff.
 
-	void setColorMethod(const ColorMethod& cm);
-
-	void reshape(int width, int height);
-	void InitializeBuffer();
-	void drawLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, Color c);
-	void drawSinglePixel(GLint x, GLint y, Color c);
-	void setBuffer(const vector<shared_ptr<Model>>& models, const Camera& cam, const vector<shared_ptr<Light>>& lights);
-
-	bool getDrawNormals();
-	void setDrawNormals(const bool drawNormals);
-	bool getDrawFaceNormals();
-	void setDrawFaceNormals(const bool drawFaceNorms);
-
-	const bool getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const;
-
+	
 	GLuint addModel(const vector<Face>& faces);
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
 	void drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx);
