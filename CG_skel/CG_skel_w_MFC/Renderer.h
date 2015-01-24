@@ -9,7 +9,7 @@
 //#include "Camera.h"
 //#include "Light.h"
 #include <memory>
-#include "LitVertex.h"
+#include "Face.h"
 
 #define NUMBER_VBOS 6
 #define VERTICES 0
@@ -22,22 +22,6 @@ enum class ColorMethod{
 	FLAT, GOURAUD, PHONG
 };
 
-class Triangle{
-	LitVertex vertices[3];
-	bool drawWireframe;
-
-public:
-	LitVertex& operator[](const int i){
-		return vertices[i];
-	}
-
-	const LitVertex& operator[](const int i) const{
-		return vertices[i];
-	}
-
-	bool getDrawWireframe() const { return drawWireframe; }
-	void setDrawWireframe(bool draw){ drawWireframe = draw; }
-};
 
 class Color {
 	float red;
