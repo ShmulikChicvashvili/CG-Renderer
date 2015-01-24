@@ -119,6 +119,6 @@ void Model::addToRenderer(){
 }
 
 void Model::draw() const{
-	renderer->drawModel(vao, getModelMatrix(), getModelNormalMatrix());
+	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
 }
 

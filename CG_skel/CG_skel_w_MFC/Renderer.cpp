@@ -46,12 +46,12 @@ Renderer::~Renderer(void)
 
 
 void Renderer::fillShaderParams() {
-	shaderParams[ShaderParam::V_POSITION] = pair<GLuint, GLuint>(glGetAttribLocation(program, "vPosition"), 4);
-	shaderParams[ShaderParam::V_NORMAL] = pair<GLuint, GLuint>(glGetAttribLocation(program, "vNormal"), 4);
-	shaderParams[ShaderParam::V_FACE_NORMAL] = pair<GLuint, GLuint>(glGetAttribLocation(program, "vFaceNormal"), 4);
-	shaderParams[ShaderParam::U_MODELVIEW_MTX] = pair<GLuint, GLuint>(glGetUniformLocation(program, "uModelViewMtx"), 16);
-	shaderParams[ShaderParam::U_NORM_MODELVIEW_MTX] = pair<GLuint, GLuint>(glGetUniformLocation(program, "uNormModelViewMtx"), 16);
-	shaderParams[ShaderParam::U_PROJ_MTX] = pair<GLuint, GLuint>(glGetUniformLocation(program, "uProjMtx"), 16);
+	shaderParams[ShaderParamName::V_POSITION] = ShaderParam(glGetAttribLocation(program, "vPosition"), 4);
+	shaderParams[ShaderParamName::V_NORMAL] = ShaderParam(glGetAttribLocation(program, "vNormal"), 4);
+	shaderParams[ShaderParamName::V_FACE_NORMAL] = ShaderParam(glGetAttribLocation(program, "vFaceNormal"), 4);
+	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelViewMtx"), 16);
+	shaderParams[ShaderParamName::U_NORM_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uNormModelViewMtx"), 16);
+	shaderParams[ShaderParamName::U_PROJ_MTX] = ShaderParam(glGetUniformLocation(program, "uProjMtx"), 16);
 }
 
 void Renderer::CreateBuffers(int width, int height)
@@ -120,9 +120,9 @@ void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 }
 
 
-GLuint Renderer::addModel(const vector<Face>& faces) const {
+GLuint Renderer::addModel(const vector<Face>& faces) {
 	GLuint vao;
-	map<ShaderParam, GLuint> vbos;
+	map<ShaderParamName, GLuint> vbos;
 
 	// First we arrange everything in vectors
 	vector<vec4> vertices;
@@ -141,18 +141,18 @@ GLuint Renderer::addModel(const vector<Face>& faces) const {
 	glGenBuffers(NUMBER_VBOS, buffers);
 
 	// Vertices vbo
-	vbos[ShaderParam::V_POSITION] = buffers[VERTICES];
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParam::V_POSITION]);
+	vbos[ShaderParamName::V_POSITION] = buffers[VERTICES];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
 	// Normals vbo
-	vbos[ShaderParam::V_NORMAL] = buffers[NORMALS];
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParam::V_NORMAL]);
+	vbos[ShaderParamName::V_NORMAL] = buffers[NORMALS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * normals.size(), normals.data(), GL_STATIC_DRAW);
 
 	// Face's normals vbo
-	vbos[ShaderParam::V_FACE_NORMAL] = buffers[FACE_NORMALS];
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParam::V_FACE_NORMAL]);
+	vbos[ShaderParamName::V_FACE_NORMAL] = buffers[FACE_NORMALS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_FACE_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceNormals.size(), faceNormals.data(), GL_STATIC_DRAW);
 
 	// Now we create the vao
@@ -160,8 +160,10 @@ GLuint Renderer::addModel(const vector<Face>& faces) const {
 	glBindVertexArray(vao);
 
 	for (auto it = vbos.begin(); it != vbos.end(); ++it) {
-		glVertexAttribPointer(shaderParams.at(it->first).first, shaderParams.at(it->first).second, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(shaderParams.at(it->first).first);
+		ShaderParam& param = shaderParams.at(it->first);
+		glBindBuffer(GL_ARRAY_BUFFER, it->second);
+		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(param.id);
 	}
 
 	return vao;
@@ -176,9 +178,9 @@ void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat
 void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
 	glUseProgram(program);
 
-	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_MODELVIEW_MTX).first, 1, GL_TRUE, viewMtx * modelMtx);
-	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_NORM_MODELVIEW_MTX).first, 1, GL_TRUE, normViewMtx * normModelMtx);
-	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_PROJ_MTX).first, 1, GL_TRUE, projMtx);
+	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_MODELVIEW_MTX).id, 1, GL_TRUE, viewMtx * modelMtx);
+	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_NORM_MODELVIEW_MTX).id, 1, GL_TRUE, normViewMtx * normModelMtx);
+	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx);
 
 	glBindVertexArray(vao);
 

@@ -42,7 +42,7 @@ public:
 	}
 };
 
-enum class ShaderParam{
+enum class ShaderParamName{
 	V_POSITION,
 	V_NORMAL,
 	V_FACE_NORMAL,
@@ -51,10 +51,18 @@ enum class ShaderParam{
 	U_PROJ_MTX
 };
 
+struct ShaderParam{
+	GLuint id;
+	GLuint size;
+
+	ShaderParam() : ShaderParam(0, 0){}
+	ShaderParam(GLuint _id, GLuint _size) : id(_id), size(_size){}
+};
+
 class Renderer
 {
 	GLuint program;
-	map<ShaderParam, pair<GLuint, GLuint> > shaderParams;
+	map<ShaderParamName, ShaderParam > shaderParams;
 	float *m_outBuffer; // 3*width*height
 	float *m_zbuffer; // width*height
 	int m_width, m_height;
@@ -116,7 +124,7 @@ public:
 	bool getDrawFaceNormals();
 	void setDrawFaceNormals(const bool drawFaceNorms);
 	
-	GLuint addModel(const vector<Face>& faces) const;
+	GLuint addModel(const vector<Face>& faces);
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
 	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	//////////////////////////////
