@@ -70,7 +70,7 @@ enum class ShaderParam{
 class Renderer
 {
 	GLuint program;
-	map<ShaderParam, pair<GLuint, GLuint>> shaderParams;
+	map<ShaderParam, pair<GLuint, GLuint> > shaderParams;
 	float *m_outBuffer; // 3*width*height
 	float *m_zbuffer; // width*height
 	int m_width, m_height;
