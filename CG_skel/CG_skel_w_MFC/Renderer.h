@@ -73,6 +73,10 @@ class Renderer
 	bool drawVertexNormals;
 	bool drawFaceNorms;
 
+	mat4 viewMtx;
+	mat4 normViewMtx;
+	mat4 projMtx;
+
 	//////////////////////////////
 
 	void fillShaderParams();

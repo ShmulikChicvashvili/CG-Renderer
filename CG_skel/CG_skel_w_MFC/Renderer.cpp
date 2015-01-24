@@ -50,8 +50,8 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParam::V_NORMAL] = pair<GLuint, GLuint>(glGetAttribLocation(program, "vNormal"), 4);
 	shaderParams[ShaderParam::V_FACE_NORMAL] = pair<GLuint, GLuint>(glGetAttribLocation(program, "vFaceNormal"), 4);
 	shaderParams[ShaderParam::U_MODELVIEW_MTX] = pair<GLuint, GLuint>(glGetUniformLocation(program, "uModelViewMtx"), 16);
-	shaderParams[ShaderParam::U_NORM_MODELVIEW_MTX] = pair<GLuint, GLuint>(glGetAttribLocation(program, "uNormModelViewMtx"), 16);
-	shaderParams[ShaderParam::U_PROJ_MTX] = pair<GLuint, GLuint>(glGetAttribLocation(program, "uProjMtx"), 16);
+	shaderParams[ShaderParam::U_NORM_MODELVIEW_MTX] = pair<GLuint, GLuint>(glGetUniformLocation(program, "uNormModelViewMtx"), 16);
+	shaderParams[ShaderParam::U_PROJ_MTX] = pair<GLuint, GLuint>(glGetUniformLocation(program, "uProjMtx"), 16);
 }
 
 void Renderer::CreateBuffers(int width, int height)
@@ -168,7 +168,14 @@ GLuint Renderer::addModel(const vector<Face>& faces) const {
 }
 
 void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx) {
+	this->viewMtx = viewMtx;
+	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_MODELVIEW_MTX).first, 1, GL_TRUE, viewMtx);
 
+	this->normViewMtx = normViewMtx;
+	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_NORM_MODELVIEW_MTX).first, 1, GL_TRUE, normViewMtx);
+
+	this->projMtx = projMtx;
+	glUniformMatrix4fv(shaderParams.at(ShaderParam::U_PROJ_MTX).first, 1, GL_TRUE, projMtx);
 }
 
 void Renderer::drawModel(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const {
