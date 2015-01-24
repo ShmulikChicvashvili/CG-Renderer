@@ -536,6 +536,51 @@ void Renderer::setColor(const int x, const int y, const Triangle& t, const vecto
 }
 
 
+void Renderer::makeModel(const vector<Face>& faces) {
+	// First we arrange everything in vectors
+	vector<vec4> vertices;
+	vector<vec4> normals;
+	vector<vec4> faceNormals;
+	for (auto& f : faces) {
+		for (auto& v : f.getVertices()) {
+			vertices.push_back(v.getCoords());
+			normals.push_back(v.getNorm());
+		}
+		faceNormals.push_back(f.getNorm());
+	}
+
+	// Now we will create the vbos
+	GLuint buffers[NUMBER_VBOS];
+	glGenBuffers(NUMBER_VBOS, buffers);
+
+	// Vertices vbo
+	vbos[VERTICES] = buffers[VERTICES];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[VERTICES]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
+	// Normals vbo
+	vbos[NORMALS] = buffers[NORMALS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[NORMALS]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * normals.size(), normals.data(), GL_STATIC_DRAW);
+
+	// Face's normals vbo
+	vbos[FACE_NORMALS] = buffers[FACE_NORMALS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[FACE_NORMALS]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceNormals.size(), faceNormals.data(), GL_STATIC_DRAW);
+
+	// Now we create the vao
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	for (int i = 0; i < NUMBER_VBOS; i++) {
+		glBindBuffer(GL_ARRAY_BUFFER, vbos[i]);
+		glVertexAttribPointer(i, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		if (i == 0 || i == 1 || i == 2) {
+			glEnableVertexAttribArray(i);
+		}
+	}
+}
+
 /////////////////////////////////////////////////////
 
 

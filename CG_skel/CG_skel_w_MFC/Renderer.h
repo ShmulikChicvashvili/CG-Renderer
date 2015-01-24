@@ -10,6 +10,10 @@
 #include <memory>
 #include "LitVertex.h"
 
+#define NUMBER_VBOS 6
+#define VERTICES 0
+#define NORMALS 1
+#define FACE_NORMALS 2
 
 using namespace std;
 
@@ -62,6 +66,9 @@ class Renderer
 
 	void CreateBuffers(int width, int height);
 	void CreateLocalBuffer();
+
+	GLuint vao;
+	GLuint vbos[NUMBER_VBOS];
 
 	//////////////////////////////
 	// Shmulik & Eyal stuff
@@ -129,6 +136,7 @@ public:
 
 	const bool getBarycentricCoordinates(const int x, const int y, const vec2& a, const vec2& b, const vec2&c, float& u, float& v, float& w) const;
 
+	void makeModel(const vector<Face>& faces);
 	//////////////////////////////
 };
 
