@@ -85,7 +85,8 @@ void Renderer::SetDemoBuffer()
 
 GLuint Renderer::addModel(const vector<Face>& faces) {
 	GLuint vao;
-	GLuint vbos[NUMBER_VBOS];
+	map<ShaderParam, GLuint> vbos;
+
 	// First we arrange everything in vectors
 	vector<vec4> vertices;
 	vector<vec4> normals;
@@ -103,31 +104,25 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	glGenBuffers(NUMBER_VBOS, buffers);
 
 	// Vertices vbo
-	vbos[VERTICES] = buffers[VERTICES];
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[VERTICES]);
+	vbos[ShaderParam::V_POSITION] = buffers[VERTICES];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParam::V_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
 	// Normals vbo
-	vbos[NORMALS] = buffers[NORMALS];
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[NORMALS]);
+	vbos[ShaderParam::V_NORMAL] = buffers[NORMALS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParam::V_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * normals.size(), normals.data(), GL_STATIC_DRAW);
 
 	// Face's normals vbo
-	vbos[FACE_NORMALS] = buffers[FACE_NORMALS];
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[FACE_NORMALS]);
+	vbos[ShaderParam::V_FACE_NORMAL] = buffers[FACE_NORMALS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParam::V_FACE_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceNormals.size(), faceNormals.data(), GL_STATIC_DRAW);
 
 	// Now we create the vao
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	for (int i = 0; i < NUMBER_VBOS; i++) {
-		glBindBuffer(GL_ARRAY_BUFFER, vbos[i]);
-		glVertexAttribPointer(i, 4, GL_FLOAT, GL_FALSE, 0, 0);
-		if (i == 0 || i == 1 || i == 2) {
-			glEnableVertexAttribArray(i);
-		}
-	}
+	
 
 	return vao;
 }
