@@ -182,19 +182,9 @@ void Renderer::fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test){
 	for (const auto& face : faces){
 		for (const auto& v : face.getVertices()){
 			const Material& mat = v.getMaterial();
-			if (!test){
-				buffer.push_back(vec3(1, 0, 0));
-				buffer.push_back(vec3(0, 1, 0));
-				buffer.push_back(vec3(0, 0, 1));
-			}
-			else {
-				buffer.push_back(vec3(0, 1, 0));
-				buffer.push_back(vec3(0, 0, 1));
-				buffer.push_back(vec3(1, 0, 0));
-			}
-			//buffer.push_back(mat.getAmbient());
-			//buffer.push_back(mat.getDiffuse());
-			//buffer.push_back(mat.getSpecular());
+			buffer.push_back(mat.getAmbient());
+			buffer.push_back(mat.getDiffuse());
+			buffer.push_back(mat.getSpecular());
 		}
 	}
 	assert(buffer.size() == faces.size() * 3 * 3);
@@ -293,7 +283,7 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 		checkError();
 	}
 
-	fillColorVBO(colorVbo, faces, true);
+	//fillColorVBO(colorVbo, faces, true);
 
 	//tmpVao[vao][ShaderParamName::V_POSITION] = vertices; 
 	//tmpVao[vao][ShaderParamName::V_NORMAL] = normals;

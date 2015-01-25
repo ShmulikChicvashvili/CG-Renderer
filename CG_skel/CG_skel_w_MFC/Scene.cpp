@@ -53,10 +53,6 @@ void Scene::draw()
 
 	vector<RendererLight> rendererLights;
 
-	if (lights.size() == 0) {
-		loadLight(shared_ptr<Light>(new PointLight(Material(vec3(1, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0)), vec4(0, 0, -1, 1))));
-	}
-
 	for (const auto& l : lights) {
 		Material m = l->getMaterial();
 
