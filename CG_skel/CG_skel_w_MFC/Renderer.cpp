@@ -12,6 +12,7 @@
 
 #include <time.h>
 
+map<GLuint, map<ShaderParamName, vector<vec4> > > tmpVao;
 
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 #define INDEXZ(width,x,y) (x+y*width)
@@ -125,17 +126,22 @@ void Renderer::reshape(int width, int height){
 		0, (float)initial_height / height, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1);
-	CreateBuffers(width, height);
+
+	m_width = width;
+	m_height = height;
+	glViewport(0, 0, m_width, m_height);
+	//CreateBuffers(width, height);
 }
 
 void Renderer::InitializeBuffer() {
-	for (int x = 0; x < m_width; x++) {
-		for (int y = 0; y < m_height; y++) {
-			m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
-			m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
-			m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
-		}
-	}
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//for (int x = 0; x < m_width; x++) {
+	//	for (int y = 0; y < m_height; y++) {
+	//		m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
+	//		m_outBuffer[INDEX(m_width, x, y, 1)] = 0;
+	//		m_outBuffer[INDEX(m_width, x, y, 2)] = 0;
+	//	}
+	//}
 }
 
 bool Renderer::getDrawNormals() {
@@ -218,7 +224,11 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 		cout << "Binded vbo with id: " << vbo << endl;
 		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, 0, 0);
 		checkError();
+
 	}
+	//tmpVao[vao][ShaderParamName::V_POSITION] = vertices; 
+	//tmpVao[vao][ShaderParamName::V_NORMAL] = normals;
+	//tmpVao[vao][ShaderParamName::V_FACE_NORMAL] = faceNormals;
 
 	return vao;
 }
@@ -237,12 +247,16 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	checkError();
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_NORM_MODELVIEW_MTX).id, 1, GL_TRUE, normViewMtx * normModelMtx);
 	checkError();
-	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx);
+	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx * resizingMatrix);
 	checkError();
 
 //#ifdef DEBUG_PRINT
 	cout << "Drawing vao " << vao << endl;
 	cout << "Number of vertices: " << size << endl;
+	//cout << "Vertices: ";
+	//for (int i = 0; i < size; i++){
+	//	cout << tmpVao[vao][ShaderParamName::V_POSITION][i] << ", " << endl;
+	//}
 	cout << "ModelView: " << viewMtx * modelMtx << endl;
 	cout << "NormModelView: " << normViewMtx * normModelMtx << endl;
 	cout << "ProjMtx: " << projMtx << endl;
@@ -253,7 +267,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 
 
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
 }
@@ -321,6 +335,8 @@ void Renderer::CreateOpenGLBuffer()
 void Renderer::SwapBuffers()
 {
 	glutSwapBuffers();
+	glFlush();
+	//glutPostRedisplay();
 	//int a = glGetError();
 	//glActiveTexture(GL_TEXTURE0);
 	//a = glGetError();

@@ -63,11 +63,7 @@ void Scene::draw()
 
 	//m_renderer->setBuffer(models, *cameras[getActiveCamera()], lights);
 
-	begin = clock();
 	m_renderer->SwapBuffers();
-#ifdef DEBUG_PRINT
-	cout << "Scene draw SwapBuffers time: " << (double)((clock() - begin)) / CLOCKS_PER_SEC << " secs" << endl;
-#endif
 }
 
 void Scene::drawDemo()
