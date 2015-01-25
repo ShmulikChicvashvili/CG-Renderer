@@ -30,7 +30,9 @@ enum class ShaderParamName{
 	V_POSITION,
 	V_NORMAL,
 	V_FACE_NORMAL,
-	V_MATERIAL,
+	V_AMBIENT,
+	V_DIFFUSE,
+	V_SPECULAR,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
 	U_PROJ_MTX
@@ -74,7 +76,7 @@ class Renderer
 
 	void fillShaderParams();
 
-	void fillColorVBO(GLuint vbo, const vector<Face>& faces);
+	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.

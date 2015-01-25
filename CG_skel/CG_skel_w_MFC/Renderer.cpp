@@ -74,9 +74,17 @@ void Renderer::fillShaderParams() {
 	checkError();
 	cout << "V_FACE_NORMAL id: " << shaderParams[ShaderParamName::V_FACE_NORMAL].id << endl;
 
-	shaderParams[ShaderParamName::V_MATERIAL] = ShaderParam(glGetAttribLocation(program, "vMaterial"), 9);
+	shaderParams[ShaderParamName::V_AMBIENT] = ShaderParam(glGetAttribLocation(program, "vAmbient"), 3);
 	checkError();
-	cout << "V_MATERIAL id: " << shaderParams[ShaderParamName::V_MATERIAL].id << endl;
+	cout << "V_AMBIENT id: " << shaderParams[ShaderParamName::V_AMBIENT].id << endl;
+
+	shaderParams[ShaderParamName::V_DIFFUSE] = ShaderParam(glGetAttribLocation(program, "vDiffuse"), 3);
+	checkError();
+	cout << "V_DIFFUSE id: " << shaderParams[ShaderParamName::V_DIFFUSE].id << endl;
+
+	shaderParams[ShaderParamName::V_SPECULAR] = ShaderParam(glGetAttribLocation(program, "vSpecular"), 3);
+	checkError();
+	cout << "V_SPECULAR id: " << shaderParams[ShaderParamName::V_SPECULAR].id << endl;
 	
 	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelviewMtx"), 16);
 	checkError();
@@ -164,21 +172,27 @@ void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 	this->drawFaceNorms = drawFaceNorms;
 }
 
-void Renderer::fillColorVBO(GLuint vbo, const vector<Face>& faces){
+void Renderer::fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test){
 	vector<vec3> buffer;
 	for (const auto& face : faces){
 		for (const auto& v : face.getVertices()){
 			const Material& mat = v.getMaterial();
-			buffer.push_back(vec3(1, 0, 0));
-			buffer.push_back(vec3(0, 1, 0));
-			buffer.push_back(vec3(0, 0, 1));
+			if (!test){
+				buffer.push_back(vec3(1, 0, 0));
+				buffer.push_back(vec3(0, 1, 0));
+				buffer.push_back(vec3(0, 0, 1));
+			}
+			else {
+				buffer.push_back(vec3(0, 1, 0));
+				buffer.push_back(vec3(0, 0, 1));
+				buffer.push_back(vec3(1, 0, 0));
+			}
 			//buffer.push_back(mat.getAmbient());
 			//buffer.push_back(mat.getDiffuse());
 			//buffer.push_back(mat.getSpecular());
 		}
 	}
 	assert(buffer.size() == faces.size() * 3 * 3);
-	assert(sizeof(vec3) * buffer.size() == sizeof(GL_FLOAT) * faces.size() * 3 * 9);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	checkError();
@@ -230,8 +244,9 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	checkError();
 
 	// Materials vbo
-	vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];
-	fillColorVBO(vbos[ShaderParamName::V_MATERIAL], faces);
+	//vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];
+	GLuint matVbo = buffers[VBOIndex::MATERIALS];
+	fillColorVBO(matVbo, faces);
 
 	// Now we create the vao
 	glGenVertexArrays(1, &vao);
@@ -254,8 +269,28 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 		cout << "Binded vbo with id: " << vbo << endl;
 		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, 0, 0);
 		checkError();
-
 	}
+
+	ShaderParamName colorParams[3] = { ShaderParamName::V_AMBIENT, ShaderParamName::V_DIFFUSE, ShaderParamName::V_SPECULAR };
+	glBindBuffer(GL_ARRAY_BUFFER, matVbo);
+	checkError();
+	cout << "Binded Color vbo with id: " << matVbo << endl;
+	for (int i = 0; i < 3; i++){
+		ShaderParam param = shaderParams[colorParams[i]];
+		assert(param.size == 3);
+		int stride = 3 * sizeof(vec3);
+		int offset = i * sizeof(vec3);
+		//int offset = 0;
+
+		glEnableVertexAttribArray(param.id);
+		checkError();
+		cout << "Enabled color attribute with id: " << param.id << endl;
+		glVertexAttribPointer(param.id, param.size, GL_FLOAT, GL_FALSE, stride, (GLvoid *) offset);
+		checkError();
+	}
+
+	fillColorVBO(matVbo, faces, true);
+
 	//tmpVao[vao][ShaderParamName::V_POSITION] = vertices; 
 	//tmpVao[vao][ShaderParamName::V_NORMAL] = normals;
 	//tmpVao[vao][ShaderParamName::V_FACE_NORMAL] = faceNormals;
