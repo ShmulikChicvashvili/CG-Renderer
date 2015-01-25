@@ -39,7 +39,7 @@ Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : m_width(width), m_height(height), colorMethod(ColorMethod::FLAT)
+Renderer::Renderer(int width, int height) : initial_width(width),initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT)
 {
 	//InitOpenGLRendering();
 	glViewport(0, 0, m_width, m_height);
@@ -135,6 +135,7 @@ void Renderer::reshape(int width, int height){
 
 void Renderer::InitializeBuffer() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	//for (int x = 0; x < m_width; x++) {
 	//	for (int y = 0; y < m_height; y++) {
 	//		m_outBuffer[INDEX(m_width, x, y, 0)] = 0;
@@ -259,7 +260,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	//}
 	cout << "ModelView: " << viewMtx * modelMtx << endl;
 	cout << "NormModelView: " << normViewMtx * normModelMtx << endl;
-	cout << "ProjMtx: " << projMtx << endl;
+	cout << "ProjMtx: " << projMtx * resizingMatrix << endl;
 //#endif
 
 	glBindVertexArray(vao);
@@ -267,7 +268,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 
 
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
 }
