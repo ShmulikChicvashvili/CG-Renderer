@@ -2,7 +2,10 @@
 
 in vec4 vPosition;
 in vec4 vNormal;
+
+in vec4 vFaceMid;
 in vec4 vFaceNormal;
+
 in vec3 vAmbient;
 in vec3 vDiffuse;
 in vec3 vSpecular;
@@ -19,12 +22,15 @@ uniform struct Light {
 } lights[10];
 uniform int numLights;
 
-out vec3 fFaceNormal;
-out vec3 fNormal;
-out mat3 fMaterial;
 out vec3 fCamSpace;
-out vec3 fColor;
+out vec3 fNormal;
 
+out vec3 fFaceMid;
+out vec3 fFaceNormal;
+
+out mat3 fMaterial;
+
+out vec3 fColor;
 
 vec3 calculateIlluminationIntensity(vec3 ka, vec3 kd, vec3 ks, vec3 la, vec3 ld, vec3 ls,
 	vec3 lightDirection, vec3 norm, vec3 viewDirection) {
@@ -71,33 +77,37 @@ vec3 calcEyeDirection(vec3 point){
 	return dir;
 }
 
+vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
+	vec3 eyeVec = calcEyeDirection(point);
+	vec3 color = vec3(0.0);
+	for(int i = 0; i < numLights; i++){
+		vec3 lightDir = calcLightDirection(i, point);
+		
+		color += calculateIlluminationIntensity(ka, kd, ks, 
+			lights[i].ambient, lights[i].diffuse, lights[i].specular,
+			lightDir, norm, eyeVec);
+	}
+	return vec3(min(1,color.x),min(1,color.y),min(1,color.z));
+}
+
 void main()
 {
 	if (vPosition.w == 0){
-		gl_Position = uProjMtx * uNormModelviewMtx * uModelviewMtx * (vPosition + vNormal + vFaceNormal + vec4(vAmbient,0) + vec4(vDiffuse,0) + vec4(vSpecular,0));
+		gl_Position = uProjMtx * uNormModelviewMtx * uModelviewMtx * (vPosition + vNormal + vFaceNormal + vec4(vAmbient,0) + vec4(vDiffuse,0) + vec4(vSpecular,0) + vFaceMid);
 		return;
 	}
 	vec4 camSpace = uModelviewMtx * vPosition;
     
 	gl_Position = uProjMtx * camSpace;
-	
-	fMaterial = mat3(vAmbient,vDiffuse,vSpecular);
-	
-	fFaceNormal = normalize((uNormModelviewMtx * vFaceNormal).xyz);
-	
+
+	fCamSpace = camSpace.xyz;
 	fNormal = normalize((uNormModelviewMtx * vNormal).xyz);
 	
-	fCamSpace = camSpace.xyz;
-	
-	
-	vec3 eyeVec = calcEyeDirection(fCamSpace);
-	fColor = vec3(0.0);
-	for(int i = 0; i < numLights; i++){
-		vec3 lightDir = calcLightDirection(i, fCamSpace);
+	fFaceMid = (uModelviewMtx * vFaceMid).xyz;
+	fFaceNormal = normalize((uNormModelviewMtx * vFaceNormal).xyz);
 		
-		fColor += calculateIlluminationIntensity(vAmbient, vDiffuse, vSpecular, 
-			lights[i].ambient, lights[i].diffuse, lights[i].specular,
-			lightDir, fNormal, eyeVec);
-	}
-	fColor = vec3(min(1,fColor.x),min(1,fColor.y),min(1,fColor.z));
+	fMaterial = mat3(vAmbient,vDiffuse,vSpecular);
+	
+	
+	fColor = calcColor(fCamSpace, fNormal, vAmbient, vDiffuse, vSpecular);
 }

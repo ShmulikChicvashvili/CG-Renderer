@@ -99,12 +99,14 @@ void Model::setMaterial(const Material& mat){
 	for (auto& f : faces){
 		f.setMaterial(mat);
 	}
+	renderer->fillColorVBO(colorVbo, faces);
 }
 
 void Model::setRandomMaterial(){
 	for (auto& f : faces){
 		f.setMaterial(randomizeMaterial(0.2, 0.5, 0.6));
 	}
+	renderer->fillColorVBO(colorVbo, faces);
 }
 
 void Model::setActive(const bool isActive) {

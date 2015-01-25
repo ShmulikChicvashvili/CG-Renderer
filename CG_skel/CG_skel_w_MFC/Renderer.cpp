@@ -324,7 +324,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx * resizingMatrix);
 	checkError();
 
-//#ifdef DEBUG_PRINT
+#ifdef DEBUG_PRINT
 	cout << "Drawing vao " << vao << endl;
 	cout << "Number of vertices: " << size << endl;
 	//cout << "Vertices: ";
@@ -334,7 +334,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	cout << "ModelView: " << viewMtx * modelMtx << endl;
 	cout << "NormModelView: " << normViewMtx * normModelMtx << endl;
 	cout << "ProjMtx: " << projMtx * resizingMatrix << endl;
-//#endif
+#endif
 
 	glBindVertexArray(vao);
 	checkError();
