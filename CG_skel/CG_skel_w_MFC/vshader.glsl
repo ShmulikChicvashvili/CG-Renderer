@@ -11,9 +11,20 @@ uniform mat4 uModelviewMtx;
 uniform mat4 uNormModelviewMtx;
 uniform mat4 uProjMtx;
 
+uniform struct Light {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	vec4 pos;
+} lights[10];
+uniform int numLights;
+
 out vec4 fNormal;
 out vec4 fFaceNormal;
 out mat3 fMaterial;
+
+out vec4 fEyeVec;
+out vec4 f
 
 void main()
 {

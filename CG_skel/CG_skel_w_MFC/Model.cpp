@@ -116,7 +116,7 @@ bool Model::getActive() const {
 
 void Model::setRenderer(Renderer* renderer){
 	this->renderer = renderer;
-	vao = renderer->addModel(getFaces());
+	renderer->addModel(getFaces(), vao, colorVbo);
 }
 
 void Model::draw() const{

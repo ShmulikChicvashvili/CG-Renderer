@@ -11,6 +11,7 @@ enum Axes {X, Y, Z, ALL};
 class Model {
 private:
 	GLuint vao;
+	GLuint colorVbo;
 protected:
 	Renderer* renderer;
 	Model() : renderer(NULL) {}
