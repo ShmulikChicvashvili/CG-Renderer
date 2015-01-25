@@ -76,8 +76,6 @@ class Renderer
 
 	void fillShaderParams();
 
-	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
-
 	//////////////////////////////
 	// openGL stuff. Don't touch.
 
@@ -113,9 +111,11 @@ public:
 	bool getDrawFaceNormals();
 	void setDrawFaceNormals(const bool drawFaceNorms);
 	
-	GLuint addModel(const vector<Face>& faces);
+	void addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo);
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
 	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
+
+	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 	//////////////////////////////
 };
 

@@ -200,9 +200,8 @@ void Renderer::fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test){
 	checkError();
 }
 
-GLuint Renderer::addModel(const vector<Face>& faces) {
+void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo) {
 	cout << "Adding model to renderer with " << faces.size() << " faces" << endl;
-	GLuint vao;
 	map<ShaderParamName, GLuint> vbos;
 
 	// First we arrange everything in vectors
@@ -245,8 +244,8 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 
 	// Materials vbo
 	//vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];
-	GLuint matVbo = buffers[VBOIndex::MATERIALS];
-	fillColorVBO(matVbo, faces);
+	colorVbo = buffers[VBOIndex::MATERIALS];
+	fillColorVBO(colorVbo, faces);
 
 	// Now we create the vao
 	glGenVertexArrays(1, &vao);
@@ -272,9 +271,9 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	}
 
 	ShaderParamName colorParams[3] = { ShaderParamName::V_AMBIENT, ShaderParamName::V_DIFFUSE, ShaderParamName::V_SPECULAR };
-	glBindBuffer(GL_ARRAY_BUFFER, matVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
 	checkError();
-	cout << "Binded Color vbo with id: " << matVbo << endl;
+	cout << "Binded Color vbo with id: " << colorVbo << endl;
 	for (int i = 0; i < 3; i++){
 		ShaderParam param = shaderParams[colorParams[i]];
 		assert(param.size == 3);
@@ -289,13 +288,11 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 		checkError();
 	}
 
-	fillColorVBO(matVbo, faces, true);
+	fillColorVBO(colorVbo, faces, true);
 
 	//tmpVao[vao][ShaderParamName::V_POSITION] = vertices; 
 	//tmpVao[vao][ShaderParamName::V_NORMAL] = normals;
 	//tmpVao[vao][ShaderParamName::V_FACE_NORMAL] = faceNormals;
-
-	return vao;
 }
 
 void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx) {
