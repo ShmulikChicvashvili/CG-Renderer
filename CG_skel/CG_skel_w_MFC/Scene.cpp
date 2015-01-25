@@ -50,6 +50,26 @@ void Scene::draw()
 	begin = clock();
 	Camera& cam = *cameras[getActiveCamera()];
 	m_renderer->setCamera(cam.getViewMatrix(), cam.getViewNormalMatrix(), cam.getProjectionMatrix());
+
+	vector<RendererLight> rendererLights;
+	for (const auto& l : lights) {
+		Material m = l->getMaterial();
+
+		if (isPointLight(l.get())) {
+			RendererLight rl(m.getAmbient(), m.getDiffuse(), m.getSpecular(), l->getModelMatrix(), true);
+			rendererLights.push_back(rl);
+		}
+		else if(isParallelLight(l.get())) {
+			RendererLight rl(m.getAmbient(), m.getDiffuse(), m.getSpecular(), l->getModelNormalMatrix(), false);
+			rendererLights.push_back(rl);
+		}
+		else {
+			assert(false);
+		}
+	}
+
+	m_renderer->setLights(rendererLights);
+
 #ifdef DEBUG_PRINT
 	cout << "Set renderer cam" << endl;
 #endif

@@ -35,7 +35,8 @@ enum class ShaderParamName{
 	V_SPECULAR,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
-	U_PROJ_MTX
+	U_PROJ_MTX,
+	U_NUM_LIGHTS
 };
 
 struct ShaderParam{
@@ -44,6 +45,17 @@ struct ShaderParam{
 
 	ShaderParam() : ShaderParam(0, 0){}
 	ShaderParam(GLuint _id, GLuint _size) : id(_id), size(_size){}
+};
+
+struct RendererLight {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	mat4 modelMtx;
+	boolean isPointLight;
+
+	RendererLight(vec3 _ambient, vec3 _diffuse, vec3 _specular, mat4 _modelMtx, boolean _isPointLight) :
+		ambient(_ambient), diffuse(_diffuse), specular(_specular), modelMtx(_modelMtx), isPointLight(_isPointLight) {}
 };
 
 class Renderer
@@ -114,6 +126,7 @@ public:
 	void addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo);
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
 	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
+	void setLights(const vector<RendererLight>& lights);
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 	//////////////////////////////

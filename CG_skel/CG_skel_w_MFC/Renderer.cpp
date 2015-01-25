@@ -11,6 +11,7 @@
 #include "Vertex.h"
 
 #include <time.h>
+#include <sstream>
 
 map<GLuint, map<ShaderParamName, vector<vec4> > > tmpVao;
 
@@ -97,6 +98,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_PROJ_MTX] = ShaderParam(glGetUniformLocation(program, "uProjMtx"), 16);
 	checkError();
 	cout << "U_PROJ_MTX id: " << shaderParams[ShaderParamName::U_PROJ_MTX].id << endl;
+
+	shaderParams[ShaderParamName::U_NUM_LIGHTS] = ShaderParam(glGetUniformLocation(program, "numLights"), 1);
+	checkError();
+	cout << "U_NUM_LIGHTS id: " << shaderParams[ShaderParamName::U_NUM_LIGHTS].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -332,6 +337,63 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
+}
+
+void Renderer::setLights(const vector<RendererLight>& lights) {
+	int size;
+	if (lights.size() >= 10) {
+		size = 10;
+	}
+	else {
+		size = lights.size();
+	}
+	glUniform1i(shaderParams.at(ShaderParamName::U_NUM_LIGHTS).id, (GLint)size);
+	checkError();
+
+	int index = 0;
+	for (auto light : lights) {
+		stringstream lightsString;
+		lightsString << "lights[" << index << "].";
+
+		stringstream ambient, diffuse, specular, pos;
+		ambient << lightsString.str() << "ambient";
+		diffuse << lightsString.str() << "diffuse";
+		specular << lightsString.str() << "specular";
+		pos << lightsString.str() << "pos";
+		
+		vec4 direction;
+
+		if (light.isPointLight) {
+			const mat4& modelView = this->viewMtx * light.modelMtx;
+			direction = modelView * vec4(0, 0, 0, 1);
+		}
+		else {
+			const mat4& normModelView = this->normViewMtx * light.modelMtx;
+			direction = normModelView * vec4(0, 0, 1, 0);
+			direction.w = 0;
+
+			direction = normalize(direction);
+		}
+
+		GLuint ambientId = glGetUniformLocation(program, ambient.str().c_str());
+		glUniform3f(ambientId, light.ambient.x, light.ambient.y, light.ambient.z);
+		checkError();
+
+		GLuint diffuseId = glGetUniformLocation(program, diffuse.str().c_str());
+		glUniform3f(diffuseId, light.diffuse.x, light.diffuse.y, light.diffuse.z);
+		checkError();
+
+		GLuint specularId = glGetUniformLocation(program, specular.str().c_str());
+		glUniform3f(specularId, light.specular.x, light.specular.y, light.specular.z);
+		checkError();
+
+		GLuint posId = glGetUniformLocation(program, pos.str().c_str());
+		glUniform4f(posId, direction.x, direction.y, direction.z, direction.w);
+		checkError();
+
+		index++;
+		if (index >= 10) { return; }
+	}
 }
 
 /////////////////////////////////////////////////////
