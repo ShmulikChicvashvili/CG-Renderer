@@ -86,6 +86,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::V_SPECULAR] = ShaderParam(glGetAttribLocation(program, "vSpecular"), 3);
 	checkError();
 	cout << "V_SPECULAR id: " << shaderParams[ShaderParamName::V_SPECULAR].id << endl;
+
+	shaderParams[ShaderParamName::V_FACE_MID] = ShaderParam(glGetAttribLocation(program, "vFaceMid"), 4);
+	checkError();
+	cout << "V_FACE_MID id: " << shaderParams[ShaderParamName::V_FACE_MID].id << endl;
 	
 	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelviewMtx"), 16);
 	checkError();
@@ -102,6 +106,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_NUM_LIGHTS] = ShaderParam(glGetUniformLocation(program, "numLights"), 1);
 	checkError();
 	cout << "U_NUM_LIGHTS id: " << shaderParams[ShaderParamName::U_NUM_LIGHTS].id << endl;
+
+	shaderParams[ShaderParamName::U_COLOR_METHOD] = ShaderParam(glGetUniformLocation(program, "uColorMethod"), 1);
+	checkError();
+	cout << "U_COLOR_METHOD id: " << shaderParams[ShaderParamName::U_COLOR_METHOD].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -136,6 +144,8 @@ void Renderer::SetDemoBuffer()
 
 void Renderer::setColorMethod(const ColorMethod& cm){
 	colorMethod = cm;
+
+	glUniform1i(shaderParams.at(ShaderParamName::U_COLOR_METHOD).id, (GLint) cm);
 }
 
 void Renderer::reshape(int width, int height){
@@ -203,11 +213,13 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	vector<vec4> vertices;
 	vector<vec4> normals;
 	vector<vec4> faceNormals;
+	vector<vec4> faceMid;
 	for (auto& f : faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
 			normals.push_back(v.getNorm());
 			faceNormals.push_back(f.getNorm());
+			faceMid.push_back(f.getMidPoint());
 		}
 	}
 	assert(vertices.size() == faces.size() * 3);
@@ -236,6 +248,11 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_FACE_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceNormals.size(), faceNormals.data(), GL_STATIC_DRAW);
 	checkError();
+
+	// Face's mid points vbo
+	vbos[ShaderParamName::V_FACE_MID] = buffers[VBOIndex::FACE_MID];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_FACE_MID]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceMid.size(), faceMid.data(), GL_STATIC_DRAW);
 
 	// Materials vbo
 	//vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];

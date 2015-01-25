@@ -13,12 +13,13 @@
 
 using namespace std;
 
-#define NUMBER_VBOS 4
+#define NUMBER_VBOS 5
 enum VBOIndex{
 	VERTICES,
 	NORMALS,
 	FACE_NORMALS,
-	MATERIALS
+	MATERIALS,
+	FACE_MID
 };
 
 enum class ColorMethod{
@@ -33,10 +34,12 @@ enum class ShaderParamName{
 	V_AMBIENT,
 	V_DIFFUSE,
 	V_SPECULAR,
+	V_FACE_MID,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
 	U_PROJ_MTX,
-	U_NUM_LIGHTS
+	U_NUM_LIGHTS,
+	U_COLOR_METHOD
 };
 
 struct ShaderParam{

@@ -116,6 +116,9 @@ bool Model::getActive() const {
 
 void Model::setRenderer(Renderer* renderer){
 	this->renderer = renderer;
+	for (auto& face : this->faces) {
+		face.calcMidPoint();
+	}
 	renderer->addModel(getFaces(), vao, colorVbo);
 }
 
