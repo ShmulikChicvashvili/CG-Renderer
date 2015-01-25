@@ -861,6 +861,7 @@ int my_main(int argc, char **argv)
 		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 		/*		...*/
 	}
+	glGetError();
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 #ifdef NDEBUG

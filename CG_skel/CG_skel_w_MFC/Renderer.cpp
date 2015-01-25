@@ -73,6 +73,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::V_FACE_NORMAL] = ShaderParam(glGetAttribLocation(program, "vFaceNormal"), 4);
 	checkError();
 	cout << "V_FACE_NORMAL id: " << shaderParams[ShaderParamName::V_FACE_NORMAL].id << endl;
+
+	shaderParams[ShaderParamName::V_MATERIAL] = ShaderParam(glGetAttribLocation(program, "vMaterial"), 9);
+	checkError();
+	cout << "V_MATERIAL id: " << shaderParams[ShaderParamName::V_MATERIAL].id << endl;
 	
 	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelviewMtx"), 16);
 	checkError();
@@ -160,6 +164,27 @@ void Renderer::setDrawFaceNormals(const bool drawFaceNorms) {
 	this->drawFaceNorms = drawFaceNorms;
 }
 
+void Renderer::fillColorVBO(GLuint vbo, const vector<Face>& faces){
+	vector<vec3> buffer;
+	for (const auto& face : faces){
+		for (const auto& v : face.getVertices()){
+			const Material& mat = v.getMaterial();
+			buffer.push_back(vec3(1, 0, 0));
+			buffer.push_back(vec3(0, 1, 0));
+			buffer.push_back(vec3(0, 0, 1));
+			//buffer.push_back(mat.getAmbient());
+			//buffer.push_back(mat.getDiffuse());
+			//buffer.push_back(mat.getSpecular());
+		}
+	}
+	assert(buffer.size() == faces.size() * 3 * 3);
+	assert(sizeof(vec3) * buffer.size() == sizeof(GL_FLOAT) * faces.size() * 3 * 9);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	checkError();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * buffer.size(), buffer.data(), GL_STATIC_DRAW);
+	checkError();
+}
 
 GLuint Renderer::addModel(const vector<Face>& faces) {
 	cout << "Adding model to renderer with " << faces.size() << " faces" << endl;
@@ -167,9 +192,9 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	map<ShaderParamName, GLuint> vbos;
 
 	// First we arrange everything in vectors
-	vector<vec4>& vertices = *(new vector<vec4>());
-	vector<vec4>& normals = *(new vector<vec4>());
-	vector<vec4>& faceNormals = *(new vector<vec4>());
+	vector<vec4> vertices;
+	vector<vec4> normals;
+	vector<vec4> faceNormals;
 	for (auto& f : faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
@@ -187,22 +212,26 @@ GLuint Renderer::addModel(const vector<Face>& faces) {
 	checkError();
 
 	// Vertices vbo
-	vbos[ShaderParamName::V_POSITION] = buffers[VERTICES];
+	vbos[ShaderParamName::V_POSITION] = buffers[VBOIndex::VERTICES];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_POSITION]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 	checkError();
 
 	// Normals vbo
-	vbos[ShaderParamName::V_NORMAL] = buffers[NORMALS];
+	vbos[ShaderParamName::V_NORMAL] = buffers[VBOIndex::NORMALS];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * normals.size(), normals.data(), GL_STATIC_DRAW);
 	checkError();
 
 	// Face's normals vbo
-	vbos[ShaderParamName::V_FACE_NORMAL] = buffers[FACE_NORMALS];
+	vbos[ShaderParamName::V_FACE_NORMAL] = buffers[VBOIndex::FACE_NORMALS];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_FACE_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceNormals.size(), faceNormals.data(), GL_STATIC_DRAW);
 	checkError();
+
+	// Materials vbo
+	vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];
+	fillColorVBO(vbos[ShaderParamName::V_MATERIAL], faces);
 
 	// Now we create the vao
 	glGenVertexArrays(1, &vao);

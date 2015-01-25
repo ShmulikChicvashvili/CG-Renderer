@@ -11,41 +11,26 @@
 #include <memory>
 #include "Face.h"
 
-#define NUMBER_VBOS 3
-#define VERTICES 0
-#define NORMALS 1
-#define FACE_NORMALS 2
-
 using namespace std;
+
+#define NUMBER_VBOS 4
+enum VBOIndex{
+	VERTICES,
+	NORMALS,
+	FACE_NORMALS,
+	MATERIALS
+};
 
 enum class ColorMethod{
 	FLAT, GOURAUD, PHONG
 };
 
 
-class Color {
-	float red;
-	float green;
-	float blue;
-public:
-	Color() : red(0), green(0), blue(0) {}
-	Color(float _red, float _green, float _blue) : red(_red), green(_green), blue(_blue) {}
-	Color(const vec3& v) : red(v[0]), green(v[1]), blue(v[2]){}
-	float getRed() const {
-		return red;
-	}
-	float getGreen() const {
-		return green;
-	}
-	float getBlue() const {
-		return blue;
-	}
-};
-
 enum class ShaderParamName{
 	V_POSITION,
 	V_NORMAL,
 	V_FACE_NORMAL,
+	V_MATERIAL,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
 	U_PROJ_MTX
@@ -88,6 +73,8 @@ class Renderer
 	//////////////////////////////
 
 	void fillShaderParams();
+
+	void fillColorVBO(GLuint vbo, const vector<Face>& faces);
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.
