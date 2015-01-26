@@ -39,7 +39,8 @@ enum class ShaderParamName{
 	U_NORM_MODELVIEW_MTX,
 	U_PROJ_MTX,
 	U_NUM_LIGHTS,
-	U_COLOR_METHOD
+	U_COLOR_METHOD,
+	U_CONST_COLOR
 };
 
 struct ShaderParam{
@@ -93,6 +94,7 @@ class Renderer
 	
 	void setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void drawArrays(int size) const;
+	void setConstColor(const boolean constColor) const;
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.

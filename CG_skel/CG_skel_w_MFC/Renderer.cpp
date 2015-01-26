@@ -110,6 +110,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_COLOR_METHOD] = ShaderParam(glGetUniformLocation(program, "uColorMethod"), 1);
 	checkError();
 	cout << "U_COLOR_METHOD id: " << shaderParams[ShaderParamName::U_COLOR_METHOD].id << endl;
+
+	shaderParams[ShaderParamName::U_CONST_COLOR] = ShaderParam(glGetUniformLocation(program, "uConstColor"), 1);
+	checkError();
+	cout << "U_CONST_COLOR id: " << shaderParams[ShaderParamName::U_CONST_COLOR].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -347,6 +351,7 @@ void Renderer::drawArrays(int size) const {
 
 void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
 	setModelTransformations(vao, modelMtx, normModelMtx);
+	setConstColor(false);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -355,6 +360,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 
 void Renderer::drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
 	setModelTransformations(vao, modelMtx, normModelMtx);
+	setConstColor(true);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -416,6 +422,10 @@ void Renderer::setLights(const vector<RendererLight>& lights) {
 		index++;
 		if (index >= 10) { return; }
 	}
+}
+
+void Renderer::setConstColor(const boolean constColor) const {
+	glUniform1i(shaderParams.at(ShaderParamName::U_CONST_COLOR).id, constColor);
 }
 
 /////////////////////////////////////////////////////
