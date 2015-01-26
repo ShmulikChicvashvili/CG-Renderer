@@ -10,6 +10,8 @@ in vec3 vAmbient;
 in vec3 vDiffuse;
 in vec3 vSpecular;
 
+in vec2 vTexCoords;
+
 uniform mat4 uModelviewMtx;
 uniform mat4 uNormModelviewMtx;
 uniform mat4 uProjMtx;
@@ -29,6 +31,8 @@ out vec3 fFaceMid;
 out vec3 fFaceNormal;
 
 out mat3 fMaterial;
+
+out vec2 fTexCoords;
 
 out vec3 fColor;
 

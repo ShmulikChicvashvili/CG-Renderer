@@ -8,6 +8,8 @@ in vec3 fFaceNormal;
 
 in mat3 fMaterial;
 
+in vec2 fTexCoords;
+
 in vec3 fColor;
 
 uniform struct Light {
@@ -19,6 +21,9 @@ uniform struct Light {
 uniform int numLights;
 
 uniform int uColorMethod; // 0 - flat, 1 - gouraud, 2 - phong
+
+uniform int uTexType; // 0 - No texture. 1 - Color texture. 2 - Normal texture
+uniform sample2D uTexMap;
 
 uniform bool uConstColor;
 
