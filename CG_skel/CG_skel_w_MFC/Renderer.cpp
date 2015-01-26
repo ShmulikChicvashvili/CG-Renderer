@@ -426,6 +426,7 @@ void Renderer::setLights(const vector<RendererLight>& lights) {
 
 void Renderer::setConstColor(const boolean constColor) const {
 	glUniform1i(shaderParams.at(ShaderParamName::U_CONST_COLOR).id, constColor);
+	checkError();
 }
 
 /////////////////////////////////////////////////////
