@@ -20,6 +20,8 @@ uniform int numLights;
 
 uniform int uColorMethod; // 0 - flat, 1 - gouraud, 2 - phong
 
+uniform bool uConstColor;
+
 out vec4 color;
 
 
@@ -87,6 +89,10 @@ vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
 
 void main() 
 { 
+	if (uConstColor){
+		color = vec4(0,1,0,1);
+		return;
+	}
 	
 	if (uColorMethod == 0 || uColorMethod == 2){
 		vec3 norm;
