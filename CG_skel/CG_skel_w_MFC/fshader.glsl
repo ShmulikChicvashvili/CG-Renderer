@@ -79,6 +79,7 @@ vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
 		 lightDir = calcLightDirection(i, point);
 
 		if(lightDir == vec3(10,10,10)) return vec3(1,0,1);
+		if(lights[i].diffuse == vec3(10,10,10) || lights[i].specular == vec3(10,10,10)) return vec3(0,0,1);
 		
 		color += calculateIlluminationIntensity(ka, kd, ks, 
 			lights[i].ambient, lights[i].diffuse, lights[i].specular,
