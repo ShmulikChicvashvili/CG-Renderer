@@ -313,7 +313,7 @@ void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat
 	this->projMtx = projMtx;
 }
 
-void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
+void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const {
 	glUseProgram(program);
 	checkError();
 
@@ -338,12 +338,27 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 
 	glBindVertexArray(vao);
 	checkError();
+}
 
-
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+void Renderer::drawArrays(int size) const {
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
+}
+
+void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
+	setModelTransformations(vao, modelMtx, normModelMtx);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	drawArrays(size);
+}
+
+void Renderer::drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
+	setModelTransformations(vao, modelMtx, normModelMtx);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	drawArrays(size);
 }
 
 void Renderer::setLights(const vector<RendererLight>& lights) {

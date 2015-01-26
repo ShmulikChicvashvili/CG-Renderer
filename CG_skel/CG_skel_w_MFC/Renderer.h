@@ -90,6 +90,9 @@ class Renderer
 	//////////////////////////////
 
 	void fillShaderParams();
+	
+	void setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const;
+	void drawArrays(int size) const;
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.
@@ -129,6 +132,7 @@ public:
 	void addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo);
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
 	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
+	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void setLights(const vector<RendererLight>& lights);
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);

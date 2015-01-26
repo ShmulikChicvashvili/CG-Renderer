@@ -125,6 +125,9 @@ void Model::setRenderer(Renderer* renderer){
 }
 
 void Model::draw() const{
+	if (this->isActive) {
+		renderer->drawActiveModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
+	}
 	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
 }
 
