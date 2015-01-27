@@ -540,6 +540,11 @@ GLuint Renderer::add2DTexture(GLubyte* texels, int width, int height) {
 	return tex;
 }
 
+void Renderer::del2DTexture(GLuint tex){
+	glDeleteTextures(1, &tex);
+	checkError();
+}
+
 void Renderer::setSilhouette(const boolean silhouette) {
 	this->silhouette = silhouette;
 }

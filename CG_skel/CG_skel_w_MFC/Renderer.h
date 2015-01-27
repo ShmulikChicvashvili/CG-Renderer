@@ -156,6 +156,7 @@ public:
 	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void setLights(const vector<RendererLight>& lights);
 	GLuint add2DTexture(GLubyte* texImg, int width, int height);
+	void del2DTexture(GLuint tex);
 	void setSilhouette(const boolean silhouette);
 	void setToon(const boolean toon);
 	boolean getSilhouette();

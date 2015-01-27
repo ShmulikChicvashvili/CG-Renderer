@@ -168,6 +168,9 @@ void Model::setTexture(string textureFilename) {
 }
 
 void Model::removeTexture() {
+	if (texType != TextureType::NONE){
+
+	}
 	this->texImg = NULL;
 	this->texHeight = 0;
 	this->texWidth = 0;
