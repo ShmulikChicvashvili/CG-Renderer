@@ -148,7 +148,7 @@ void Model::setTexture(string textureFilename) {
 	if (texImg != NULL){
 		delete texImg;
 	}
-	texImg = new GLubyte(texWidth * texHeight * 3);
+	texImg = new GLubyte[texWidth * texHeight * 3];
 	for (int x = 0; x < texWidth; x++) {
 		for (int y = 0; y < texHeight; y++) {
 			int pixelColor = png.GetValue(x, y);

@@ -638,8 +638,8 @@ void fileMenu(int id)
 
 void textureMenu(int id) {
 	switch (id) {
-	case LOAD_CAMERA:
-		CFileDialog dlg(TRUE, _T(".obj"), NULL, NULL, _T("*.obj|*.*"));
+	case LOAD_TEXTURE:
+		CFileDialog dlg(TRUE, _T(".png"), NULL, NULL, _T("*.png|*.*"));
 		if (dlg.DoModal() == IDOK)
 		{
 			std::string s((LPCTSTR)dlg.GetPathName());
@@ -854,6 +854,7 @@ void initMenu()
 	//glutAddSubMenu("Choose Axis", menuAxis);
 	//glutAddSubMenu("Choose Action", menuAction);
 	glutAddSubMenu("Choose Shading Algorithm", menuShading);
+	glutAddSubMenu("Load texture", menuTextures);
 	glutAddSubMenu("Add Light", menuLight);
 	glutAddMenuEntry("About", MAIN_ABOUT);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);

@@ -369,10 +369,14 @@ void Renderer::setTexture(GLuint tex, TextureType texType) const{
 	}
 
 	glActiveTexture(GL_TEXTURE0);
+	checkError();
+
 	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_MAP).id, 0);
 	checkError();
 
 	glBindTexture(GL_TEXTURE_2D, tex);
+	checkError();
+	glEnable(GL_TEXTURE_2D);
 	checkError();
 
 	switch (texType){
@@ -487,13 +491,21 @@ void Renderer::setConstColor(const boolean constColor) const {
 GLuint Renderer::add2DTexture(GLubyte* texels, int width, int height) {
 	GLuint tex;
 	glGenTextures(1, &tex);
+	checkError();
 	glActiveTexture(GL_TEXTURE0);
+	checkError();
 	glBindTexture(GL_TEXTURE_2D, tex);
+	checkError();
 
 	// We are assigning the chosen image to the 'tex' data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+	checkError();
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+	checkError();
 	
 	glBindTexture(GL_TEXTURE_2D,0);
+	checkError();
 	return tex;
 }
 
