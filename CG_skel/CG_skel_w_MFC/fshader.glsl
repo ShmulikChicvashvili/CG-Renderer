@@ -81,7 +81,7 @@ vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
 	vec3 color = vec3(0.0);
 	vec3 lightDir;
 	for(int i = 0; i < numLights; i++){
-		 lightDir = calcLightDirection(i, point);
+		lightDir = calcLightDirection(i, point);
 
 		if(lightDir == vec3(10,10,10)) return vec3(1,0,1);
 		
@@ -103,9 +103,12 @@ void main()
 	}
 	
 	if(uTexType == 1){
-		ka = vec3(0.1,0.1,0.1);
-		kd = texture(uTexMap, fTexCoords).xyz;
-		ks = vec3(0.8,0.8,0.8);
+		vec3 tex = texture(uTexMap, fTexCoords).xyz;
+		//ka = vec3(0.05);
+		ka = tex * 0.1;
+		kd = tex;
+		ks = tex * 0.7;
+		//ks = vec3(0.6);
 	}
 	
 	if (uColorMethod == 1) { // Gouraud
@@ -128,9 +131,9 @@ void main()
 	}
 	
 	if(uTexType == 1){
-		if(kd.x > 0.5 && kd.y > 0.5 && kd.z > 0.5) color = vec4(1,0,0,1);
-		if(kd.x < 0.5 && kd.y < 0.5 && kd.z < 0.5) color = vec4(0,1,0,1);
-		if(kd == vec3(0.0)) color = vec4(0,0,1,1);
+		//if(kd.x > 0.5 && kd.y > 0.5 && kd.z > 0.5) color = vec4(1,0,0,1);
+		//if(kd.x < 0.5 && kd.y < 0.5 && kd.z < 0.5) color = vec4(0,1,0,1);
+		//if(kd == vec3(0.0)) color = vec4(0,0,1,1);
 	}
 } 
 

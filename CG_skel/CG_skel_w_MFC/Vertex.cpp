@@ -19,6 +19,10 @@ void Vertex::setTexCoords(GLfloat x, GLfloat y){
 	hasSetTexCoords = true;
 }
 
+void Vertex::setTexCoords(const vec2& coords){
+	setTexCoords(coords.x, coords.y);
+}
+
 void Vertex::setMaterial(const Material& mat){
 	material = mat;
 }

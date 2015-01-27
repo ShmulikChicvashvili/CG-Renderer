@@ -12,6 +12,8 @@ class Model {
 private:
 	GLuint vao;
 	GLuint colorVbo;
+
+	void initializeFaces();
 protected:
 	Renderer* renderer;
 	GLubyte* texImg;

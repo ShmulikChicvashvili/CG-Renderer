@@ -123,10 +123,6 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_TEX_MAP] = ShaderParam(glGetUniformLocation(program, "uTexMap"), 1);
 	checkError();
 	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
-
-	shaderParams[ShaderParamName::U_TEX_MAP] = ShaderParam(glGetUniformLocation(program, "uTexMap"), 1);
-	checkError();
-	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -376,8 +372,6 @@ void Renderer::setTexture(GLuint tex, TextureType texType) const{
 
 	glBindTexture(GL_TEXTURE_2D, tex);
 	checkError();
-	glEnable(GL_TEXTURE_2D);
-	checkError();
 
 	switch (texType){
 	case TextureType::COLOR:{ 
@@ -500,6 +494,9 @@ GLuint Renderer::add2DTexture(GLubyte* texels, int width, int height) {
 	// We are assigning the chosen image to the 'tex' data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
 	checkError();
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 	checkError();

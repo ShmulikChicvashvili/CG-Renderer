@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Model.h"
-#include "pngLib\png.h"
-#include "pngLib\PngWrapper.h"
+#include "png.h"
+#include "PngWrapper.h"
 
 //#pragma import libpng.lib
 
@@ -120,18 +120,23 @@ bool Model::getActive() const {
 	return this->isActive;
 }
 
-void Model::setRenderer(Renderer* renderer){
-	this->renderer = renderer;
+void Model::initializeFaces(){
 	for (auto& face : this->faces) {
 		face.calcMidPoint();
+		face.calcNorm();
 		vector<Vertex>& vertices = face.getVertices();
 		if (vertices[0].hasTexCoords()){
 			continue;
 		}
-		vertices[0].setTexCoords(0, 0);
-		vertices[1].setTexCoords(0, 1);
+		vertices[0].setTexCoords(0, 1);
+		vertices[1].setTexCoords(0, 0);
 		vertices[2].setTexCoords(1, 0);
 	}
+}
+
+void Model::setRenderer(Renderer* renderer){
+	initializeFaces();
+	this->renderer = renderer;
 	renderer->addModel(getFaces(), vao, colorVbo);
 }
 
@@ -151,7 +156,7 @@ void Model::setTexture(string textureFilename) {
 	texImg = new GLubyte[texWidth * texHeight * 3];
 	for (int x = 0; x < texWidth; x++) {
 		for (int y = 0; y < texHeight; y++) {
-			int pixelColor = png.GetValue(x, y);
+			int pixelColor = png.GetValue(x, texHeight - 1 - y);
 			texImg[INDEX(texWidth, x, y, 0)] = GET_R(pixelColor);
 			texImg[INDEX(texWidth, x, y, 1)] = GET_G(pixelColor);
 			texImg[INDEX(texWidth, x, y, 2)] = GET_B(pixelColor);

@@ -19,6 +19,7 @@ public:
 	const vector<Vertex>& getVertices() const;
 	void addVertex(const vec4& v);
 	void addVertex(const vec4& v, const vec4& n);
+	void addVertex(const Vertex& v);
 
 	bool hasMidPoint() const;
 	bool hasNormal() const;

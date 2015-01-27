@@ -11,13 +11,15 @@ const vector<Vertex>& Face::getVertices() const{
 }
 
 void Face::addVertex(const vec4& v){
-	vertices.push_back(Vertex(v));
-	hasMid = false;
-	hasNorm = false;
+	addVertex(Vertex(v));
 }
 
 void Face::addVertex(const vec4& v, const vec4& n){
-	vertices.push_back(Vertex(v, n));
+	addVertex(Vertex(v, n));
+}
+
+void Face::addVertex(const Vertex& v){
+	vertices.push_back(v);
 	hasMid = false;
 	hasNorm = false;
 }

@@ -62,7 +62,7 @@ class Vertex
 	Material material;
 
 	bool isValidNormal(const vec4& v){
-		return length(vec3(coords.x, coords.y, coords.z)) != 0;
+		return length(vec3(v.x, v.y, v.z)) != 0;
 	}
 public:
 	virtual ~Vertex(){}
@@ -74,6 +74,7 @@ public:
 	void setCoords(const vec4& _coords);
 	bool setNorm(const vec4& v);
 	void setTexCoords(GLfloat x, GLfloat y);
+	void setTexCoords(const vec2& coords);
 
 	void setMaterial(const Material& mat);
 	const Material& getMaterial() const;

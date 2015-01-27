@@ -137,9 +137,6 @@
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pngLib\png.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pngLib\pngasmrd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -153,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pngLib\zlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pngLib\png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -169,9 +169,5 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="pngLib\libpng.lib" />
-    <Library Include="pngLib\zlib.lib" />
   </ItemGroup>
 </Project>

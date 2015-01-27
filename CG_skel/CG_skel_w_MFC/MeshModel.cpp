@@ -82,6 +82,7 @@ void MeshModel::loadFile(string fileName)
 	vector<FaceIdcs> facesIdcs;
 	vector<vec4> vertices;
 	vector<vec4> normals;
+	vector<vec2> texCoords;
 	// while not end of file
 	while (!ifile.eof())
 	{
@@ -108,6 +109,9 @@ void MeshModel::loadFile(string fileName)
 			normals.push_back(vec4fFromStream(issLine, 1));
 			//cout << "read normal: " << normals.at(normals.size() - 1) << endl;;
 		}
+		else if (lineType == "vt"){
+			texCoords.push_back(vec2fFromStream(issLine));
+		}
 		else
 		{
 			cout << "Found unknown line Type \"" << lineType << "\"" << endl;
@@ -126,21 +130,25 @@ void MeshModel::loadFile(string fileName)
 	{
 		Face f;
 		for (int i = 0; i < 3; i++){
-			const vec4& v = vertices[faceIdc.v[i] - 1];
-			if (faceIdc.vn[i] == 0){
-				f.addVertex(v);
+			const vec4& vCoords = vertices[faceIdc.v[i] - 1];
+			Vertex v(vCoords);
+			if (faceIdc.vn[i] != 0){
+				v.setNorm(normals[faceIdc.vn[i] - 1]);
 			}
-			else {
-				//cout << "Vertex: " << v << " Loaded with normal: " << normals[faceIdc.vn[i] - 1] << endl;
-				f.addVertex(v, normals[faceIdc.vn[i] - 1]);
+			if (faceIdc.vt[i] != 0){
+				v.setTexCoords(texCoords[faceIdc.vt[i] - 1]);
 			}
+
+			f.addVertex(v);
+			
+			
 		}
-		f.calcMidPoint();
-		f.calcNorm();
+		/*f.calcMidPoint();
+		f.calcNorm();*/
 		this->faces.push_back(f);
 	}
 
-	cout << "Loaded mesh model: " << fileName << " Successfully";
+	cout << "Loaded mesh model: " << fileName << " Successfully" << endl;
 }
 
 ///////////////////////////////////////////////
