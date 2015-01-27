@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Model.h"
-#include "png.h"
-#include "PngWrapper.h"
+#include "pngLib\png.h"
+#include "pngLib\PngWrapper.h"
 
-#pragma import libpng.lib
+//#pragma import libpng.lib
 
 GLfloat deg2radian(const GLfloat deg){
 	return (GLfloat)(deg * M_PI / 180);
