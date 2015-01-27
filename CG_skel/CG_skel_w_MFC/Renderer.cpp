@@ -361,7 +361,7 @@ void Renderer::drawArrays(int size) const {
 	checkError();
 }
 
-void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
+void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType) const {
 	setModelTransformations(vao, modelMtx, normModelMtx);
 	setConstColor(false);
 

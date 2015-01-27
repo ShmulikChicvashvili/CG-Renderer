@@ -135,19 +135,19 @@ void Model::setTexture(string textureFilename) {
 		return;
 	}
 
-	this->textureWidth = png.GetWidth();
-	this->textureHeight = png.GetHeight();
+	this->texWidth = png.GetWidth();
+	this->texHeight = png.GetHeight();
 
-	if (textureImg != NULL){
-		delete textureImg;
+	if (texImg != NULL){
+		delete texImg;
 	}
-	this->textureImg = new GLubyte(textureWidth * textureHeight * 3);
-	for (int x = 0; x < textureWidth; x++) {
-		for (int y = 0; y < textureHeight; y++) {
+	this->texImg = new GLubyte(texWidth * texHeight * 3);
+	for (int x = 0; x < texWidth; x++) {
+		for (int y = 0; y < texHeight; y++) {
 			int pixelColor = png.GetValue(x, y);
-			textureImg[INDEX(textureWidth, x, y, 0)] = GET_R(pixelColor);
-			textureImg[INDEX(textureWidth, x, y, 1)] = GET_G(pixelColor);
-			textureImg[INDEX(textureWidth, x, y, 2)] = GET_B(pixelColor);
+			texImg[INDEX(texWidth, x, y, 0)] = GET_R(pixelColor);
+			texImg[INDEX(texWidth, x, y, 1)] = GET_G(pixelColor);
+			texImg[INDEX(texWidth, x, y, 2)] = GET_B(pixelColor);
 		}
 	}
 }
@@ -156,6 +156,6 @@ void Model::draw() const{
 	if (this->isActive) {
 		renderer->drawActiveModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
 	}
-	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
+	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix(), texId, texType);
 }
 

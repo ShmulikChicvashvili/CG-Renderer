@@ -14,10 +14,12 @@ private:
 	GLuint colorVbo;
 protected:
 	Renderer* renderer;
-	GLubyte* textureImg;
-	GLubyte textureId;
-	int textureWidth, textureHeight;
-	Model() : renderer(NULL), textureWidth(0), textureHeight(0), textureImg(NULL) {}
+	GLubyte* texImg;
+	int texWidth, texHeight;
+	GLubyte texId;
+	TextureType texType;
+
+	Model() : renderer(NULL), texImg(NULL), texType(TextureType::NONE) {}
 
 	vector<Face> faces;
 
