@@ -14,10 +14,14 @@
     <ProjectGuid>{849F10CE-4916-4A83-A3CB-A19AF397A995}</ProjectGuid>
     <RootNamespace>CG_skel_w_MFC</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <SccProjectName>SAK</SccProjectName>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -105,8 +109,13 @@
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="InitShader.cpp" />
     <ClCompile Include="InputDialog.cpp" />
+    <ClCompile Include="light.cpp" />
+    <ClCompile Include="LitVertex.cpp" />
     <ClCompile Include="MeshModel.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ParallelLight.cpp" />
+    <ClCompile Include="pngLib\PngWrapper.cpp" />
+    <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PrimMeshModel.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -120,11 +129,22 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CG_skel_w_MFC.h" />
     <ClInclude Include="Face.h" />
+    <ClInclude Include="GlVersion.h" />
     <ClInclude Include="InitShader.h" />
     <ClInclude Include="InputDialog.h" />
+    <ClInclude Include="light.h" />
+    <ClInclude Include="LitVertex.h" />
     <ClInclude Include="mat.h" />
     <ClInclude Include="MeshModel.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ParallelLight.h" />
+    <ClInclude Include="pngLib\png.h" />
+    <ClInclude Include="pngLib\pngasmrd.h" />
+    <ClInclude Include="pngLib\pngconf.h" />
+    <ClInclude Include="pngLib\PngWrapper.h" />
+    <ClInclude Include="pngLib\zconf.h" />
+    <ClInclude Include="pngLib\zlib.h" />
+    <ClInclude Include="PointLight.h" />
     <ClInclude Include="PrimMeshModel.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
@@ -151,6 +171,10 @@
       <Project>{e354a711-c2d4-4492-a756-1000564dccb8}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="pngLib\libpng.lib" />
+    <Library Include="pngLib\zlib.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -441,24 +441,24 @@ void Renderer::setConstColor(const boolean constColor) const {
 	checkError();
 }
 
-void Renderer::drawTexture(GLuint * texels, int width, int height) {
-	GLuint tex;
-	glGenTextures(1, &tex);
-	glActiveTexture(GL_TEXTURE0);
-
-	glBindTexture(GL_TEXTURE_2D, tex);
-
-	// We are assigning the chosen image to the 'tex' data
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
-
-	// For the vertex shader
-	GLuint texLocation = shaderParams.at(ShaderParamName::V_TEX_COORDS).id;
-	glEnableVertexAttribArray(texLocation);
-	glVertexAttribPointer(texLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-	// For the fragment shader
-	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_MAP).id, 0);
-}
+//void Renderer::drawTexture(GLuint * texels, int width, int height) {
+//	GLuint tex;
+//	glGenTextures(1, &tex);
+//	glActiveTexture(GL_TEXTURE0);
+//
+//	glBindTexture(GL_TEXTURE_2D, tex);
+//
+//	// We are assigning the chosen image to the 'tex' data
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+//
+//	// For the vertex shader
+//	GLuint texLocation = shaderParams.at(ShaderParamName::V_TEX_COORDS).id;
+//	glEnableVertexAttribArray(texLocation);
+//	glVertexAttribPointer(texLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+//
+//	// For the fragment shader
+//	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_MAP).id, 0);
+//}
 
 /////////////////////////////////////////////////////
 
