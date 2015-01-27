@@ -159,6 +159,12 @@ void main()
 		color = vec4(calcColor(point, norm, ka, kd, ks),1); 
 	}
 	
+	if (animateColor){
+		vec3 tmpColor = rgb2hsv(color.xyz);
+		tmpColor.x += ticks * 0.01;
+		color = vec4(hsv2rgb(tmpColor),1);
+	}
+	
 	if (uToon){
 		int bits = 6;
 		float r = floor(color.x * (2 ^ bits)) / (2 ^ bits);
