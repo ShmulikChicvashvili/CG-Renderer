@@ -132,7 +132,7 @@ void MeshModel::loadFile(string fileName)
 		for (int i = 0; i < 3; i++){
 			const vec4& vCoords = vertices[faceIdc.v[i] - 1];
 			Vertex v(vCoords);
-			if (faceIdc.vn[i] != 0){
+			if (faceIdc.vn[i] != 0 && faceIdc.vn[i] < normals.size()){
 				v.setNorm(normals[faceIdc.vn[i] - 1]);
 			}
 			if (faceIdc.vt[i] != 0){

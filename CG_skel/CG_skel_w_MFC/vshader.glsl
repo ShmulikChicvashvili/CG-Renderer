@@ -110,10 +110,31 @@ void main()
 	//}
 	
 	vec4 pos = vPosition;
+	vec4 faceMid = vFaceMid;
+	vec4 norm = vNormal;
+	vec4 faceNorm = vFaceNormal;
 	
 	if (animateVertex){
-		float randNum = rand(pos.xy);
-		pos = vec4(pos.xyz + normalize(vNormal.xyz) * ticks * 0.01, 1);
+		mat4 resize = mat4(1,0,0,0,
+							0,1,0,0,
+							0,0,1,0,
+							0,0,0,1);
+		//resize = resize * (0.5 + ticks / 100.0);
+		
+		resize = resize * (sin(radians((ticks / 200.0) * 360.0)) + 2) * 0.5;
+				
+		float deg = ticks * 360.0 / 100.0;
+		float rad = radians(deg);
+		
+		mat4 rotate = mat4(cos(rad), 0, sin(rad), 0,
+							0, 1, 0, 0,
+							-sin(rad),0, cos(rad), 0,
+							0, 0, 0, 1);
+		
+		pos = vec4((rotate * resize * pos).xyz,1);
+		faceMid = vec4((rotate * resize * faceMid).xyz,1);
+		norm = rotate * norm;
+		faceNorm = rotate * faceNorm;
 	}
 	
 	vec4 camSpace = uModelviewMtx * pos;
@@ -121,10 +142,10 @@ void main()
 	gl_Position = uProjMtx * camSpace;
 
 	fCamSpace = camSpace.xyz;
-	fNormal = normalize((uNormModelviewMtx * vNormal).xyz);
+	fNormal = normalize((uNormModelviewMtx * norm).xyz);
 	
-	fFaceMid = (uModelviewMtx * vFaceMid).xyz;
-	fFaceNormal = normalize((uNormModelviewMtx * vFaceNormal).xyz);
+	fFaceMid = (uModelviewMtx * faceMid).xyz;
+	fFaceNormal = normalize((uNormModelviewMtx * faceNorm).xyz);
 		
 	fMaterial = mat3(vAmbient,vDiffuse,vSpecular);
 	

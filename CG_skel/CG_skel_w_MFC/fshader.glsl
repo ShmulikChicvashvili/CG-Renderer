@@ -161,7 +161,7 @@ void main()
 	
 	if (animateColor){
 		vec3 tmpColor = rgb2hsv(color.xyz);
-		tmpColor.x += ticks * 0.01;
+		tmpColor.x += ticks * 0.005;
 		color = vec4(hsv2rgb(tmpColor),1);
 	}
 	

@@ -52,7 +52,7 @@ CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up
 		0, 0, 0, 1);
 	this->spinScaleMtx = transpose(this->spinScaleInvMtx);
 
-	assert(spinScaleMtx * spinScaleInvMtx == mat4());
+	//assert(spinScaleMtx * spinScaleInvMtx == mat4());
 
 	this->rotateTranslateInvMtx = mat4(1, 0, 0, -eyeNotHomogenic.x,
 										0, 1, 0, -eyeNotHomogenic.y,
@@ -63,7 +63,7 @@ CameraLookAtError Camera::LookAt(const vec4& eye, const vec4& at, const vec4& up
 									0, 0, 1, eyeNotHomogenic.z,
 									0, 0, 0, 1);
 
-	assert(rotateTranslateMtx * rotateTranslateInvMtx == mat4());
+	//assert(rotateTranslateMtx * rotateTranslateInvMtx == mat4());
 
 	return CameraLookAtError::OK;
 	//@TODO camera is a model. date modelMatrix (the inverse of the above)
