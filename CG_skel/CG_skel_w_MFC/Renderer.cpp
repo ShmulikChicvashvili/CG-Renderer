@@ -29,7 +29,7 @@ void checkError()
 	}
 }
 
-Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0), ticksDirection(true)
+Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), animationVertex(false), ticks(0), ticksDirection(true)
 {
 	InitOpenGLRendering();
 	initial_width = 512;
@@ -38,7 +38,7 @@ Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0), ticksDirection(true)
+Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), animationVertex(false), ticks(0), ticksDirection(true)
 {
 	//InitOpenGLRendering();
 	glViewport(0, 0, m_width, m_height);
@@ -588,7 +588,7 @@ void Renderer::updateTicks() {
 		else {
 			ticks--;
 		}
-		if (ticks == MAX_UNSIGNED_INT || ticks == 0) {
+		if (ticks == CHANGE_DIRECTION || ticks == 0) {
 			ticksDirection = !ticksDirection;
 		}
 	}
