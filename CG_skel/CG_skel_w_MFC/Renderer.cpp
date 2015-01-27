@@ -183,6 +183,7 @@ void Renderer::reshape(int width, int height){
 
 void Renderer::InitializeBuffer() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 
 	//for (int x = 0; x < m_width; x++) {
 	//	for (int y = 0; y < m_height; y++) {
@@ -414,20 +415,30 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 
 	if (silhouette) {
 		glDepthMask(GL_FALSE);
-		glPolygonMode(GL_BACK, GL_LINE);
-		glLineWidth(3.0);
+		checkError();
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		checkError();
+		glLineWidth(7.0f);
+		//glGetError();
+		checkError();
 
 		glUniform1i(shaderParams.at(ShaderParamName::U_SILHOUETTE).id, 1);
+		checkError();
 
 		glDrawArrays(GL_TRIANGLES, 0, size);
+		checkError();
 
 		glUniform1i(shaderParams.at(ShaderParamName::U_SILHOUETTE).id, 0);
+		checkError();
 
-		glLineWidth(1.0);
+		glLineWidth(1.0f);
+		checkError();
 		glDepthMask(GL_TRUE);
+		checkError();
 	}
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	checkError();
 
 	drawArrays(size);
 

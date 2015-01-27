@@ -819,6 +819,7 @@ void effectMenu(int id) {
 			renderer->setSilhouette(true);
 		}
 		std::cout << "Silhouette is: " << renderer->getSilhouette() << std::endl;
+		break;
 	}
 	case TOON:
 	{
@@ -829,6 +830,7 @@ void effectMenu(int id) {
 			renderer->setToon(true);
 		}
 		std::cout << "Toon is: " << renderer->getToon() << std::endl;
+		break;
 	}
 	default:
 		break;

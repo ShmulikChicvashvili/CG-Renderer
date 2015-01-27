@@ -30,6 +30,9 @@ uniform bool uConstColor;
 uniform bool uToon;
 uniform bool uSilhouette;
 
+uniform long ticks;
+uniform bool animateColor;
+
 out vec4 color;
 
 
@@ -105,6 +108,11 @@ void main()
 		return;
 	}
 	
+	if (uSilhouette){
+		color = vec4(0,0,0,1);
+		return;
+	}
+	
 	if(uTexType == 1){
 		vec3 tex = texture(uTexMap, fTexCoords).xyz;
 		//ka = vec3(0.05);
@@ -133,7 +141,7 @@ void main()
 		color = vec4(calcColor(point, norm, ka, kd, ks),1); 
 	}
 	
-	if (uToon || true){
+	if (uToon){
 		int bits = 6;
 		float r = floor(color.x * (2 ^ bits)) / (2 ^ bits);
 		float g = floor(color.y * (2 ^ bits)) / (2 ^ bits);
