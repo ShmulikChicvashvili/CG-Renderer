@@ -17,7 +17,7 @@ map<GLuint, map<ShaderParamName, vector<vec4> > > tmpVao;
 
 #define SPEC_SHININESS 3
 
-#define MAX_UNSIGNED_INT 4294967294
+#define CHANGE_DIRECTION 10000
 
 void checkError()
 {
