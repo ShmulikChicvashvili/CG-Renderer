@@ -28,7 +28,7 @@ void checkError()
 	}
 }
 
-Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false)
+Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0)
 {
 	InitOpenGLRendering();
 	initial_width = 512;
@@ -37,7 +37,7 @@ Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false)
+Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0)
 {
 	//InitOpenGLRendering();
 	glViewport(0, 0, m_width, m_height);
@@ -131,6 +131,18 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_SILHOUETTE] = ShaderParam(glGetUniformLocation(program, "uSilhouette"), 1);
 	checkError();
 	cout << "U_SILHOUETTE id: " << shaderParams[ShaderParamName::U_SILHOUETTE].id << endl;
+
+	shaderParams[ShaderParamName::U_TICKS] = ShaderParam(glGetUniformLocation(program, "ticks"), 1);
+	checkError();
+	cout << "U_TICKS id: " << shaderParams[ShaderParamName::U_TICKS].id << endl;
+
+	shaderParams[ShaderParamName::U_ANIMATION_COLOR] = ShaderParam(glGetUniformLocation(program, "animateColor"), 1);
+	checkError();
+	cout << "U_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_ANIMATION_COLOR].id << endl;
+
+	shaderParams[ShaderParamName::U_ANIMATION_VERTEX] = ShaderParam(glGetUniformLocation(program, "animateVertex"), 1);
+	checkError();
+	cout << "U_ANIMATION_VERTEX id: " << shaderParams[ShaderParamName::U_ANIMATION_VERTEX].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -339,7 +351,7 @@ void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat
 	this->projMtx = projMtx;
 }
 
-void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const {
+void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) {
 	glUseProgram(program);
 	checkError();
 
@@ -366,7 +378,7 @@ void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const m
 	checkError();
 }
 
-void Renderer::setTexture(GLuint tex, TextureType texType) const{
+void Renderer::setTexture(GLuint tex, TextureType texType) {
 	if (texType == TextureType::NONE){
 		glUniform1i(shaderParams.at(ShaderParamName::U_TEX_TYPE).id, 0);
 		checkError();
@@ -397,18 +409,18 @@ void Renderer::setTexture(GLuint tex, TextureType texType) const{
 	}
 }
 
-void Renderer::unsetTexture() const{
+void Renderer::unsetTexture() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_TYPE).id, 0);
 }
 
-void Renderer::drawArrays(int size) const {
+void Renderer::drawArrays(int size) {
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
 }
 
-void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType) const {
+void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType) {
 	setModelTransformations(vao, modelMtx, normModelMtx);
 	setTexture(tex, texType);
 	setConstColor(false);
@@ -445,7 +457,7 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	unsetTexture();
 }
 
-void Renderer::drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
+void Renderer::drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) {
 	setModelTransformations(vao, modelMtx, normModelMtx);
 	setConstColor(true);
 
@@ -511,7 +523,7 @@ void Renderer::setLights(const vector<RendererLight>& lights) {
 	}
 }
 
-void Renderer::setConstColor(const boolean constColor) const {
+void Renderer::setConstColor(const boolean constColor) {
 	glUniform1i(shaderParams.at(ShaderParamName::U_CONST_COLOR).id, constColor);
 	checkError();
 }
@@ -561,6 +573,29 @@ boolean Renderer::getSilhouette() {
 
 boolean Renderer::getToon() {
 	return this->toon;
+}
+
+void Renderer::updateTicks() {
+	if (!animationColor && !animationVertex) {
+		ticks = 0;
+	}
+	else {
+		ticks++;
+	}
+	glUniform1i(shaderParams.at(ShaderParamName::U_TICKS).id, ticks);
+	checkError();
+}
+
+void Renderer::setAnimationColor(const boolean animationColor) {
+	this->animationColor = animationColor;
+	glUniform1i(shaderParams.at(ShaderParamName::U_ANIMATION_COLOR).id, animationColor);
+	checkError();
+}
+
+void Renderer::setAnimationVertex(const boolean animationVertex) {
+	this->animationVertex = animationVertex;
+	glUniform1i(shaderParams.at(ShaderParamName::U_ANIMATION_VERTEX).id, animationVertex);
+	checkError();
 }
 
 /////////////////////////////////////////////////////
@@ -627,7 +662,8 @@ void Renderer::SwapBuffers()
 {
 	glutSwapBuffers();
 	glFlush();
-	//glutPostRedisplay();
+	if (animationColor || animationVertex)
+		glutPostRedisplay();
 	//int a = glGetError();
 	//glActiveTexture(GL_TEXTURE0);
 	//a = glGetError();

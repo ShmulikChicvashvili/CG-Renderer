@@ -64,6 +64,7 @@
 #define PARALLEL_LIGHT 2
 
 #define LOAD_TEXTURE 1
+#define REMOVE_TEXTURE 2
 
 #define SILHOUETTE 1
 #define TOON 2
@@ -642,6 +643,7 @@ void fileMenu(int id)
 void textureMenu(int id) {
 	switch (id) {
 	case LOAD_TEXTURE:
+	{
 		CFileDialog dlg(TRUE, _T(".png"), NULL, NULL, _T("*.png|*.*"));
 		if (dlg.DoModal() == IDOK)
 		{
@@ -650,6 +652,11 @@ void textureMenu(int id) {
 			scene->getModels()[activeModel]->setTexture((LPCTSTR)dlg.GetPathName());
 			display();
 		}
+	}
+		break;
+	case REMOVE_TEXTURE:
+		int activeModel = scene->getActiveModel();
+		scene->getModels()[activeModel]->removeTexture();
 		break;
 	}
 }
@@ -879,6 +886,7 @@ void initMenu()
 	// TEXTURES menu
 	int menuTextures = glutCreateMenu(textureMenu);
 	glutAddMenuEntry("Load texture", LOAD_TEXTURE);
+	glutAddMenuEntry("Remove texture", REMOVE_TEXTURE);
 
 	// Special Effects menu
 	int menuEffects = glutCreateMenu(effectMenu);

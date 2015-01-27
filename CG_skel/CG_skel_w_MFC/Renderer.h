@@ -54,7 +54,8 @@ enum class ShaderParamName{
 	U_TOON,
 	U_SILHOUETTE,
 	U_TICKS,
-	U_ANIMATION_COLOR
+	U_ANIMATION_COLOR,
+	U_ANIMATION_VERTEX
 };
 
 struct ShaderParam{
@@ -104,16 +105,19 @@ class Renderer
 
 	boolean silhouette;
 	boolean toon;
+	boolean animationColor;
+	boolean animationVertex;
+	GLuint ticks;
 
 	//////////////////////////////
 
 	void fillShaderParams();
 	
-	void setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const;
-	void setTexture(GLuint tex, TextureType texType) const;
-	void unsetTexture() const;
-	void drawArrays(int size) const;
-	void setConstColor(const boolean constColor) const;
+	void setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx);
+	void setTexture(GLuint tex, TextureType texType);
+	void unsetTexture();
+	void drawArrays(int size);
+	void setConstColor(const boolean constColor);
 
 	//////////////////////////////
 	// openGL stuff. Don't touch.
@@ -152,8 +156,8 @@ public:
 	
 	void addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo);
 	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
-	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType) const;
-	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
+	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType);
+	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx);
 	void setLights(const vector<RendererLight>& lights);
 	GLuint add2DTexture(GLubyte* texImg, int width, int height);
 	void del2DTexture(GLuint tex);
@@ -161,6 +165,9 @@ public:
 	void setToon(const boolean toon);
 	boolean getSilhouette();
 	boolean getToon();
+	void setAnimationColor(const boolean animationColor);
+	void setAnimationVertex(const boolean animationVertex);
+	void updateTicks();
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 	//////////////////////////////

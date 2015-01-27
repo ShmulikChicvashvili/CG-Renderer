@@ -48,6 +48,9 @@ void Scene::draw()
 #endif
 
 	begin = clock();
+
+	m_renderer->updateTicks();
+
 	Camera& cam = *cameras[getActiveCamera()];
 	m_renderer->setCamera(cam.getViewMatrix(), cam.getViewNormalMatrix(), cam.getProjectionMatrix());
 
