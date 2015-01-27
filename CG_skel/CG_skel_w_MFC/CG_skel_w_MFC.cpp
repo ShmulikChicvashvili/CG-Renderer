@@ -63,6 +63,8 @@
 #define POINT_LIGHT 1
 #define PARALLEL_LIGHT 2
 
+#define LOAD_TEXTURE 1
+
 Scene *scene;
 Renderer *renderer;
 
@@ -634,6 +636,21 @@ void fileMenu(int id)
 	}
 }
 
+void textureMenu(int id) {
+	switch (id) {
+	case LOAD_CAMERA:
+		CFileDialog dlg(TRUE, _T(".obj"), NULL, NULL, _T("*.obj|*.*"));
+		if (dlg.DoModal() == IDOK)
+		{
+			std::string s((LPCTSTR)dlg.GetPathName());
+			int activeModel = scene->getActiveModel();
+			scene->getModels()[activeModel]->setTexture((LPCTSTR)dlg.GetPathName());
+			display();
+		}
+		break;
+	}
+}
+
 void axisMenu(int id) {
 	switch (id)
 	{
@@ -824,6 +841,10 @@ void initMenu()
 	glutAddMenuEntry("Spin", SPIN_ACTION);
 	glutAddMenuEntry("Scaling", SCALING_ACTION);
 	glutAddMenuEntry("Rotation", ROTATE_ACTION);
+
+	// TEXTURES menu
+	int menuTextures = glutCreateMenu(textureMenu);
+	glutAddMenuEntry("Load texture", LOAD_TEXTURE);
 
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);
