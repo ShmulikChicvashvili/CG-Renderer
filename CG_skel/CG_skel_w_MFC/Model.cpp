@@ -2,8 +2,11 @@
 #include "Model.h"
 #include "png.h"
 #include "PngWrapper.h"
+#include <math.h>
 
 //#pragma import libpng.lib
+
+#define pi 3.14
 
 GLfloat deg2radian(const GLfloat deg){
 	return (GLfloat)(deg * M_PI / 180);
@@ -121,18 +124,45 @@ bool Model::getActive() const {
 }
 
 void Model::initializeFaces(){
+	double xSum = 0.0;
+	double ySum = 0.0;
+	double zSum = 0.0;
+	double polygonVolume = 0.0;
+	
+	// Initializing and calculating centroid of the polyhedron
 	for (auto& face : this->faces) {
 		face.calcMidPoint();
 		face.calcNorm();
 		vector<Vertex>& vertices = face.getVertices();
 		if (vertices[0].hasTexCoords()){
-			continue;
+			hasTextureCoords == true;
 		}
-		vertices[0].setTexCoords(0, 1);
-		vertices[1].setTexCoords(0, 0);
-		vertices[2].setTexCoords(1, 0);
+		for (auto& v : vertices) {
+			vec4 vertice = v.getCoords();
+			xSum += vertice.x;
+			ySum += vertice.y;
+			zSum += vertice.z;
+			
+		}
+		polygonVolume += dot(vertices[0].getCoords(), face.getNorm());
+	}
+	polygonVolume /= 6;
+
+	vec3 centroid(xSum / polygonVolume, ySum / polygonVolume, zSum / polygonVolume);
+
+	// Calculating the tex coords;
+	for (auto& f : faces) {
+		vector<Vertex>& vertices = f.getVertices();
+		for (auto& v : vertices) {
+			vec3 d = centroid - v.getCoords();
+			float xTex = 0.5 + (atan2(d.z, d.x) / (2*pi));
+			float yTex = 0.5 - (asin(d.y) / pi);
+			v.setTexCoords(vec2(xTex, yTex));
+		}
 	}
 }
+
+
 
 void Model::setRenderer(Renderer* renderer){
 	initializeFaces();
