@@ -14,6 +14,11 @@ bool Vertex::setNorm(const vec4& v){
 	return true;
 }
 
+void Vertex::setTexCoords(GLfloat x, GLfloat y){
+	texCoords = vec2(x, y);
+	hasSetTexCoords = true;
+}
+
 void Vertex::setMaterial(const Material& mat){
 	material = mat;
 }
@@ -31,6 +36,15 @@ const vec4& Vertex::getNorm() const{
 	return norm;
 }
 
+const vec2& Vertex::getTexCoords() const{
+	assert(hasSetTexCoords);
+	return texCoords;
+}
+
 bool Vertex::hasNormal() const{
 	return hasNorm;
+}
+
+bool Vertex::hasTexCoords() const{
+	return hasSetTexCoords;
 }

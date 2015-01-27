@@ -15,6 +15,7 @@ private:
 	bool hasNorm;
 
 public:
+	vector<Vertex>& getVertices();
 	const vector<Vertex>& getVertices() const;
 	void addVertex(const vec4& v);
 	void addVertex(const vec4& v, const vec4& n);

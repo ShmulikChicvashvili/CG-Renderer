@@ -56,6 +56,9 @@ class Vertex
 	vec4 norm;
 	bool hasNorm;
 
+	vec2 texCoords;
+	bool hasSetTexCoords;
+
 	Material material;
 
 	bool isValidNormal(const vec4& v){
@@ -64,11 +67,13 @@ class Vertex
 public:
 	virtual ~Vertex(){}
 	
-	Vertex(const vec4& _coords) : coords(_coords), norm(), hasNorm(false){}
-	Vertex(const vec4& _coords, const vec4& _norm) : coords(_coords), norm(_norm), hasNorm(true) { assert(isValidNormal(coords)); }
+	Vertex(const vec4& _coords) : coords(_coords), norm(), hasNorm(false), hasSetTexCoords(false){}
+	Vertex(const vec4& _coords, const vec4& _norm) : 
+		coords(_coords), norm(_norm), hasNorm(true), hasSetTexCoords(false) { assert(isValidNormal(coords)); }
 
 	void setCoords(const vec4& _coords);
 	bool setNorm(const vec4& v);
+	void setTexCoords(GLfloat x, GLfloat y);
 
 	void setMaterial(const Material& mat);
 	const Material& getMaterial() const;
@@ -76,6 +81,8 @@ public:
 
 	const vec4& getCoords() const;
 	const vec4& getNorm() const;
+	const vec2& getTexCoords() const;
 	bool hasNormal() const;
+	bool hasTexCoords() const;
 };
 

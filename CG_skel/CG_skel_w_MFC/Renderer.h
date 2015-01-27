@@ -48,8 +48,9 @@ enum class ShaderParamName{
 	U_PROJ_MTX,
 	U_NUM_LIGHTS,
 	U_COLOR_METHOD,
-	U_CONST_COLOR,
-	U_TEX_MAP
+	U_TEX_TYPE,
+	U_TEX_MAP,
+	U_CONST_COLOR
 };
 
 struct ShaderParam{
@@ -102,6 +103,8 @@ class Renderer
 	void fillShaderParams();
 	
 	void setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) const;
+	void setTexture(GLuint tex, TextureType texType) const;
+	void unsetTexture() const;
 	void drawArrays(int size) const;
 	void setConstColor(const boolean constColor) const;
 
@@ -146,7 +149,6 @@ public:
 	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void setLights(const vector<RendererLight>& lights);
 	GLuint add2DTexture(GLubyte* texImg, int width, int height);
-	//void drawTexture(GLuint * texels, int width, int height);
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 	//////////////////////////////

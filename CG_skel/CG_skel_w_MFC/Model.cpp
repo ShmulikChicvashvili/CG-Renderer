@@ -124,6 +124,13 @@ void Model::setRenderer(Renderer* renderer){
 	this->renderer = renderer;
 	for (auto& face : this->faces) {
 		face.calcMidPoint();
+		vector<Vertex>& vertices = face.getVertices();
+		if (vertices[0].hasTexCoords()){
+			continue;
+		}
+		vertices[0].setTexCoords(0, 0);
+		vertices[1].setTexCoords(0, 1);
+		vertices[2].setTexCoords(1, 0);
 	}
 	renderer->addModel(getFaces(), vao, colorVbo);
 }
@@ -135,13 +142,13 @@ void Model::setTexture(string textureFilename) {
 		return;
 	}
 
-	this->texWidth = png.GetWidth();
-	this->texHeight = png.GetHeight();
+	texWidth = png.GetWidth();
+	texHeight = png.GetHeight();
 
 	if (texImg != NULL){
 		delete texImg;
 	}
-	this->texImg = new GLubyte(texWidth * texHeight * 3);
+	texImg = new GLubyte(texWidth * texHeight * 3);
 	for (int x = 0; x < texWidth; x++) {
 		for (int y = 0; y < texHeight; y++) {
 			int pixelColor = png.GetValue(x, y);
@@ -150,6 +157,9 @@ void Model::setTexture(string textureFilename) {
 			texImg[INDEX(texWidth, x, y, 2)] = GET_B(pixelColor);
 		}
 	}
+
+	texId = renderer->add2DTexture(texImg, texWidth, texHeight);
+	texType = TextureType::COLOR;
 }
 
 void Model::draw() const{

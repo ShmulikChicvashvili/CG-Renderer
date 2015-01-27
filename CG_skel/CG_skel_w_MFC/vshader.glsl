@@ -96,6 +96,7 @@ vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
 
 void main()
 {
+	fTexCoords = vTexCoords;
 	if (vPosition.w == 0){
 		gl_Position = uProjMtx * uNormModelviewMtx * uModelviewMtx * (vPosition + vNormal + vFaceNormal + vec4(vAmbient,0) + vec4(vDiffuse,0) + vec4(vSpecular,0) + vFaceMid);
 		return;

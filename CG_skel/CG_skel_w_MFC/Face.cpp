@@ -2,6 +2,10 @@
 #include "Face.h"
 #include <exception>
 
+vector<Vertex>& Face::getVertices(){
+	return vertices;
+}
+
 const vector<Vertex>& Face::getVertices() const{
 	return vertices;
 }

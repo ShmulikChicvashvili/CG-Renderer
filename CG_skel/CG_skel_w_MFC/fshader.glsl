@@ -94,29 +94,37 @@ vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
 
 void main() 
 { 
+	vec3 norm;
+	vec3 point;
+	vec3 ka = fMaterial[0], kd = fMaterial[1], ks = fMaterial[2];
 	if (uConstColor){
 		color = vec4(0,1,0,1);
 		return;
 	}
 	
-	if (uColorMethod == 0 || uColorMethod == 2){
-		vec3 norm;
-		vec3 point;
-		if(uColorMethod == 0) { // Flat
-			norm = fFaceNormal;
-			point = fFaceMid;
-		} else {
-			norm = fNormal;
-			point = fCamSpace;
-		}
-		if (norm != vec3(0.0)){
-			norm = normalize(norm);
-		}
-		
-		color = vec4(calcColor(point, norm, fMaterial[0], fMaterial[1], fMaterial[2]),1); 
-	} else if (uColorMethod == 1) { // Gouraud
+	if(uTexType == 1){
+		ka = vec3(0.1,0.1,0.1);
+		kd = texture(uTexMap, fTexCoords).xyz;
+		ks = vec3(0.8,0.8,0.8);
+	}
+	
+	if (uColorMethod == 1) { // Gouraud
 		color = vec4(fColor,1);
 	}
-
+	
+	if(uColorMethod == 0) { // Flat
+		norm = fFaceNormal;
+		point = fFaceMid;
+	} else {
+		norm = fNormal;
+		point = fCamSpace;
+	}
+	if (norm != vec3(0.0)){
+		norm = normalize(norm);
+	}
+	
+	if (uColorMethod == 0 || uColorMethod == 2){
+		color = vec4(calcColor(point, norm, ka, kd, ks),1); 
+	}
 } 
 

@@ -116,6 +116,14 @@ void Renderer::fillShaderParams() {
 	checkError();
 	cout << "U_CONST_COLOR id: " << shaderParams[ShaderParamName::U_CONST_COLOR].id << endl;
 
+	shaderParams[ShaderParamName::U_TEX_TYPE] = ShaderParam(glGetUniformLocation(program, "uTexType"), 1);
+	checkError();
+	cout << "U_TEX_TYPE id: " << shaderParams[ShaderParamName::U_TEX_TYPE].id << endl;
+
+	shaderParams[ShaderParamName::U_TEX_MAP] = ShaderParam(glGetUniformLocation(program, "uTexMap"), 1);
+	checkError();
+	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
+
 	shaderParams[ShaderParamName::U_TEX_MAP] = ShaderParam(glGetUniformLocation(program, "uTexMap"), 1);
 	checkError();
 	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
@@ -223,14 +231,14 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	vector<vec4> normals;
 	vector<vec4> faceNormals;
 	vector<vec4> faceMid;
-	vector<vec4> textures;
+	vector<vec2> textures;
 	for (auto& f : faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
 			normals.push_back(v.getNorm());
 			faceNormals.push_back(f.getNorm());
 			faceMid.push_back(f.getMidPoint());
-			// INSERT TEXTURES!
+			textures.push_back(v.getTexCoords());
 		}
 	}
 	assert(vertices.size() == faces.size() * 3);
@@ -268,7 +276,7 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	// Textures vbo
 	vbos[ShaderParamName::V_TEX_COORDS] = buffers[VBOIndex::TEXTURES];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_TEX_COORDS]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * textures.size(), textures.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * textures.size(), textures.data(), GL_STATIC_DRAW);
 
 	// Materials vbo
 	//vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];
@@ -316,11 +324,8 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 		checkError();
 	}
 
-	//fillColorVBO(colorVbo, faces, true);
-
-	//tmpVao[vao][ShaderParamName::V_POSITION] = vertices; 
-	//tmpVao[vao][ShaderParamName::V_NORMAL] = normals;
-	//tmpVao[vao][ShaderParamName::V_FACE_NORMAL] = faceNormals;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx) {
@@ -356,6 +361,41 @@ void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const m
 	checkError();
 }
 
+void Renderer::setTexture(GLuint tex, TextureType texType) const{
+	if (texType == TextureType::NONE){
+		glUniform1i(shaderParams.at(ShaderParamName::U_TEX_TYPE).id, 0);
+		checkError();
+		return;
+	}
+
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_MAP).id, 0);
+	checkError();
+
+	glBindTexture(GL_TEXTURE_2D, tex);
+	checkError();
+
+	switch (texType){
+	case TextureType::COLOR:{ 
+		glUniform1i(shaderParams.at(ShaderParamName::U_TEX_TYPE).id, 1); 
+		checkError(); 
+		break; 
+	}
+	case TextureType::NORMAL: {
+		glUniform1i(shaderParams.at(ShaderParamName::U_TEX_TYPE).id, 2); 
+		checkError(); 
+		break; 
+	}
+	default: throw exception("Tried setting unkown tex type");
+	}
+}
+
+void Renderer::unsetTexture() const{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_TYPE).id, 0);
+}
+
 void Renderer::drawArrays(int size) const {
 	glDrawArrays(GL_TRIANGLES, 0, size);
 	checkError();
@@ -363,11 +403,14 @@ void Renderer::drawArrays(int size) const {
 
 void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType) const {
 	setModelTransformations(vao, modelMtx, normModelMtx);
+	setTexture(tex, texType);
 	setConstColor(false);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	drawArrays(size);
+
+	unsetTexture();
 }
 
 void Renderer::drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const {
@@ -441,24 +484,18 @@ void Renderer::setConstColor(const boolean constColor) const {
 	checkError();
 }
 
-//void Renderer::drawTexture(GLuint * texels, int width, int height) {
-//	GLuint tex;
-//	glGenTextures(1, &tex);
-//	glActiveTexture(GL_TEXTURE0);
-//
-//	glBindTexture(GL_TEXTURE_2D, tex);
-//
-//	// We are assigning the chosen image to the 'tex' data
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
-//
-//	// For the vertex shader
-//	GLuint texLocation = shaderParams.at(ShaderParamName::V_TEX_COORDS).id;
-//	glEnableVertexAttribArray(texLocation);
-//	glVertexAttribPointer(texLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
-//
-//	// For the fragment shader
-//	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_MAP).id, 0);
-//}
+GLuint Renderer::add2DTexture(GLubyte* texels, int width, int height) {
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	// We are assigning the chosen image to the 'tex' data
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+	
+	glBindTexture(GL_TEXTURE_2D,0);
+	return tex;
+}
 
 /////////////////////////////////////////////////////
 
