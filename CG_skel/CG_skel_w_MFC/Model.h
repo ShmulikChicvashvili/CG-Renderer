@@ -21,7 +21,7 @@ protected:
 	GLubyte texId;
 	TextureType texType;
 
-	Model() : renderer(NULL), texImg(NULL), texType(TextureType::NONE) {}
+	Model() : renderer(NULL), texImg(NULL), texWidth(0), texHeight(0), texId(0), texType(TextureType::NONE) {}
 
 	vector<Face> faces;
 

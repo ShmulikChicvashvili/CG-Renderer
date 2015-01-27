@@ -171,6 +171,7 @@ void Model::removeTexture() {
 		assert(texHeight == 0);
 		assert(texWidth == 0);
 		assert(texId == 0);
+		return;
 	}
 	assert(texImg != NULL);
 	delete texImg;
