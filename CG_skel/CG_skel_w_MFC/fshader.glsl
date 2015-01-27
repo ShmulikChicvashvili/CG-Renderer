@@ -27,6 +27,9 @@ uniform sampler2D uTexMap;
 
 uniform bool uConstColor;
 
+uniform bool uToon;
+uniform bool uSilhouette;
+
 out vec4 color;
 
 
