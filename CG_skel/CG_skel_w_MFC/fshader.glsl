@@ -133,6 +133,13 @@ void main()
 		color = vec4(calcColor(point, norm, ka, kd, ks),1); 
 	}
 	
+	if (uToon || true){
+		int bits = 6;
+		float r = floor(color.x * (2 ^ bits)) / (2 ^ bits);
+		float g = floor(color.y * (2 ^ bits)) / (2 ^ bits);
+		float b = floor(color.z * (2 ^ bits)) / (2 ^ bits);
+		color = vec4(r, g, b, 1);
+	}
 	//if(uTexType == 1){
 		//if(kd.x > 0.5 && kd.y > 0.5 && kd.z > 0.5) color = vec4(1,0,0,1);
 		//if(kd.x < 0.5 && kd.y < 0.5 && kd.z < 0.5) color = vec4(0,1,0,1);
