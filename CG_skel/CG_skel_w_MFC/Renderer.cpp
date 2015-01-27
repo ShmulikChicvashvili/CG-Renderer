@@ -598,6 +598,14 @@ void Renderer::setAnimationVertex(const boolean animationVertex) {
 	checkError();
 }
 
+boolean Renderer::getAnimationColor() {
+	return this->animationColor;
+}
+
+boolean Renderer::getAnimationVertex() {
+	return this->animationVertex;
+}
+
 /////////////////////////////////////////////////////
 
 

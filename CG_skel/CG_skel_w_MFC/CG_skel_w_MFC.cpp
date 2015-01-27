@@ -68,6 +68,8 @@
 
 #define SILHOUETTE 1
 #define TOON 2
+#define COLOR_ANIMATION 3
+#define VERTEX_ANIMATION 4
 
 Scene *scene;
 Renderer *renderer;
@@ -839,6 +841,12 @@ void effectMenu(int id) {
 		std::cout << "Toon is: " << renderer->getToon() << std::endl;
 		break;
 	}
+	case COLOR_ANIMATION:
+		renderer->setAnimationColor(!renderer->getAnimationColor());
+		break;
+	case VERTEX_ANIMATION:
+		renderer->setAnimationVertex(!renderer->getAnimationVertex());
+		break;
 	default:
 		break;
 	}
@@ -892,6 +900,8 @@ void initMenu()
 	int menuEffects = glutCreateMenu(effectMenu);
 	glutAddMenuEntry("Silhouette", SILHOUETTE);
 	glutAddMenuEntry("Toon", TOON);
+	glutAddMenuEntry("Color Animation", COLOR_ANIMATION);
+	glutAddMenuEntry("Vertex Animation", VERTEX_ANIMATION);
 
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);

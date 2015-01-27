@@ -167,6 +167,8 @@ public:
 	boolean getToon();
 	void setAnimationColor(const boolean animationColor);
 	void setAnimationVertex(const boolean animationVertex);
+	boolean getAnimationColor();
+	boolean getAnimationVertex();
 	void updateTicks();
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
