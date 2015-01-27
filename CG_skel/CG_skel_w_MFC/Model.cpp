@@ -146,13 +146,11 @@ void Model::setTexture(string textureFilename) {
 		std::cout << "Couldnt read the texture file: " << textureFilename.c_str() << endl;
 		return;
 	}
+	removeTexture();
 
 	texWidth = png.GetWidth();
 	texHeight = png.GetHeight();
 
-	if (texImg != NULL){
-		delete texImg;
-	}
 	texImg = new GLubyte[texWidth * texHeight * 3];
 	for (int x = 0; x < texWidth; x++) {
 		for (int y = 0; y < texHeight; y++) {
@@ -168,15 +166,23 @@ void Model::setTexture(string textureFilename) {
 }
 
 void Model::removeTexture() {
-	if (texType != TextureType::NONE){
-
+	if (texType == TextureType::NONE){
+		assert(texImg == NULL);
+		assert(texHeight == 0);
+		assert(texWidth == 0);
+		assert(texId == 0);
 	}
-	this->texImg = NULL;
-	this->texHeight = 0;
-	this->texWidth = 0;
+	assert(texImg != NULL);
+	delete texImg;
+	renderer->del2DTexture(texId);
+	texImg = NULL;
+	texHeight = 0;
+	texWidth = 0;
+	texId = 0;
+	texType = TextureType::NONE;
 }
 
-void Model::draw() const{
+void Model::draw(){
 	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix(), texId, texType);
 	if (this->isActive) {
 		renderer->drawActiveModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());

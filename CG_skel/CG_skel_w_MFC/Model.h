@@ -59,5 +59,5 @@ public:
 	void setRenderer(Renderer* renderer);
 	void setTexture(string textureFilename);
 	void removeTexture();
-	void draw() const;
+	void draw();
 };

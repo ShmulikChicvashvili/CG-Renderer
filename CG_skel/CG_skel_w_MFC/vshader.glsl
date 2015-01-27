@@ -24,7 +24,7 @@ uniform struct Light {
 } lights[10];
 uniform int numLights;
 
-uniform long ticks;
+uniform int ticks;
 uniform bool animateVertex;
 
 out vec3 fCamSpace;
