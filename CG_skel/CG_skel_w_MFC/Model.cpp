@@ -167,6 +167,12 @@ void Model::setTexture(string textureFilename) {
 	texType = TextureType::COLOR;
 }
 
+void Model::removeTexture() {
+	this->texImg = NULL;
+	this->texHeight = 0;
+	this->texWidth = 0;
+}
+
 void Model::draw() const{
 	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix(), texId, texType);
 	if (this->isActive) {

@@ -52,7 +52,9 @@ enum class ShaderParamName{
 	U_TEX_MAP,
 	U_CONST_COLOR,
 	U_TOON,
-	U_SILHOUETTE
+	U_SILHOUETTE,
+	U_TICKS,
+	U_ANIMATION_COLOR
 };
 
 struct ShaderParam{
