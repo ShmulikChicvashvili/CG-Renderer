@@ -113,7 +113,7 @@ void main()
 	
 	if (animateVertex){
 		float randNum = rand(pos.xy);
-		pos = vec4(pos.xyz + normalize(vNormal.xyz) * ticks * 0.01);
+		pos = vec4(pos.xyz + normalize(vNormal.xyz) * ticks * 0.01, 1);
 	}
 	
 	vec4 camSpace = uModelviewMtx * pos;
