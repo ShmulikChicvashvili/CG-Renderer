@@ -39,6 +39,10 @@ out vec2 fTexCoords;
 
 out vec3 fColor;
 
+float rand(vec2 co){
+    return fract(sin(dot(co ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 vec3 calculateIlluminationIntensity(vec3 ka, vec3 kd, vec3 ks, vec3 la, vec3 ld, vec3 ls,
 	vec3 lightDirection, vec3 norm, vec3 viewDirection) {
 	
@@ -100,11 +104,19 @@ vec3 calcColor(vec3 point, vec3 norm, vec3 ka, vec3 kd, vec3 ks){
 void main()
 {
 	fTexCoords = vTexCoords;
-	if (vPosition.w == 0){
-		gl_Position = uProjMtx * uNormModelviewMtx * uModelviewMtx * (vPosition + vNormal + vFaceNormal + vec4(vAmbient,0) + vec4(vDiffuse,0) + vec4(vSpecular,0) + vFaceMid);
-		return;
+	//if (vPosition.w == 0){
+	//	gl_Position = uProjMtx * uNormModelviewMtx * uModelviewMtx * (vPosition + vNormal + vFaceNormal + vec4(vAmbient,0) + vec4(vDiffuse,0) + vec4(vSpecular,0) + vFaceMid);
+	//	return;
+	//}
+	
+	vec4 pos = vPosition;
+	
+	if (animateVertex){
+		float randNum = rand(pos.xy);
+		pos = vec4(pos.xyz + normalize(vNormal.xyz) * ticks * 0.01);
 	}
-	vec4 camSpace = uModelviewMtx * vPosition;
+	
+	vec4 camSpace = uModelviewMtx * pos;
     
 	gl_Position = uProjMtx * camSpace;
 
