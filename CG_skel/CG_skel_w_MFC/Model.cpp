@@ -157,5 +157,5 @@ void Model::draw() const{
 		renderer->drawActiveModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
 	}
 	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix(), texId, texType);
-}
+} 
 
