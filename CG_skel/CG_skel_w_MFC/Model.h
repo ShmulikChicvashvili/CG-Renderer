@@ -14,7 +14,17 @@ private:
 	GLuint colorVbo;
 protected:
 	Renderer* renderer;
-	Model() : renderer(NULL) {}
+	GLuint* textureImg;
+	int textureWidth, textureHeight;
+	Model() : renderer(NULL), textureWidth(512), textureHeight(512), textureImg(new GLuint[3*textureWidth*textureWidth]) {
+		for (int x = 0; x < 512; x++) {
+			for (int y = 0; y < 512; y++) {
+				textureImg[INDEX(textureWidth, x, y, 0)] = 0;
+				textureImg[INDEX(textureWidth, x, y, 1)] = 0;
+				textureImg[INDEX(textureWidth, x, y, 2)] = 0;
+			}
+		}
+	}
 
 	vector<Face> faces;
 
@@ -50,5 +60,6 @@ public:
 	bool getActive() const;
 
 	void setRenderer(Renderer* renderer);
+	void setTexture(string textureFilename);
 	void draw() const;
 };

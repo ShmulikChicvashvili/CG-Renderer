@@ -13,13 +13,17 @@
 
 using namespace std;
 
-#define NUMBER_VBOS 5
+#define INDEX(width,x,y,c) (x+y*width)*3+c
+#define INDEXZ(width,x,y) (x+y*width)
+
+#define NUMBER_VBOS 6
 enum VBOIndex{
 	VERTICES,
 	NORMALS,
 	FACE_NORMALS,
 	MATERIALS,
-	FACE_MID
+	FACE_MID,
+	TEXTURES
 };
 
 enum class ColorMethod{
@@ -35,12 +39,14 @@ enum class ShaderParamName{
 	V_DIFFUSE,
 	V_SPECULAR,
 	V_FACE_MID,
+	V_TEX_COORDS,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
 	U_PROJ_MTX,
 	U_NUM_LIGHTS,
 	U_COLOR_METHOD,
-	U_CONST_COLOR
+	U_CONST_COLOR,
+	U_TEX_MAP
 };
 
 struct ShaderParam{
@@ -136,6 +142,7 @@ public:
 	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void setLights(const vector<RendererLight>& lights);
+	void drawTexture(GLuint * texels, int width, int height);
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 	//////////////////////////////

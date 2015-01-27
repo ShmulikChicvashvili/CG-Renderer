@@ -23,7 +23,7 @@ uniform int numLights;
 uniform int uColorMethod; // 0 - flat, 1 - gouraud, 2 - phong
 
 uniform int uTexType; // 0 - No texture. 1 - Color texture. 2 - Normal texture
-uniform sample2D uTexMap;
+uniform sampler2D uTexMap;
 
 uniform bool uConstColor;
 

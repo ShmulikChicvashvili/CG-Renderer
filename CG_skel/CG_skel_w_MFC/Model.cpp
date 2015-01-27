@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include "Model.h"
+#include "png.h"
+#include "PngWrapper.h"
+
+#pragma import libpng.lib
 
 GLfloat deg2radian(const GLfloat deg){
 	return (GLfloat)(deg * M_PI / 180);
@@ -122,6 +126,30 @@ void Model::setRenderer(Renderer* renderer){
 		face.calcMidPoint();
 	}
 	renderer->addModel(getFaces(), vao, colorVbo);
+}
+
+void Model::setTexture(string textureFilename) {
+	if (typeid(this) != typeid(Model)) {
+		return;
+	}
+
+	PngWrapper png(textureFilename.c_str());
+	if (!png.ReadPng()) {
+		std::cout << "Couldnt read the texture file" << endl;
+		return;
+	}
+
+	this->textureWidth = png.GetWidth();
+	this->textureHeight = png.GetHeight();
+	this->textureImg = new GLuint(textureWidth * textureHeight * 3);
+	for (int x = 0; x < textureWidth; x++) {
+		for (int y = 0; y < textureHeight; y++) {
+			int pixelColor = png.GetValue(x, y);
+			textureImg[INDEX(textureWidth, x, y, 0)] = GET_R(pixelColor);
+			textureImg[INDEX(textureWidth, x, y, 1)] = GET_G(pixelColor);
+			textureImg[INDEX(textureWidth, x, y, 2)] = GET_B(pixelColor);
+		}
+	}
 }
 
 void Model::draw() const{

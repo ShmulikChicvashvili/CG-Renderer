@@ -15,9 +15,6 @@
 
 map<GLuint, map<ShaderParamName, vector<vec4> > > tmpVao;
 
-#define INDEX(width,x,y,c) (x+y*width)*3+c
-#define INDEXZ(width,x,y) (x+y*width)
-
 #define SPEC_SHININESS 3
 
 
@@ -90,6 +87,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::V_FACE_MID] = ShaderParam(glGetAttribLocation(program, "vFaceMid"), 4);
 	checkError();
 	cout << "V_FACE_MID id: " << shaderParams[ShaderParamName::V_FACE_MID].id << endl;
+
+	shaderParams[ShaderParamName::V_TEX_COORDS] = ShaderParam(glGetAttribLocation(program, "vTexCoords"), 2);
+	checkError();
+	cout << "V_TEX_COORDS id: " << shaderParams[ShaderParamName::V_TEX_COORDS].id << endl;
 	
 	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelviewMtx"), 16);
 	checkError();
@@ -114,6 +115,10 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_CONST_COLOR] = ShaderParam(glGetUniformLocation(program, "uConstColor"), 1);
 	checkError();
 	cout << "U_CONST_COLOR id: " << shaderParams[ShaderParamName::U_CONST_COLOR].id << endl;
+
+	shaderParams[ShaderParamName::U_TEX_MAP] = ShaderParam(glGetUniformLocation(program, "uTexMap"), 1);
+	checkError();
+	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -218,12 +223,14 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	vector<vec4> normals;
 	vector<vec4> faceNormals;
 	vector<vec4> faceMid;
+	vector<vec4> textures;
 	for (auto& f : faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
 			normals.push_back(v.getNorm());
 			faceNormals.push_back(f.getNorm());
 			faceMid.push_back(f.getMidPoint());
+			// INSERT TEXTURES!
 		}
 	}
 	assert(vertices.size() == faces.size() * 3);
@@ -257,6 +264,11 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	vbos[ShaderParamName::V_FACE_MID] = buffers[VBOIndex::FACE_MID];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_FACE_MID]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * faceMid.size(), faceMid.data(), GL_STATIC_DRAW);
+
+	// Textures vbo
+	vbos[ShaderParamName::V_TEX_COORDS] = buffers[VBOIndex::TEXTURES];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_TEX_COORDS]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * textures.size(), textures.data(), GL_STATIC_DRAW);
 
 	// Materials vbo
 	//vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];
@@ -427,6 +439,25 @@ void Renderer::setLights(const vector<RendererLight>& lights) {
 void Renderer::setConstColor(const boolean constColor) const {
 	glUniform1i(shaderParams.at(ShaderParamName::U_CONST_COLOR).id, constColor);
 	checkError();
+}
+
+void Renderer::drawTexture(GLuint * texels, int width, int height) {
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glActiveTexture(GL_TEXTURE0);
+
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	// We are assigning the chosen image to the 'tex' data
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+
+	// For the vertex shader
+	GLuint texLocation = shaderParams.at(ShaderParamName::V_TEX_COORDS).id;
+	glEnableVertexAttribArray(texLocation);
+	glVertexAttribPointer(texLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// For the fragment shader
+	glUniform1i(shaderParams.at(ShaderParamName::U_TEX_MAP).id, 0);
 }
 
 /////////////////////////////////////////////////////
