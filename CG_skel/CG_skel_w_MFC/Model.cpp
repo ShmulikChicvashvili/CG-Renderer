@@ -129,10 +129,6 @@ void Model::setRenderer(Renderer* renderer){
 }
 
 void Model::setTexture(string textureFilename) {
-	if (typeid(this) != typeid(Model)) {
-		return;
-	}
-
 	PngWrapper png(textureFilename.c_str());
 	if (!png.ReadPng()) {
 		std::cout << "Couldnt read the texture file" << endl;
@@ -141,7 +137,11 @@ void Model::setTexture(string textureFilename) {
 
 	this->textureWidth = png.GetWidth();
 	this->textureHeight = png.GetHeight();
-	this->textureImg = new GLuint(textureWidth * textureHeight * 3);
+
+	if (textureImg != NULL){
+		delete textureImg;
+	}
+	this->textureImg = new GLubyte(textureWidth * textureHeight * 3);
 	for (int x = 0; x < textureWidth; x++) {
 		for (int y = 0; y < textureHeight; y++) {
 			int pixelColor = png.GetValue(x, y);
