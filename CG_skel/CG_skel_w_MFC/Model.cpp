@@ -138,7 +138,7 @@ void Model::setRenderer(Renderer* renderer){
 void Model::setTexture(string textureFilename) {
 	PngWrapper png(textureFilename.c_str());
 	if (!png.ReadPng()) {
-		std::cout << "Couldnt read the texture file" << endl;
+		std::cout << "Couldnt read the texture file: " << textureFilename.c_str() << endl;
 		return;
 	}
 
