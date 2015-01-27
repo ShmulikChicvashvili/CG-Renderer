@@ -17,6 +17,7 @@ map<GLuint, map<ShaderParamName, vector<vec4> > > tmpVao;
 
 #define SPEC_SHININESS 3
 
+#define MAX_UNSIGNED_INT 4294967294
 
 void checkError()
 {
@@ -28,7 +29,7 @@ void checkError()
 	}
 }
 
-Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0)
+Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0), ticksDirection(true)
 {
 	InitOpenGLRendering();
 	initial_width = 512;
@@ -37,7 +38,7 @@ Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0)
+Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), ticks(0), ticksDirection(true)
 {
 	//InitOpenGLRendering();
 	glViewport(0, 0, m_width, m_height);
@@ -578,9 +579,18 @@ boolean Renderer::getToon() {
 void Renderer::updateTicks() {
 	if (!animationColor && !animationVertex) {
 		ticks = 0;
+		ticksDirection = true;
 	}
 	else {
-		ticks++;
+		if (ticksDirection) {
+			ticks++;
+		}
+		else {
+			ticks--;
+		}
+		if (ticks == MAX_UNSIGNED_INT || ticks == 0) {
+			ticksDirection = !ticksDirection;
+		}
 	}
 	glUniform1i(shaderParams.at(ShaderParamName::U_TICKS).id, ticks);
 	checkError();

@@ -108,6 +108,7 @@ class Renderer
 	boolean animationColor;
 	boolean animationVertex;
 	GLuint ticks;
+	boolean ticksDirection;
 
 	//////////////////////////////
 
