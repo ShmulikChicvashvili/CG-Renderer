@@ -50,7 +50,9 @@ enum class ShaderParamName{
 	U_COLOR_METHOD,
 	U_TEX_TYPE,
 	U_TEX_MAP,
-	U_CONST_COLOR
+	U_CONST_COLOR,
+	U_TOON,
+	U_SILHOUETTE
 };
 
 struct ShaderParam{
@@ -97,6 +99,9 @@ class Renderer
 	mat4 viewMtx;
 	mat4 normViewMtx;
 	mat4 projMtx;
+
+	boolean silhouette;
+	boolean toon;
 
 	//////////////////////////////
 
@@ -149,6 +154,10 @@ public:
 	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx) const;
 	void setLights(const vector<RendererLight>& lights);
 	GLuint add2DTexture(GLubyte* texImg, int width, int height);
+	void setSilhouette(const boolean silhouette);
+	void setToon(const boolean toon);
+	boolean getSilhouette();
+	boolean getToon();
 
 	void fillColorVBO(GLuint vbo, const vector<Face>& faces, bool test = false);
 	//////////////////////////////

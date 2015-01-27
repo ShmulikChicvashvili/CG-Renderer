@@ -28,7 +28,7 @@ void checkError()
 	}
 }
 
-Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT)
+Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false)
 {
 	InitOpenGLRendering();
 	initial_width = 512;
@@ -37,7 +37,7 @@ Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : initial_width(width),initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT)
+Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false)
 {
 	//InitOpenGLRendering();
 	glViewport(0, 0, m_width, m_height);
@@ -123,6 +123,14 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::U_TEX_MAP] = ShaderParam(glGetUniformLocation(program, "uTexMap"), 1);
 	checkError();
 	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
+
+	shaderParams[ShaderParamName::U_TOON] = ShaderParam(glGetUniformLocation(program, "uToon"), 1);
+	checkError();
+	cout << "U_TOON id: " << shaderParams[ShaderParamName::U_TOON].id << endl;
+
+	shaderParams[ShaderParamName::U_SILHOUETTE] = ShaderParam(glGetUniformLocation(program, "uSilhouette"), 1);
+	checkError();
+	cout << "U_SILHOUETTE id: " << shaderParams[ShaderParamName::U_SILHOUETTE].id << endl;
 	
 	cout << "All shader parameters were filled" << endl;
 }
@@ -404,6 +412,21 @@ void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4&
 	setTexture(tex, texType);
 	setConstColor(false);
 
+	if (silhouette) {
+		glDepthMask(GL_FALSE);
+		glPolygonMode(GL_BACK, GL_LINE);
+		glLineWidth(3.0);
+
+		glUniform1i(shaderParams.at(ShaderParamName::U_SILHOUETTE).id, 1);
+
+		glDrawArrays(GL_TRIANGLES, 0, size);
+
+		glUniform1i(shaderParams.at(ShaderParamName::U_SILHOUETTE).id, 0);
+
+		glLineWidth(1.0);
+		glDepthMask(GL_TRUE);
+	}
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	drawArrays(size);
@@ -504,6 +527,24 @@ GLuint Renderer::add2DTexture(GLubyte* texels, int width, int height) {
 	glBindTexture(GL_TEXTURE_2D,0);
 	checkError();
 	return tex;
+}
+
+void Renderer::setSilhouette(const boolean silhouette) {
+	this->silhouette = silhouette;
+}
+
+void Renderer::setToon(const boolean toon) {
+	this->toon = toon;
+	glUniform1i(shaderParams.at(ShaderParamName::U_TOON).id, toon);
+	checkError();
+}
+
+boolean Renderer::getSilhouette() {
+	return this->silhouette;
+}
+
+boolean Renderer::getToon() {
+	return this->toon;
 }
 
 /////////////////////////////////////////////////////

@@ -131,13 +131,7 @@
     <ClInclude Include="LitVertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParallelLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PointLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pngLib\pngasmrd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pngLib\pngconf.h">
@@ -153,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pngLib\png.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pngLib\pngasmrd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -65,6 +65,9 @@
 
 #define LOAD_TEXTURE 1
 
+#define SILHOUETTE 1
+#define TOON 2
+
 Scene *scene;
 Renderer *renderer;
 
@@ -804,6 +807,35 @@ void lightMenu(int id) {
 	scene->draw();
 }
 
+void effectMenu(int id) {
+	switch (id)
+	{
+	case SILHOUETTE:
+	{
+		if (renderer->getSilhouette()) {
+			renderer->setSilhouette(false);
+		}
+		else {
+			renderer->setSilhouette(true);
+		}
+		std::cout << "Silhouette is: " << renderer->getSilhouette() << std::endl;
+	}
+	case TOON:
+	{
+		if (renderer->getToon()) {
+			renderer->setToon(false);
+		}
+		else {
+			renderer->setToon(true);
+		}
+		std::cout << "Toon is: " << renderer->getToon() << std::endl;
+	}
+	default:
+		break;
+	}
+	scene->draw();
+}
+
 void initMenu()
 {
 	int menuFile = glutCreateMenu(fileMenu);
@@ -846,6 +878,11 @@ void initMenu()
 	int menuTextures = glutCreateMenu(textureMenu);
 	glutAddMenuEntry("Load texture", LOAD_TEXTURE);
 
+	// Special Effects menu
+	int menuEffects = glutCreateMenu(effectMenu);
+	glutAddMenuEntry("Silhouette", SILHOUETTE);
+	glutAddMenuEntry("Toon", TOON);
+
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);
 	glutAddSubMenu("Predefined models", menuMeshModel);
@@ -855,6 +892,7 @@ void initMenu()
 	//glutAddSubMenu("Choose Action", menuAction);
 	glutAddSubMenu("Choose Shading Algorithm", menuShading);
 	glutAddSubMenu("Load texture", menuTextures);
+	glutAddSubMenu("Insert Special Effects", menuEffects);
 	glutAddSubMenu("Add Light", menuLight);
 	glutAddMenuEntry("About", MAIN_ABOUT);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
