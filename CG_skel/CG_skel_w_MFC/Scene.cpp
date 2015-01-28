@@ -202,7 +202,7 @@ GLubyte* Scene::loadFile(string fileName) {
 	PngWrapper png(file.c_str());
 	if (!png.ReadPng()) {
 		std::cout << "Couldnt read the texture file: " << file.c_str() << endl;
-		return;
+		return NULL;
 	}
 
 	width = png.GetWidth();
