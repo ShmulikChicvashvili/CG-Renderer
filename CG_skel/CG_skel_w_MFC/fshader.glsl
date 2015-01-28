@@ -27,6 +27,9 @@ uniform int uColorMethod; // 0 - flat, 1 - gouraud, 2 - phong
 uniform int uTexType; // 0 - No texture. 1 - Color texture. 2 - Normal texture
 uniform sampler2D uTexMap;
 
+uniform bool uEnvMapping;
+uniform samplerCube uEnvTex;
+
 uniform bool uConstColor;
 
 uniform bool uToon;
@@ -135,20 +138,7 @@ void main()
 		return;
 	}
 	
-	if(uTexType == 1){
-		vec3 tex = texture(uTexMap, fTexCoords).xyz;
-		//ka = vec3(0.05);
-		ka = tex * 0.1;
-		kd = tex;
-		ks = tex * 0.7;
-		//ks = vec3(0.6);
-	}
-	
-	if (uColorMethod == 1) { // Gouraud
-		color = vec4(fColor,1);
-	}
-	
-	if(uColorMethod == 0) { // Flat
+	if(uColorMethod == 0 && !uEnvMapping) { // Flat
 		norm = fFaceNormal;
 		point = fFaceMid;
 	} else {
@@ -164,8 +154,29 @@ void main()
 		norm = normalize(norm);
 	}
 	
+	if(uTexType == 1){
+		vec3 tex = texture(uTexMap, fTexCoords).xyz;
+		ka = tex * 0.1;
+		kd = tex;
+		ks = tex * 0.7;
+	}
+	
+	if (uColorMethod == 1) { // Gouraud
+		color = vec4(fColor,1);
+	}
+	
 	if (uColorMethod == 0 || uColorMethod == 2){
 		color = vec4(calcColor(point, norm, ka, kd, ks),1); 
+	}
+	
+	if (uEnvMapping){
+		vec3 eyeDir = normalize(point);
+		vec3 reflected = reflect(eyeDir, norm);
+		
+		reflected = (uInvNormViewMtx * vec4(reflected,0)).xyz;
+		reflected = normalize(reflected);
+		
+		color = texture(uEnvTex, reflected);
 	}
 	
 	if (animateColor){
@@ -181,10 +192,5 @@ void main()
 		float b = floor(color.z * (2 ^ bits)) / (2 ^ bits);
 		color = vec4(r, g, b, 1);
 	}
-	//if(uTexType == 1){
-		//if(kd.x > 0.5 && kd.y > 0.5 && kd.z > 0.5) color = vec4(1,0,0,1);
-		//if(kd.x < 0.5 && kd.y < 0.5 && kd.z < 0.5) color = vec4(0,1,0,1);
-		//if(kd == vec3(0.0)) color = vec4(0,0,1,1);
-	//}
 } 
 
