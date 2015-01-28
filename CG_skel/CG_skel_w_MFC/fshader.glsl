@@ -6,6 +6,8 @@ in vec3 fNormal;
 in vec3 fFaceMid;
 in vec3 fFaceNormal;
 
+in mat3 TBN;
+
 in mat3 fMaterial;
 
 in vec2 fTexCoords;

@@ -2,6 +2,8 @@
 
 in vec4 vPosition;
 in vec4 vNormal;
+in vec4 vTangent;
+in vec4 vBitangent;
 
 in vec4 vFaceMid;
 in vec4 vFaceNormal;
@@ -32,6 +34,8 @@ out vec3 fNormal;
 
 out vec3 fFaceMid;
 out vec3 fFaceNormal;
+
+out mat3 TBN;
 
 out mat3 fMaterial;
 
@@ -113,6 +117,8 @@ void main()
 	vec4 faceMid = vFaceMid;
 	vec4 norm = vNormal;
 	vec4 faceNorm = vFaceNormal;
+	vec4 tangent = vTangent;
+	vec4 bitangent = vBitangent;
 	
 	if (animateVertex){
 		mat4 resize = mat4(1,0,0,0,
