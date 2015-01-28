@@ -656,8 +656,8 @@ void textureMenu(int id) {
 			scene->getModels()[activeModel]->setColorTexture((LPCTSTR)dlg.GetPathName());
 			display();
 		}
-	}
 		break;
+	}
 	case LOAD_NORMAL_TEXTURE:
 	{
 		CFileDialog dlg(TRUE, _T(".png"), NULL, NULL, _T("*.png|*.*"));
@@ -668,6 +668,7 @@ void textureMenu(int id) {
 			scene->getModels()[activeModel]->setNormalTexture((LPCTSTR)dlg.GetPathName());
 			display();
 		}
+		break;
 	}
 	case REMOVE_TEXTURE:
 		int activeModel = scene->getActiveModel();

@@ -153,6 +153,11 @@ void main()
 		norm = fNormal;
 		point = fCamSpace;
 	}
+	
+	if (uTexType == 2){
+		norm = normalize(texture( uTexMap, fTexCoords ).rgb * 2.0 - vec3(1.0));
+		norm = TBN * norm;
+	}
 	if (norm != vec3(0.0)){
 		norm = normalize(norm);
 	}

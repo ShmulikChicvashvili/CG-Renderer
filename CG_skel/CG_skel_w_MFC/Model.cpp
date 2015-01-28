@@ -156,7 +156,7 @@ void Model::initializeFaces(){
 		for (auto& f : faces) {
 			vector<Vertex>& vertices = f.getVertices();
 			for (auto& v : vertices) {
-				const vec4& d = centroid - v.getCoords();
+				const vec4& d = normalize(centroid - v.getCoords());
 				float xTex = 0.5 + (atan2(d.z, d.x) / (2 * pi));
 				float yTex = 0.5 - (asin(d.y) / pi);
 				v.setTexCoords(vec2(xTex, yTex));
