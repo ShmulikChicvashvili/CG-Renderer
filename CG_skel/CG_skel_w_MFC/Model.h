@@ -62,6 +62,9 @@ public:
 	void setActive(const bool isActive);
 	bool getActive() const;
 
+	void setEnvMapping(bool envMapping);
+	bool getEnvMapping() const;
+
 	void setRenderer(Renderer* renderer);
 	void setColorTexture(string textureFilename);
 	void setNormalTexture(string textureFilename);
