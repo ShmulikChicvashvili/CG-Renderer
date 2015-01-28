@@ -162,7 +162,7 @@ public:
 	void setDrawFaceNormals(const bool drawFaceNorms);
 	
 	void addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo);
-	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx);
+	void setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx, const mat4& invNormViewMtx);
 	void drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType);
 	void drawActiveModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx);
 	void setLights(const vector<RendererLight>& lights);

@@ -35,6 +35,8 @@ uniform bool uSilhouette;
 uniform int ticks;
 uniform bool animateColor;
 
+uniform mat4 uInvNormViewMtx;
+
 out vec4 color;
 
 
