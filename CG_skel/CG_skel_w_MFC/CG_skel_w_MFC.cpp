@@ -653,7 +653,7 @@ void textureMenu(int id) {
 		{
 			std::string s((LPCTSTR)dlg.GetPathName());
 			int activeModel = scene->getActiveModel();
-			scene->getModels()[activeModel]->setTexture((LPCTSTR)dlg.GetPathName());
+			scene->getModels()[activeModel]->setColorTexture((LPCTSTR)dlg.GetPathName());
 			display();
 		}
 	}

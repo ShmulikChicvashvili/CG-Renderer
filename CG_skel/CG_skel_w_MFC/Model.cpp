@@ -178,7 +178,7 @@ void Model::setRenderer(Renderer* renderer){
 	renderer->addModel(getFaces(), vao, colorVbo);
 }
 
-void Model::setTexture(string textureFilename) {
+void Model::setTexture(string textureFilename){
 	PngWrapper png(textureFilename.c_str());
 	if (!png.ReadPng()) {
 		std::cout << "Couldnt read the texture file: " << textureFilename.c_str() << endl;
@@ -200,7 +200,16 @@ void Model::setTexture(string textureFilename) {
 	}
 
 	texId = renderer->add2DTexture(texImg, texWidth, texHeight);
+}
+
+void Model::setColorTexture(string textureFilename) {
+	setTexture(textureFilename);
 	texType = TextureType::COLOR;
+}
+
+void Model::setNormalTexture(string textureFilename) {
+	setTexture(textureFilename);
+	texType = TextureType::NORMAL;
 }
 
 void Model::removeTexture() {

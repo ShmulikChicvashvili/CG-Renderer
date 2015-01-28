@@ -16,6 +16,8 @@ private:
 	boolean hasTextureCoords;
 
 	void initializeFaces();
+
+	void setTexture(string textureFilename);
 protected:
 	Renderer* renderer;
 	GLubyte* texImg;
@@ -60,7 +62,7 @@ public:
 	bool getActive() const;
 
 	void setRenderer(Renderer* renderer);
-	void setTexture(string textureFilename);
+	void setColorTexture(string textureFilename);
 	void setNormalTexture(string textureFilename);
 	void removeTexture();
 	void draw();
