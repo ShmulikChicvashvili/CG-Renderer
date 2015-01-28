@@ -113,6 +113,10 @@ void Renderer::fillShaderParams() {
 	checkError();
 	cout << "U_PROJ_MTX id: " << shaderParams[ShaderParamName::U_PROJ_MTX].id << endl;
 
+	shaderParams[ShaderParamName::U_INV_NORM_MTX] = ShaderParam(glGetUniformLocation(program, "uInvNormViewMtx"), 16);
+	checkError();
+	cout << "U_INV_NORM_MTX id: " << shaderParams[ShaderParamName::U_INV_NORM_MTX].id << endl;
+
 	shaderParams[ShaderParamName::U_NUM_LIGHTS] = ShaderParam(glGetUniformLocation(program, "numLights"), 1);
 	checkError();
 	cout << "U_NUM_LIGHTS id: " << shaderParams[ShaderParamName::U_NUM_LIGHTS].id << endl;
@@ -373,10 +377,11 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	glBindVertexArray(0);
 }
 
-void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx) {
+void Renderer::setCamera(const mat4& viewMtx, const mat4& normViewMtx, const mat4& projMtx, const mat4& invNormViewMtx) {
 	this->viewMtx = viewMtx;
 	this->normViewMtx = normViewMtx;
 	this->projMtx = projMtx;
+	this->invNormViewMtx = invNormViewMtx;
 }
 
 void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const mat4& normModelMtx) {
@@ -388,6 +393,8 @@ void Renderer::setModelTransformations(GLuint vao, const mat4& modelMtx, const m
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_NORM_MODELVIEW_MTX).id, 1, GL_TRUE, normViewMtx * normModelMtx);
 	checkError();
 	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_PROJ_MTX).id, 1, GL_TRUE, projMtx * resizingMatrix);
+	checkError();
+	glUniformMatrix4fv(shaderParams.at(ShaderParamName::U_INV_NORM_MTX).id, 1, GL_TRUE, invNormViewMtx);
 	checkError();
 
 #ifdef DEBUG_PRINT

@@ -25,6 +25,14 @@ class Scene {
 	int activeLight;
 	int activeCamera;
 
+	GLuint textureCube;
+	GLubyte* frontTexture;
+	GLubyte* backTexture;
+	GLubyte* rightTexture;
+	GLubyte* leftTexture;
+	GLubyte* upTexture;
+	GLubyte* downTexture;
+
 	void addModel(const shared_ptr<Model>& pModel);
 
 public:
@@ -41,6 +49,8 @@ public:
 	int setCameraAsActiveModel(int cameraIndex);
 
 	void loadLight(const shared_ptr<Light>& l);
+
+	void setTextureCube();
 
 	const int getActiveModel() {
 		return activeModel;

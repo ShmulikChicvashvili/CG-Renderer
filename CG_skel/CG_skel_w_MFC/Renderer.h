@@ -49,6 +49,7 @@ enum class ShaderParamName{
 	V_BITANGENT,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
+	U_INV_NORM_MTX,
 	U_PROJ_MTX,
 	U_NUM_LIGHTS,
 	U_COLOR_METHOD,
@@ -107,6 +108,7 @@ class Renderer
 	mat4 viewMtx;
 	mat4 normViewMtx;
 	mat4 projMtx;
+	mat4 invNormViewMtx;
 
 	boolean silhouette;
 	boolean toon;

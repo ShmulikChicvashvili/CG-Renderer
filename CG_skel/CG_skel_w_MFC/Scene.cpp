@@ -5,6 +5,8 @@
 #include <math.h>
 #include "PointLight.h"
 #include "ParallelLight.h"
+#include "png.h"
+#include "PngWrapper.h"
 
 #include <time.h>
 
@@ -52,7 +54,7 @@ void Scene::draw()
 	m_renderer->updateTicks();
 
 	Camera& cam = *cameras[getActiveCamera()];
-	m_renderer->setCamera(cam.getViewMatrix(), cam.getViewNormalMatrix(), cam.getProjectionMatrix());
+	m_renderer->setCamera(cam.getViewMatrix(), cam.getViewNormalMatrix(), cam.getProjectionMatrix(), cam.getModelNormalMatrix());
 
 	vector<RendererLight> rendererLights;
 
@@ -172,6 +174,28 @@ void Scene::deleteCamera(int index){
 	assert(false);
 }
 
+void Scene::setTextureCube() {
+	string path = "C:\\Users\\Shmulik\\Desktop\\Graphics\\cubeTextures\\";
+	PngWrapper png(path.c_str());
+	if (!png.ReadPng()) {
+		std::cout << "Couldnt read the texture file: " << textureFilename.c_str() << endl;
+		return;
+	}
+	removeTexture();
+
+	texWidth = png.GetWidth();
+	texHeight = png.GetHeight();
+
+	texImg = new GLubyte[texWidth * texHeight * 3];
+	for (int x = 0; x < texWidth; x++) {
+		for (int y = 0; y < texHeight; y++) {
+			int pixelColor = png.GetValue(x, texHeight - 1 - y);
+			texImg[INDEX(texWidth, x, y, 0)] = GET_R(pixelColor);
+			texImg[INDEX(texWidth, x, y, 1)] = GET_G(pixelColor);
+			texImg[INDEX(texWidth, x, y, 2)] = GET_B(pixelColor);
+		}
+	}
+}
 
 
 ///////////////////////////////////

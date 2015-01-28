@@ -25,8 +25,9 @@ protected:
 	GLubyte texId;
 	TextureType texType;
 
+	boolean environmentMapping;
 
-	Model() : renderer(NULL), texImg(NULL), texWidth(0), texHeight(0), texId(0), texType(TextureType::NONE), hasTextureCoords(false) {}
+	Model() : renderer(NULL), texImg(NULL), texWidth(0), texHeight(0), texId(0), texType(TextureType::NONE), hasTextureCoords(false), environmentMapping(false) {}
 
 	vector<Face> faces;
 
