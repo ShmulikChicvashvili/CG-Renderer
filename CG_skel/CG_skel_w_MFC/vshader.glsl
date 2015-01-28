@@ -141,6 +141,8 @@ void main()
 		faceMid = vec4((rotate * resize * faceMid).xyz,1);
 		norm = rotate * norm;
 		faceNorm = rotate * faceNorm;
+		tangent = rotate * tangent;
+		bitangent = rotate * bitangent;
 	}
 	
 	vec4 camSpace = uModelviewMtx * pos;
@@ -152,6 +154,11 @@ void main()
 	
 	fFaceMid = (uModelviewMtx * faceMid).xyz;
 	fFaceNormal = normalize((uNormModelviewMtx * faceNorm).xyz);
+	
+	
+	TBN[0] = normalize((uNormModelviewMtx * tangent).xyz);
+	TBN[1] = normalize((uNormModelviewMtx * bitangent).xyz);
+	TBN[2] = fNormal;
 		
 	fMaterial = mat3(vAmbient,vDiffuse,vSpecular);
 	

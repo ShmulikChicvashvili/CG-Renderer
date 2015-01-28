@@ -75,7 +75,7 @@ public:
 
 	void setCoords(const vec4& _coords);
 	bool setNorm(const vec4& v);
-	void setTangent(const vec4& v);
+	void setTangent(const vec4& v); 
 	void setBitangent(const vec4& v);
 	void setTexCoords(GLfloat x, GLfloat y);
 	void setTexCoords(const vec2& coords);
