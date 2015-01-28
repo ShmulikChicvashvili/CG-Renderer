@@ -134,8 +134,8 @@ void Model::initializeFaces(){
 		face.calcMidPoint();
 		face.calcNorm();
 		vector<Vertex>& vertices = face.getVertices();
-		if (vertices[0].hasTexCoords()){
-			hasTextureCoords == true;
+		if (vertices[0].hasTexCoords() == true){
+			hasTextureCoords = true;
 		}
 		for (auto& v : vertices) {
 			vec4 vertice = v.getCoords();

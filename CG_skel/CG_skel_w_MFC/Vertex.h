@@ -54,6 +54,8 @@ class Vertex
 {
 	vec4 coords;
 	vec4 norm;
+	vec4 tangent;
+	vec4 bitangent;
 	bool hasNorm;
 
 	vec2 texCoords;
