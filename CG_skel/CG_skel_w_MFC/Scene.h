@@ -32,8 +32,10 @@ class Scene {
 	GLubyte* leftTexture;
 	GLubyte* upTexture;
 	GLubyte* downTexture;
+	int width, height;
 
 	void addModel(const shared_ptr<Model>& pModel);
+	GLubyte* loadFile(string fileName);
 
 public:
 	Scene() :activeModel(), activeLight(), activeCamera() {};

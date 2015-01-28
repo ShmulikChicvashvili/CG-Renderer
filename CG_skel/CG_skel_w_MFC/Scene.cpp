@@ -175,27 +175,50 @@ void Scene::deleteCamera(int index){
 }
 
 void Scene::setTextureCube() {
-	string path = "C:\\Users\\Shmulik\\Desktop\\Graphics\\cubeTextures\\";
-	PngWrapper png(path.c_str());
-	if (!png.ReadPng()) {
-		std::cout << "Couldnt read the texture file: " << textureFilename.c_str() << endl;
-		return;
-	}
-	removeTexture();
+	this->textureCube = m_renderer->genCubeTexture();
+	
+	this->rightTexture = loadFile("posx.png");
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, rightTexture, width, height);
 
-	texWidth = png.GetWidth();
-	texHeight = png.GetHeight();
+	this->leftTexture = loadFile("negx.png");
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, leftTexture, width, height);
 
-	texImg = new GLubyte[texWidth * texHeight * 3];
-	for (int x = 0; x < texWidth; x++) {
-		for (int y = 0; y < texHeight; y++) {
-			int pixelColor = png.GetValue(x, texHeight - 1 - y);
-			texImg[INDEX(texWidth, x, y, 0)] = GET_R(pixelColor);
-			texImg[INDEX(texWidth, x, y, 1)] = GET_G(pixelColor);
-			texImg[INDEX(texWidth, x, y, 2)] = GET_B(pixelColor);
-		}
-	}
+	this->upTexture = loadFile("posy.png");
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, upTexture, width, height);
+
+	this->downTexture = loadFile("negy.png");
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, downTexture, width, height);
+
+	this->frontTexture = loadFile("posz.png");
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, frontTexture, width, height);
+
+	this->backTexture = loadFile("negz.png");
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, backTexture, width, height);
 }
 
+GLubyte* Scene::loadFile(string fileName) {
+	string path = "C:\\Users\\Shmulik\\Desktop\\Graphics\\cubeTextures\\";
+	string file = path + fileName;
+	PngWrapper png(file.c_str());
+	if (!png.ReadPng()) {
+		std::cout << "Couldnt read the texture file: " << file.c_str() << endl;
+		return;
+	}
+
+	width = png.GetWidth();
+	height = png.GetHeight();
+
+	GLubyte* texImg = new GLubyte[width * height * 3];
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			int pixelColor = png.GetValue(x, height - 1 - y);
+			texImg[INDEX(width, x, y, 0)] = GET_R(pixelColor);
+			texImg[INDEX(width, x, y, 1)] = GET_G(pixelColor);
+			texImg[INDEX(width, x, y, 2)] = GET_B(pixelColor);
+		}
+	}
+
+	return texImg;
+}
 
 ///////////////////////////////////
