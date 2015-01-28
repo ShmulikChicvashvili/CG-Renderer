@@ -61,7 +61,7 @@ public:
 
 	void setRenderer(Renderer* renderer);
 	void setTexture(string textureFilename);
-	void setNormalTexture(String textureFilename);
+	void setNormalTexture(string textureFilename);
 	void removeTexture();
 	void draw();
 };
