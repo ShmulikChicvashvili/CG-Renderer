@@ -64,12 +64,14 @@
 #define PARALLEL_LIGHT 2
 
 #define LOAD_TEXTURE 1
-#define REMOVE_TEXTURE 2
+#define LOAD_NORMAL_TEXTURE 2
+#define REMOVE_TEXTURE 3
 
 #define SILHOUETTE 1
 #define TOON 2
-#define COLOR_ANIMATION 3
-#define VERTEX_ANIMATION 4
+#define FIRST_COLOR_ANIMATION 3
+#define SECOND_COLOR_ANIMATION 4
+#define VERTEX_ANIMATION 5
 
 Scene *scene;
 Renderer *renderer;
@@ -656,6 +658,17 @@ void textureMenu(int id) {
 		}
 	}
 		break;
+	case LOAD_NORMAL_TEXTURE:
+	{
+		CFileDialog dlg(TRUE, _T(".png"), NULL, NULL, _T("*.png|*.*"));
+		if (dlg.DoModal() == IDOK)
+		{
+			std::string s((LPCTSTR)dlg.GetPathName());
+			int activeModel = scene->getActiveModel();
+			scene->getModels()[activeModel]->setNormalTexture((LPCTSTR)dlg.GetPathName());
+			display();
+		}
+	}
 	case REMOVE_TEXTURE:
 		int activeModel = scene->getActiveModel();
 		scene->getModels()[activeModel]->removeTexture();
@@ -841,8 +854,11 @@ void effectMenu(int id) {
 		std::cout << "Toon is: " << renderer->getToon() << std::endl;
 		break;
 	}
-	case COLOR_ANIMATION:
-		renderer->setAnimationColor(!renderer->getAnimationColor());
+	case FIRST_COLOR_ANIMATION:
+		renderer->setFirstAnimationColor(!renderer->getFirstAnimationColor());
+		break;
+	case SECOND_COLOR_ANIMATION:
+		renderer->setSecondAnimationColor(!renderer->getSecondAnimationColor());
 		break;
 	case VERTEX_ANIMATION:
 		renderer->setAnimationVertex(!renderer->getAnimationVertex());
@@ -894,13 +910,15 @@ void initMenu()
 	// TEXTURES menu
 	int menuTextures = glutCreateMenu(textureMenu);
 	glutAddMenuEntry("Load texture", LOAD_TEXTURE);
+	glutAddMenuEntry("Load normal texture", LOAD_NORMAL_TEXTURE);
 	glutAddMenuEntry("Remove texture", REMOVE_TEXTURE);
 
 	// Special Effects menu
 	int menuEffects = glutCreateMenu(effectMenu);
 	glutAddMenuEntry("Silhouette", SILHOUETTE);
 	glutAddMenuEntry("Toon", TOON);
-	glutAddMenuEntry("Color Animation", COLOR_ANIMATION);
+	glutAddMenuEntry("First color Animation", FIRST_COLOR_ANIMATION);
+	glutAddMenuEntry("Second color animation", SECOND_COLOR_ANIMATION);
 	glutAddMenuEntry("Vertex Animation", VERTEX_ANIMATION);
 
 	glutCreateMenu(mainMenu);

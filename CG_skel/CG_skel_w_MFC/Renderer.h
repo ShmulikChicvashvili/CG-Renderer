@@ -54,7 +54,8 @@ enum class ShaderParamName{
 	U_TOON,
 	U_SILHOUETTE,
 	U_TICKS,
-	U_ANIMATION_COLOR,
+	U_FIRST_ANIMATION_COLOR,
+	U_SECOND_ANIMATION_COLOR,
 	U_ANIMATION_VERTEX
 };
 
@@ -105,7 +106,8 @@ class Renderer
 
 	boolean silhouette;
 	boolean toon;
-	boolean animationColor;
+	boolean firstAnimationColor;
+	boolean secondAnimationColor;
 	boolean animationVertex;
 	GLuint ticks;
 	boolean ticksDirection;
@@ -166,9 +168,11 @@ public:
 	void setToon(const boolean toon);
 	boolean getSilhouette();
 	boolean getToon();
-	void setAnimationColor(const boolean animationColor);
+	void setFirstAnimationColor(const boolean firstAnimationColor);
+	void setSecondAnimationColor(const boolean secondAnimationColor);
 	void setAnimationVertex(const boolean animationVertex);
-	boolean getAnimationColor();
+	boolean getFirstAnimationColor();
+	boolean getSecondAnimationColor();
 	boolean getAnimationVertex();
 	void updateTicks();
 

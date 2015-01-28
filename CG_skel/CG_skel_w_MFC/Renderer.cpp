@@ -29,7 +29,7 @@ void checkError()
 	}
 }
 
-Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), animationVertex(false), ticks(0), ticksDirection(true)
+Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), firstAnimationColor(false), secondAnimationColor(false), animationVertex(false), ticks(0), ticksDirection(true)
 {
 	InitOpenGLRendering();
 	initial_width = 512;
@@ -38,7 +38,7 @@ Renderer::Renderer() :m_width(512), m_height(512), colorMethod(ColorMethod::FLAT
 	drawVertexNormals = false;
 	drawFaceNorms = false;
 }
-Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), animationColor(false), animationVertex(false), ticks(0), ticksDirection(true)
+Renderer::Renderer(int width, int height) : initial_width(width), initial_height(height), m_width(width), m_height(height), colorMethod(ColorMethod::FLAT), silhouette(false), toon(false), firstAnimationColor(false), secondAnimationColor(false), animationVertex(false), ticks(0), ticksDirection(true)
 {
 	//InitOpenGLRendering();
 	glViewport(0, 0, m_width, m_height);
@@ -137,9 +137,13 @@ void Renderer::fillShaderParams() {
 	checkError();
 	cout << "U_TICKS id: " << shaderParams[ShaderParamName::U_TICKS].id << endl;
 
-	shaderParams[ShaderParamName::U_ANIMATION_COLOR] = ShaderParam(glGetUniformLocation(program, "animateColor"), 1);
+	shaderParams[ShaderParamName::U_FIRST_ANIMATION_COLOR] = ShaderParam(glGetUniformLocation(program, "firstAnimateColor"), 1);
 	checkError();
-	cout << "U_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_ANIMATION_COLOR].id << endl;
+	cout << "U_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_FIRST_ANIMATION_COLOR].id << endl;
+
+	shaderParams[ShaderParamName::U_SECOND_ANIMATION_COLOR] = ShaderParam(glGetUniformLocation(program, "secondAnimateColor"), 1);
+	checkError();
+	cout << "U_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_SECOND_ANIMATION_COLOR].id << endl;
 
 	shaderParams[ShaderParamName::U_ANIMATION_VERTEX] = ShaderParam(glGetUniformLocation(program, "animateVertex"), 1);
 	checkError();
@@ -577,7 +581,7 @@ boolean Renderer::getToon() {
 }
 
 void Renderer::updateTicks() {
-	if (!animationColor && !animationVertex) {
+	if (!firstAnimationColor && !secondAnimationColor && !animationVertex) {
 		ticks = 0;
 		ticksDirection = true;
 	}
@@ -596,9 +600,23 @@ void Renderer::updateTicks() {
 	checkError();
 }
 
-void Renderer::setAnimationColor(const boolean animationColor) {
-	this->animationColor = animationColor;
-	glUniform1i(shaderParams.at(ShaderParamName::U_ANIMATION_COLOR).id, animationColor);
+void Renderer::setFirstAnimationColor(const boolean firstAnimationColor) {
+	this->firstAnimationColor = firstAnimationColor;
+	if (firstAnimationColor) {
+		secondAnimationColor = false;
+	}
+	glUniform1i(shaderParams.at(ShaderParamName::U_FIRST_ANIMATION_COLOR).id, firstAnimationColor);
+	glUniform1i(shaderParams.at(ShaderParamName::U_SECOND_ANIMATION_COLOR).id, secondAnimationColor);
+	checkError();
+}
+
+void Renderer::setSecondAnimationColor(const boolean secondAnimationColor) {
+	this->secondAnimationColor = secondAnimationColor;
+	if (secondAnimationColor) {
+		firstAnimationColor = false;
+	}
+	glUniform1i(shaderParams.at(ShaderParamName::U_FIRST_ANIMATION_COLOR).id, firstAnimationColor);
+	glUniform1i(shaderParams.at(ShaderParamName::U_SECOND_ANIMATION_COLOR).id, secondAnimationColor);
 	checkError();
 }
 
@@ -608,8 +626,12 @@ void Renderer::setAnimationVertex(const boolean animationVertex) {
 	checkError();
 }
 
-boolean Renderer::getAnimationColor() {
-	return this->animationColor;
+boolean Renderer::getFirstAnimationColor() {
+	return this->firstAnimationColor;
+}
+
+boolean Renderer::getSecondAnimationColor() {
+	return this->secondAnimationColor;
 }
 
 boolean Renderer::getAnimationVertex() {
@@ -680,7 +702,7 @@ void Renderer::SwapBuffers()
 {
 	glutSwapBuffers();
 	glFlush();
-	if (animationColor || animationVertex)
+	if (firstAnimationColor || secondAnimationColor || animationVertex)
 		glutPostRedisplay();
 	//int a = glGetError();
 	//glActiveTexture(GL_TEXTURE0);
