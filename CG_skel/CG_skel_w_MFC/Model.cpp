@@ -146,24 +146,28 @@ void Model::initializeFaces(){
 		}
 		//polygonVolume += dot(vertices[0].getCoords(), face.getNorm());
 	}
-	if (hasTextureCoords){
-		return;
-	}
-	//polygonVolume /= 6;
-	int numVertices = faces.size() * 3;
+	if (!hasTextureCoords){
+		//polygonVolume /= 6;
+		int numVertices = faces.size() * 3;
 
-	vec4 centroid(xSum / numVertices, ySum / numVertices, zSum / numVertices, 1);
+		vec4 centroid(xSum / numVertices, ySum / numVertices, zSum / numVertices, 1);
 
-	// Calculating the tex coords;
-	for (auto& f : faces) {
-		vector<Vertex>& vertices = f.getVertices();
-		for (auto& v : vertices) {
-			const vec4& d = centroid - v.getCoords();
-			float xTex = 0.5 + (atan2(d.z, d.x) / (2*pi));
-			float yTex = 0.5 - (asin(d.y) / pi);
-			v.setTexCoords(vec2(xTex, yTex));
+		// Calculating the tex coords;
+		for (auto& f : faces) {
+			vector<Vertex>& vertices = f.getVertices();
+			for (auto& v : vertices) {
+				const vec4& d = centroid - v.getCoords();
+				float xTex = 0.5 + (atan2(d.z, d.x) / (2 * pi));
+				float yTex = 0.5 - (asin(d.y) / pi);
+				v.setTexCoords(vec2(xTex, yTex));
+			}
 		}
 	}
+
+	for (auto& f : faces){
+		f.calcTangents();
+	}
+
 }
 
 

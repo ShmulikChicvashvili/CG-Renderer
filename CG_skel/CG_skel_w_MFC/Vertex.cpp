@@ -14,6 +14,14 @@ bool Vertex::setNorm(const vec4& v){
 	return true;
 }
 
+void Vertex::setTangent(const vec4& v){
+	tangent = v;
+}
+
+void Vertex::setBitangent(const vec4& v){
+	bitangent = v;
+}
+
 void Vertex::setTexCoords(GLfloat x, GLfloat y){
 	texCoords = vec2(x, y);
 	hasSetTexCoords = true;
@@ -38,6 +46,14 @@ const vec4& Vertex::getCoords() const{
 const vec4& Vertex::getNorm() const{
 	assert(hasNorm);
 	return norm;
+}
+
+const vec4& Vertex::getTangent() const{
+	return tangent;
+}
+
+const vec4& Vertex::getBitangent() const{
+	return bitangent;
 }
 
 const vec2& Vertex::getTexCoords() const{

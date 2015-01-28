@@ -73,6 +73,36 @@ void Face::calcNorm(){
 	}
 }
 
+void Face::calcTangents(){
+	assert(hasNorm);
+
+	const vec4& v0 = vertices[0].getCoords();
+	const vec4& v1 = vertices[1].getCoords();
+	const vec4& v2 = vertices[2].getCoords();
+		
+	const vec2& uv0 = vertices[0].getTexCoords();
+	const vec2& uv1 = vertices[1].getTexCoords();
+	const vec2& uv2 = vertices[2].getTexCoords();
+
+	const vec4& deltaPos1 = v1 - v0;
+	const vec4& deltaPos2 = v2 - v0;
+
+	const vec2& deltaUV1 = uv1 - uv0;
+	const vec2& deltaUV2 = uv2 - uv0;
+
+	float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+	const vec4& tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
+	const vec4& bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
+
+	assert(cmpFloat(tangent.w, 0));
+	assert(cmpFloat(bitangent.w, 0));
+
+	for (auto& v : vertices){
+		v.setTangent(tangent);
+		v.setBitangent(bitangent);
+	}
+}
+
 const vec4& Face::getMidPoint() const{
 	assert(hasMid);
 	return midPoint;
