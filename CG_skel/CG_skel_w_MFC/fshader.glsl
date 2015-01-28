@@ -172,10 +172,6 @@ void main()
 	
 	if (uEnvMapping){
 		vec3 eyeDir = normalize(point);
-		if(eyeDir.z < 0){
-			color = vec3(1,0,0);
-			return;
-		}
 		vec3 reflected = reflect(eyeDir, norm);
 		
 		reflected = (uInvNormViewMtx * vec4(reflected,0)).xyz;
