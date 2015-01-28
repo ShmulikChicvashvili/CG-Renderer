@@ -173,6 +173,7 @@ void Model::initializeFaces(){
 	}
 
 	for (auto& f : faces){
+		cout << "Face calc tangents" << endl;
 		f.calcTangents();
 	}
 

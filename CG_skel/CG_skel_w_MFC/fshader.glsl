@@ -172,6 +172,10 @@ void main()
 	
 	if (uEnvMapping){
 		vec3 eyeDir = normalize(point);
+		if(eyeDir.z < 0){
+			color = vec3(1,0,0);
+			return;
+		}
 		vec3 reflected = reflect(eyeDir, norm);
 		
 		reflected = (uInvNormViewMtx * vec4(reflected,0)).xyz;
@@ -180,7 +184,7 @@ void main()
 		color = texture(uEnvTex, reflected);
 	}
 	
-	if (firstAnimateColor){
+	if (firstAnimateColor || secondAnimateColor){
 		vec3 tmpColor = rgb2hsv(color.xyz);
 		tmpColor.x += ticks * 0.005;
 		color = vec4(hsv2rgb(tmpColor),1);

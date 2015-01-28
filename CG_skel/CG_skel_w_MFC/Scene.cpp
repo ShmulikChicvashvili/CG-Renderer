@@ -178,26 +178,27 @@ void Scene::setTextureCube() {
 	this->textureCube = m_renderer->genCubeTexture();
 	
 	this->rightTexture = loadFile("posx.png");
-	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, rightTexture, width, height);
-
 	this->leftTexture = loadFile("negx.png");
-	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, leftTexture, width, height);
-
 	this->upTexture = loadFile("posy.png");
-	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, upTexture, width, height);
-
 	this->downTexture = loadFile("negy.png");
-	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, downTexture, width, height);
-
 	this->frontTexture = loadFile("posz.png");
-	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, frontTexture, width, height);
-
 	this->backTexture = loadFile("negz.png");
+
+	if (!rightTexture || !leftTexture || !upTexture || !downTexture || !frontTexture || !backTexture){
+		cout << "Couldn't load cube texture. exiting" << endl;
+		exit(1);
+	}
+
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, rightTexture, width, height);
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, leftTexture, width, height);
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, upTexture, width, height);
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, downTexture, width, height);
+	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, frontTexture, width, height);
 	m_renderer->setCubeTextureSide(textureCube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, backTexture, width, height);
 }
 
 GLubyte* Scene::loadFile(string fileName) {
-	string path = "C:\\Users\\Shmulik\\Desktop\\Graphics\\cubeTextures\\";
+	string path = "D:\\University\\Semester 7\\Graphics\\CG_skel\\CG_skel_w_MFC\\Textures\\";
 	string file = path + fileName;
 	PngWrapper png(file.c_str());
 	if (!png.ReadPng()) {

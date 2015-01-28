@@ -90,7 +90,11 @@ void Face::calcTangents(){
 	const vec2& deltaUV1 = uv1 - uv0;
 	const vec2& deltaUV2 = uv2 - uv0;
 
-	float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+	float tmp = deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x;
+	float r = 1;
+	if (tmp != 0){
+		r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+	}
 	const vec4& tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
 	const vec4& bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
 
