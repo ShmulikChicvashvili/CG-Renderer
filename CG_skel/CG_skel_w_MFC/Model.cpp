@@ -123,6 +123,14 @@ bool Model::getActive() const {
 	return this->isActive;
 }
 
+void Model::setEnvMapping(bool envMapping){
+	this->environmentMapping = envMapping;
+}
+
+bool Model::getEnvMapping() const{
+	return environmentMapping;
+}
+
 void Model::initializeFaces(){
 	double xSum = 0.0;
 	double ySum = 0.0;
@@ -231,7 +239,7 @@ void Model::removeTexture() {
 }
 
 void Model::draw(){
-	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix(), texId, texType);
+	renderer->drawModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix(), texId, texType, environmentMapping);
 	if (this->isActive) {
 		renderer->drawActiveModel(vao, faces.size() * 3, getModelMatrix(), getModelNormalMatrix());
 	}

@@ -464,10 +464,11 @@ void Renderer::drawArrays(int size) {
 	checkError();
 }
 
-void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType) {
+void Renderer::drawModel(GLuint vao, int size, const mat4& modelMtx, const mat4& normModelMtx, GLuint tex, TextureType texType, bool envMapping) {
 	setModelTransformations(vao, modelMtx, normModelMtx);
 	setTexture(tex, texType);
 	setConstColor(false);
+	glUniform1i(shaderParams[ShaderParamName::U_ENV_MAPPING].id, envMapping);
 
 	if (silhouette) {
 		glDepthMask(GL_FALSE);
@@ -603,14 +604,15 @@ void Renderer::del2DTexture(GLuint tex){
 
 GLuint Renderer::genCubeTexture(){
 	GLuint tex;
-
-	glActiveTexture(GL_TEXTURE1);
-	checkError();
-
 	glGenTextures(1, &tex);
 	checkError();
+	glActiveTexture(GL_TEXTURE1);
+	checkError();
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+	checkError();
 
-	//glUniform1i(shaderParams[ShaderParamName::U_])
+	glUniform1i(shaderParams[ShaderParamName::U_ENV_TEX].id, 1);
+	checkError();
 
 	return tex;
 }
@@ -629,9 +631,10 @@ void Renderer::setCubeTextureSide(GLuint tex, GLenum side, GLubyte* texImg, int 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	checkError();
+
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	//checkError();
 }
 
 void Renderer::setSilhouette(const boolean silhouette) {
