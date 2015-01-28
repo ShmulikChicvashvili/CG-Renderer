@@ -176,13 +176,19 @@ void main()
 		
 		reflected = (uInvNormViewMtx * vec4(reflected,0)).xyz;
 		reflected = normalize(reflected);
+		reflected.y *= -1;
 		
 		color = texture(uEnvTex, reflected);
 	}
 	
-	if (firstAnimateColor || secondAnimateColor){
+	if (firstAnimateColor){
 		vec3 tmpColor = rgb2hsv(color.xyz);
 		tmpColor.x += ticks * 0.005;
+		color = vec4(hsv2rgb(tmpColor),1);
+	}
+	if (secondAnimateColor){
+		vec3 tmpColor = rgb2hsv(color.xyz);
+		tmpColor.z += ticks * 0.005;
 		color = vec4(hsv2rgb(tmpColor),1);
 	}
 	
