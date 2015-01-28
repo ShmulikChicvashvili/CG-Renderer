@@ -92,6 +92,14 @@ void Renderer::fillShaderParams() {
 	shaderParams[ShaderParamName::V_TEX_COORDS] = ShaderParam(glGetAttribLocation(program, "vTexCoords"), 2);
 	checkError();
 	cout << "V_TEX_COORDS id: " << shaderParams[ShaderParamName::V_TEX_COORDS].id << endl;
+
+	shaderParams[ShaderParamName::V_TANGENT] = ShaderParam(glGetAttribLocation(program, "vTangent"), 4);
+	checkError();
+	cout << "V_TANGENT id: " << shaderParams[ShaderParamName::V_TANGENT].id << endl;
+
+	shaderParams[ShaderParamName::V_BITANGENT] = ShaderParam(glGetAttribLocation(program, "vBitangent"), 4);
+	checkError();
+	cout << "V_BITANGENT id: " << shaderParams[ShaderParamName::V_BITANGENT].id << endl;
 	
 	shaderParams[ShaderParamName::U_MODELVIEW_MTX] = ShaderParam(glGetUniformLocation(program, "uModelviewMtx"), 16);
 	checkError();
@@ -254,6 +262,8 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	vector<vec4> faceNormals;
 	vector<vec4> faceMid;
 	vector<vec2> textures;
+	vector<vec4> tangents;
+	vector<vec4> bitangents;
 	for (auto& f : faces) {
 		for (auto& v : f.getVertices()) {
 			vertices.push_back(v.getCoords());
@@ -261,6 +271,8 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 			faceNormals.push_back(f.getNorm());
 			faceMid.push_back(f.getMidPoint());
 			textures.push_back(v.getTexCoords());
+			tangents.push_back(v.getTangent());
+			bitangents.push_back(v.getBitangent());
 		}
 	}
 	assert(vertices.size() == faces.size() * 3);
@@ -299,6 +311,17 @@ void Renderer::addModel(const vector<Face>& faces, GLuint& vao, GLuint& colorVbo
 	vbos[ShaderParamName::V_TEX_COORDS] = buffers[VBOIndex::TEXTURES];
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_TEX_COORDS]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * textures.size(), textures.data(), GL_STATIC_DRAW);
+
+	// Tangents vbo
+	vbos[ShaderParamName::V_TANGENT] = buffers[VBOIndex::TANGENTS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_TANGENT]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * tangents.size(), tangents.data(), GL_STATIC_DRAW);
+
+	// Bitangents vbo
+	// Tangents vbo
+	vbos[ShaderParamName::V_BITANGENT] = buffers[VBOIndex::BITANGENTS];
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[ShaderParamName::V_BITANGENT]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec4) * bitangents.size(), bitangents.data(), GL_STATIC_DRAW);
 
 	// Materials vbo
 	//vbos[ShaderParamName::V_MATERIAL] = buffers[VBOIndex::MATERIALS];

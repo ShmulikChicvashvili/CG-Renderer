@@ -16,14 +16,16 @@ using namespace std;
 #define INDEX(width,x,y,c) (x+y*width)*3+c
 #define INDEXZ(width,x,y) (x+y*width)
 
-#define NUMBER_VBOS 6
+#define NUMBER_VBOS 8
 enum VBOIndex{
 	VERTICES,
 	NORMALS,
 	FACE_NORMALS,
 	MATERIALS,
 	FACE_MID,
-	TEXTURES
+	TEXTURES,
+	TANGENTS,
+	BITANGENTS
 };
 
 enum class ColorMethod{
@@ -43,6 +45,8 @@ enum class ShaderParamName{
 	V_SPECULAR,
 	V_FACE_MID,
 	V_TEX_COORDS,
+	V_TANGENT,
+	V_BITANGENT,
 	U_MODELVIEW_MTX,
 	U_NORM_MODELVIEW_MTX,
 	U_PROJ_MTX,
