@@ -135,6 +135,10 @@ void Model::initializeFaces(){
 	double xSum = 0.0;
 	double ySum = 0.0;
 	double zSum = 0.0;
+	double lowestX = faces.at(0).getVertices().at(0).getCoords().x;
+	double highestX = faces.at(0).getVertices().at(1).getCoords().x;
+	double lowestY = faces.at(0).getVertices().at(0).getCoords().y;
+	double highestY = faces.at(0).getVertices().at(1).getCoords().y;
 	//double polygonVolume = 0.0;
 	
 	// Initializing and calculating centroid of the polyhedron
@@ -151,6 +155,10 @@ void Model::initializeFaces(){
 			ySum += vertice.y;
 			zSum += vertice.z;
 			
+			if (vertice.x < lowestX) lowestX = vertice.x;
+			if (vertice.x > highestX) highestX = vertice.x;
+			if (vertice.y < lowestY) lowestY = vertice.y;
+			if (vertice.y > highestY) highestY = vertice.y;
 		}
 		//polygonVolume += dot(vertices[0].getCoords(), face.getNorm());
 	}
@@ -160,26 +168,31 @@ void Model::initializeFaces(){
 
 		vec4 centroid(xSum / numVertices, ySum / numVertices, zSum / numVertices, 1);
 
+		double rangeX = highestX - lowestX;
+		double rangeY = highestY - lowestY;
+		double offsetX = 0 - lowestX;
+		double offsetY = 0 - lowestY;
+
 		// Calculating the tex coords;
 		for (auto& f : faces) {
 			vector<Vertex>& vertices = f.getVertices();
 			for (auto& v : vertices) {
 				const vec4& d = normalize(centroid - v.getCoords());
-				float xTex = 0.5 + (atan2(d.z, d.x) / (2 * pi));
-				float yTex = 0.5 - (asin(d.y) / pi);
+				/*float xTex = 0.5 + (atan2(d.z, d.x) / (2 * pi));
+				float yTex = 0.5 - (asin(d.y) / pi);*/
+				float xTex = (v.getCoords().x + offsetX) / rangeX;
+				float yTex = (v.getCoords().y + offsetY) / rangeY;
+				cout << "Coords : " << xTex << " , " << yTex << endl;
 				v.setTexCoords(vec2(xTex, yTex));
 			}
 		}
 	}
 
 	for (auto& f : faces){
-		cout << "Face calc tangents" << endl;
 		f.calcTangents();
 	}
 
 }
-
-
 
 void Model::setRenderer(Renderer* renderer){
 	initializeFaces();
