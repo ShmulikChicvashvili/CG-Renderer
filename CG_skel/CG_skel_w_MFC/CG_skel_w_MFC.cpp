@@ -72,6 +72,7 @@
 #define FIRST_COLOR_ANIMATION 3
 #define SECOND_COLOR_ANIMATION 4
 #define VERTEX_ANIMATION 5
+#define ENVIRONMENT_MAPPING 6
 
 Scene *scene;
 Renderer *renderer;
@@ -864,6 +865,13 @@ void effectMenu(int id) {
 	case VERTEX_ANIMATION:
 		renderer->setAnimationVertex(!renderer->getAnimationVertex());
 		break;
+	case ENVIRONMENT_MAPPING:
+	{
+		int activeModel = scene->getActiveModel();
+		shared_ptr<Model> model = scene->getModels().at(activeModel);
+		model->setEnvMapping(!model->getEnvMapping());
+		break;
+	}
 	default:
 		break;
 	}
@@ -921,6 +929,7 @@ void initMenu()
 	glutAddMenuEntry("First color Animation", FIRST_COLOR_ANIMATION);
 	glutAddMenuEntry("Second color animation", SECOND_COLOR_ANIMATION);
 	glutAddMenuEntry("Vertex Animation", VERTEX_ANIMATION);
+	glutAddMenuEntry("Environment Mapping", ENVIRONMENT_MAPPING);
 
 	glutCreateMenu(mainMenu);
 	glutAddSubMenu("File", menuFile);
@@ -981,6 +990,7 @@ int my_main(int argc, char **argv)
 	shared_ptr<Light> p (new PointLight(Material(), vec4(0, 0, 1, 1)));
 	//shared_ptr<Light> p(new ParallelLight(Material(), vec4(0, 0, -1, 0)));
 	scene->loadLight(p);
+	scene->setTextureCube();
 
 	//----------------------------------------------------------------------------
 	// Initialize Callbacks
