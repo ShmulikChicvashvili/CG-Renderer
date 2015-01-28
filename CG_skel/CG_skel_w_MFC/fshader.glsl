@@ -188,7 +188,7 @@ void main()
 	}
 	if (secondAnimateColor){
 		vec3 tmpColor = rgb2hsv(color.xyz);
-		tmpColor.z += ticks * 0.005;
+		tmpColor.z += ticks * 0.001;
 		color = vec4(hsv2rgb(tmpColor),1);
 	}
 	

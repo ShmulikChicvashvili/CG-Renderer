@@ -182,7 +182,7 @@ void Model::initializeFaces(){
 				float yTex = 0.5 - (asin(d.y) / pi);*/
 				float xTex = (v.getCoords().x + offsetX) / rangeX;
 				float yTex = (v.getCoords().y + offsetY) / rangeY;
-				cout << "Coords : " << xTex << " , " << yTex << endl;
+				//cout << "Coords : " << xTex << " , " << yTex << endl;
 				v.setTexCoords(vec2(xTex, yTex));
 			}
 		}
