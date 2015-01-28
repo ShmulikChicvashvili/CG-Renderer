@@ -55,6 +55,8 @@ enum class ShaderParamName{
 	U_COLOR_METHOD,
 	U_TEX_TYPE,
 	U_TEX_MAP,
+	U_ENV_MAPPING,
+	U_ENV_TEX,
 	U_CONST_COLOR,
 	U_TOON,
 	U_SILHOUETTE,

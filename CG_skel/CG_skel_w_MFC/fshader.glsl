@@ -36,7 +36,8 @@ uniform bool uToon;
 uniform bool uSilhouette;
 
 uniform int ticks;
-uniform bool animateColor;
+uniform bool firstAnimateColor;
+uniform bool secondAnimateColor;
 
 uniform mat4 uInvNormViewMtx;
 
@@ -179,7 +180,7 @@ void main()
 		color = texture(uEnvTex, reflected);
 	}
 	
-	if (animateColor){
+	if (firstAnimateColor){
 		vec3 tmpColor = rgb2hsv(color.xyz);
 		tmpColor.x += ticks * 0.005;
 		color = vec4(hsv2rgb(tmpColor),1);

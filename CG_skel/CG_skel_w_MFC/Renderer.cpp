@@ -137,6 +137,15 @@ void Renderer::fillShaderParams() {
 	checkError();
 	cout << "U_TEX_MAP id: " << shaderParams[ShaderParamName::U_TEX_MAP].id << endl;
 
+	shaderParams[ShaderParamName::U_ENV_MAPPING] = ShaderParam(glGetUniformLocation(program, "uEnvMapping"), 1);
+	checkError();
+	cout << "U_ENV_MAPPING id: " << shaderParams[ShaderParamName::U_ENV_MAPPING].id << endl;
+
+
+	shaderParams[ShaderParamName::U_ENV_TEX] = ShaderParam(glGetUniformLocation(program, "uEnvTex"), 1);
+	checkError();
+	cout << "U_ENV_TEX id: " << shaderParams[ShaderParamName::U_ENV_TEX].id << endl;
+
 	shaderParams[ShaderParamName::U_TOON] = ShaderParam(glGetUniformLocation(program, "uToon"), 1);
 	checkError();
 	cout << "U_TOON id: " << shaderParams[ShaderParamName::U_TOON].id << endl;
@@ -151,11 +160,11 @@ void Renderer::fillShaderParams() {
 
 	shaderParams[ShaderParamName::U_FIRST_ANIMATION_COLOR] = ShaderParam(glGetUniformLocation(program, "firstAnimateColor"), 1);
 	checkError();
-	cout << "U_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_FIRST_ANIMATION_COLOR].id << endl;
+	cout << "U_FIRST_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_FIRST_ANIMATION_COLOR].id << endl;
 
 	shaderParams[ShaderParamName::U_SECOND_ANIMATION_COLOR] = ShaderParam(glGetUniformLocation(program, "secondAnimateColor"), 1);
 	checkError();
-	cout << "U_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_SECOND_ANIMATION_COLOR].id << endl;
+	cout << "U_SECOND_ANIMATION_COLOR id: " << shaderParams[ShaderParamName::U_SECOND_ANIMATION_COLOR].id << endl;
 
 	shaderParams[ShaderParamName::U_ANIMATION_VERTEX] = ShaderParam(glGetUniformLocation(program, "animateVertex"), 1);
 	checkError();
@@ -594,8 +603,15 @@ void Renderer::del2DTexture(GLuint tex){
 
 GLuint Renderer::genCubeTexture(){
 	GLuint tex;
+
+	glActiveTexture(GL_TEXTURE1);
+	checkError();
+
 	glGenTextures(1, &tex);
 	checkError();
+
+	//glUniform1i(shaderParams[ShaderParamName::U_])
+
 	return tex;
 }
 
