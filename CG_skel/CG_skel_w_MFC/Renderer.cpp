@@ -592,6 +592,25 @@ void Renderer::del2DTexture(GLuint tex){
 	checkError();
 }
 
+GLuint Renderer::genCubeTexture(){
+	GLuint tex;
+	glGenTextures(1, &tex);
+	checkError();
+	return tex;
+}
+
+void Renderer::setCubeTextureSide(GLuint tex, GLenum side, GLubyte* texImg, int width, int height){
+	glActiveTexture(GL_TEXTURE1);
+	checkError();
+	glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+	checkError();
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+	checkError();
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
 void Renderer::setSilhouette(const boolean silhouette) {
 	this->silhouette = silhouette;
 }

@@ -170,6 +170,8 @@ public:
 	void setLights(const vector<RendererLight>& lights);
 	GLuint add2DTexture(GLubyte* texImg, int width, int height);
 	void del2DTexture(GLuint tex);
+	GLuint genCubeTexture();
+	void setCubeTextureSide(GLuint tex, GLenum side, GLubyte* texImg, int width, int height);
 	void setSilhouette(const boolean silhouette);
 	void setToon(const boolean toon);
 	boolean getSilhouette();
